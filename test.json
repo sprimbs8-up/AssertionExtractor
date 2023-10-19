@@ -1,0 +1,1130 @@
+{
+  "test_class": {
+    "identifier": "seqTest",
+    "superclass": "",
+    "interfaces": "",
+    "fields": [
+      {
+        "original_string": "private boolean DEBUG = false;",
+        "modifier": "private",
+        "type": "boolean",
+        "declarator": "DEBUG = false",
+        "var_name": "DEBUG"
+      },
+      {
+        "original_string": "private static PrintStream out;",
+        "modifier": "private static",
+        "type": "PrintStream",
+        "declarator": "out",
+        "var_name": "out"
+      },
+      {
+        "original_string": "public String[] DEFAULT_VALS = new String[] { \"A\", \"B\", \"C\", \"D\", \"E\" };",
+        "modifier": "public",
+        "type": "String[]",
+        "declarator": "DEFAULT_VALS = new String[] { \"A\", \"B\", \"C\", \"D\", \"E\" }",
+        "var_name": "DEFAULT_VALS"
+      }
+    ],
+    "file": "src/ajm/seqTest.java"
+  },
+  "test_case": {
+    "identifier": "testBasicIteration",
+    "parameters": "()",
+    "modifiers": "@Test public",
+    "return": "void",
+    "body": "@Test\n\tpublic void testBasicIteration() {\n\t\tseqStub s = makeSeq();\n\t\tfor (String val : DEFAULT_VALS) {\n\t\t\ts.bang();\n\t\t\tassertEquals(val, s.getLastStringValue());\n\t\t}\n\t\ts.bang();\n\t\tassertEquals(DEFAULT_VALS[0], s.getLastStringValue());\n\t}",
+    "signature": "void testBasicIteration()",
+    "full_signature": "@Test public void testBasicIteration()",
+    "class_method_signature": "seqTest.testBasicIteration()",
+    "testcase": true,
+    "constructor": false,
+    "invocations": [
+      "makeSeq",
+      "bang",
+      "assertEquals",
+      "getLastStringValue",
+      "bang",
+      "assertEquals",
+      "getLastStringValue"
+    ]
+  },
+  "focal_class": {
+    "identifier": "seq",
+    "superclass": "extends AbstractMaxRubyObject",
+    "interfaces": "",
+    "fields": [
+      {
+        "original_string": "protected static int INFO_OUTLET = 4;",
+        "modifier": "protected static",
+        "type": "int",
+        "declarator": "INFO_OUTLET = 4",
+        "var_name": "INFO_OUTLET"
+      },
+      {
+        "original_string": "protected ArrayList<Item> seq = new ArrayList<Item>();",
+        "modifier": "protected",
+        "type": "ArrayList<Item>",
+        "declarator": "seq = new ArrayList<Item>()",
+        "var_name": "seq"
+      },
+      {
+        "original_string": "protected int index = 0;",
+        "modifier": "protected",
+        "type": "int",
+        "declarator": "index = 0",
+        "var_name": "index"
+      },
+      {
+        "original_string": "protected int iter = 0;",
+        "modifier": "protected",
+        "type": "int",
+        "declarator": "iter = 0",
+        "var_name": "iter"
+      },
+      {
+        "original_string": "protected int step = 1;",
+        "modifier": "protected",
+        "type": "int",
+        "declarator": "step = 1",
+        "var_name": "step"
+      },
+      {
+        "original_string": "protected CHORDMODE chordmode = CHORDMODE.CHORD;",
+        "modifier": "protected",
+        "type": "CHORDMODE",
+        "declarator": "chordmode = CHORDMODE.CHORD",
+        "var_name": "chordmode"
+      },
+      {
+        "original_string": "protected boolean autooutputseq = false;",
+        "modifier": "protected",
+        "type": "boolean",
+        "declarator": "autooutputseq = false",
+        "var_name": "autooutputseq"
+      },
+      {
+        "original_string": "protected ArrayList<Item> defaultSeq = new ArrayList<Item>();",
+        "modifier": "protected",
+        "type": "ArrayList<Item>",
+        "declarator": "defaultSeq = new ArrayList<Item>()",
+        "var_name": "defaultSeq"
+      },
+      {
+        "original_string": "protected int defaultIndex = index;",
+        "modifier": "protected",
+        "type": "int",
+        "declarator": "defaultIndex = index",
+        "var_name": "defaultIndex"
+      },
+      {
+        "original_string": "protected int defaultIter = iter;",
+        "modifier": "protected",
+        "type": "int",
+        "declarator": "defaultIter = iter",
+        "var_name": "defaultIter"
+      },
+      {
+        "original_string": "protected int defaultStep = step;",
+        "modifier": "protected",
+        "type": "int",
+        "declarator": "defaultStep = step",
+        "var_name": "defaultStep"
+      },
+      {
+        "original_string": "protected CHORDMODE defaultChordmode;",
+        "modifier": "protected",
+        "type": "CHORDMODE",
+        "declarator": "defaultChordmode",
+        "var_name": "defaultChordmode"
+      },
+      {
+        "original_string": "protected int chordIndex = 0;",
+        "modifier": "protected",
+        "type": "int",
+        "declarator": "chordIndex = 0",
+        "var_name": "chordIndex"
+      },
+      {
+        "original_string": "protected boolean iterChanged = true;",
+        "modifier": "protected",
+        "type": "boolean",
+        "declarator": "iterChanged = true",
+        "var_name": "iterChanged"
+      },
+      {
+        "original_string": "protected Parser parser = new Parser();",
+        "modifier": "protected",
+        "type": "Parser",
+        "declarator": "parser = new Parser()",
+        "var_name": "parser"
+      },
+      {
+        "original_string": "protected final seq thisseq = this;",
+        "modifier": "protected final",
+        "type": "seq",
+        "declarator": "thisseq = this",
+        "var_name": "thisseq"
+      },
+      {
+        "original_string": "protected static Atom ATOM_MAX = Atom.newAtom(\"max\");",
+        "modifier": "protected static",
+        "type": "Atom",
+        "declarator": "ATOM_MAX = Atom.newAtom(\"max\")",
+        "var_name": "ATOM_MAX"
+      },
+      {
+        "original_string": "protected static Atom ATOM_MIN = Atom.newAtom(\"min\");",
+        "modifier": "protected static",
+        "type": "Atom",
+        "declarator": "ATOM_MIN = Atom.newAtom(\"min\")",
+        "var_name": "ATOM_MIN"
+      }
+    ],
+    "methods": [
+      {
+        "identifier": "seq",
+        "parameters": "(Atom[] args)",
+        "modifiers": "public",
+        "return": "",
+        "signature": " seq(Atom[] args)",
+        "full_signature": "public  seq(Atom[] args)",
+        "class_method_signature": "seq.seq(Atom[] args)",
+        "testcase": false,
+        "constructor": true
+      },
+      {
+        "identifier": "getInitializer",
+        "parameters": "()",
+        "modifiers": "@Override protected",
+        "return": "Executable",
+        "signature": "Executable getInitializer()",
+        "full_signature": "@Override protected Executable getInitializer()",
+        "class_method_signature": "seq.getInitializer()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "items",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "List<Item>",
+        "signature": "List<Item> items()",
+        "full_signature": "public List<Item> items()",
+        "class_method_signature": "seq.items()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "getseq",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "Atom[]",
+        "signature": "Atom[] getseq()",
+        "full_signature": "public Atom[] getseq()",
+        "class_method_signature": "seq.getseq()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "seq",
+        "parameters": "(Atom[] list)",
+        "modifiers": "@SuppressWarnings(\"all\") public",
+        "return": "void",
+        "signature": "void seq(Atom[] list)",
+        "full_signature": "@SuppressWarnings(\"all\") public void seq(Atom[] list)",
+        "class_method_signature": "seq.seq(Atom[] list)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "getindex",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "int",
+        "signature": "int getindex()",
+        "full_signature": "public int getindex()",
+        "class_method_signature": "seq.getindex()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "index",
+        "parameters": "(int idx)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void index(int idx)",
+        "full_signature": "public void index(int idx)",
+        "class_method_signature": "seq.index(int idx)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "getiter",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "int",
+        "signature": "int getiter()",
+        "full_signature": "public int getiter()",
+        "class_method_signature": "seq.getiter()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "iter",
+        "parameters": "(int iter)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void iter(int iter)",
+        "full_signature": "public void iter(int iter)",
+        "class_method_signature": "seq.iter(int iter)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "getstep",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "int",
+        "signature": "int getstep()",
+        "full_signature": "public int getstep()",
+        "class_method_signature": "seq.getstep()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "step",
+        "parameters": "(int s)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void step(int s)",
+        "full_signature": "public void step(int s)",
+        "class_method_signature": "seq.step(int s)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "getchordmode",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "String",
+        "signature": "String getchordmode()",
+        "full_signature": "public String getchordmode()",
+        "class_method_signature": "seq.getchordmode()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "chordmode",
+        "parameters": "(String chordmode)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void chordmode(String chordmode)",
+        "full_signature": "public void chordmode(String chordmode)",
+        "class_method_signature": "seq.chordmode(String chordmode)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "list",
+        "parameters": "(Atom[] list)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void list(Atom[] list)",
+        "full_signature": "public void list(Atom[] list)",
+        "class_method_signature": "seq.list(Atom[] list)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "set",
+        "parameters": "(Atom[] list)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void set(Atom[] list)",
+        "full_signature": "public void set(Atom[] list)",
+        "class_method_signature": "seq.set(Atom[] list)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "anything",
+        "parameters": "(String msg, Atom[] args)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void anything(String msg, Atom[] args)",
+        "full_signature": "public void anything(String msg, Atom[] args)",
+        "class_method_signature": "seq.anything(String msg, Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "text",
+        "parameters": "(Atom[] args)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void text(Atom[] args)",
+        "full_signature": "public void text(Atom[] args)",
+        "class_method_signature": "seq.text(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "rubyseq",
+        "parameters": "(Atom[] input)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void rubyseq(Atom[] input)",
+        "full_signature": "public void rubyseq(Atom[] input)",
+        "class_method_signature": "seq.rubyseq(Atom[] input)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "ruby",
+        "parameters": "(Atom[] input)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void ruby(Atom[] input)",
+        "full_signature": "public void ruby(Atom[] input)",
+        "class_method_signature": "seq.ruby(Atom[] input)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "evalRuby",
+        "parameters": "(Atom[] input, boolean returnResults)",
+        "modifiers": "protected",
+        "return": "Object",
+        "signature": "Object evalRuby(Atom[] input, boolean returnResults)",
+        "full_signature": "protected Object evalRuby(Atom[] input, boolean returnResults)",
+        "class_method_signature": "seq.evalRuby(Atom[] input, boolean returnResults)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "append",
+        "parameters": "(Atom[] list)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void append(Atom[] list)",
+        "full_signature": "public void append(Atom[] list)",
+        "class_method_signature": "seq.append(Atom[] list)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "prepend",
+        "parameters": "(Atom[] list)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void prepend(Atom[] list)",
+        "full_signature": "public void prepend(Atom[] list)",
+        "class_method_signature": "seq.prepend(Atom[] list)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "insert",
+        "parameters": "(Atom[] args)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void insert(Atom[] args)",
+        "full_signature": "public void insert(Atom[] args)",
+        "class_method_signature": "seq.insert(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "insert",
+        "parameters": "(int idx, Atom[] list)",
+        "modifiers": "protected",
+        "return": "void",
+        "signature": "void insert(int idx, Atom[] list)",
+        "full_signature": "protected void insert(int idx, Atom[] list)",
+        "class_method_signature": "seq.insert(int idx, Atom[] list)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "insertsort",
+        "parameters": "(Atom[] list)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void insertsort(Atom[] list)",
+        "full_signature": "public void insertsort(Atom[] list)",
+        "class_method_signature": "seq.insertsort(Atom[] list)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "repeat",
+        "parameters": "(Atom[] args)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void repeat(Atom[] args)",
+        "full_signature": "public void repeat(Atom[] args)",
+        "class_method_signature": "seq.repeat(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "length",
+        "parameters": "(Atom[] args)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void length(Atom[] args)",
+        "full_signature": "public void length(Atom[] args)",
+        "class_method_signature": "seq.length(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "delete",
+        "parameters": "(Atom[] args)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void delete(Atom[] args)",
+        "full_signature": "public void delete(Atom[] args)",
+        "class_method_signature": "seq.delete(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "fixBounds",
+        "parameters": "(int idx)",
+        "modifiers": "protected",
+        "return": "int",
+        "signature": "int fixBounds(int idx)",
+        "full_signature": "protected int fixBounds(int idx)",
+        "class_method_signature": "seq.fixBounds(int idx)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "fixBounds",
+        "parameters": "(int left, int right)",
+        "modifiers": "protected",
+        "return": "int[]",
+        "signature": "int[] fixBounds(int left, int right)",
+        "full_signature": "protected int[] fixBounds(int left, int right)",
+        "class_method_signature": "seq.fixBounds(int left, int right)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "getRange",
+        "parameters": "(int start, int end)",
+        "modifiers": "@Deprecated protected",
+        "return": "int[]",
+        "signature": "int[] getRange(int start, int end)",
+        "full_signature": "@Deprecated protected int[] getRange(int start, int end)",
+        "class_method_signature": "seq.getRange(int start, int end)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "getReverseRange",
+        "parameters": "(int start, int end)",
+        "modifiers": "@Deprecated protected",
+        "return": "int[]",
+        "signature": "int[] getReverseRange(int start, int end)",
+        "full_signature": "@Deprecated protected int[] getReverseRange(int start, int end)",
+        "class_method_signature": "seq.getReverseRange(int start, int end)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "subseq",
+        "parameters": "(int left, int right)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void subseq(int left, int right)",
+        "full_signature": "public void subseq(int left, int right)",
+        "class_method_signature": "seq.subseq(int left, int right)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "deleterange",
+        "parameters": "(int left, int right)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void deleterange(int left, int right)",
+        "full_signature": "public void deleterange(int left, int right)",
+        "class_method_signature": "seq.deleterange(int left, int right)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "deletevalue",
+        "parameters": "(Atom[] args)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void deletevalue(Atom[] args)",
+        "full_signature": "public void deletevalue(Atom[] args)",
+        "class_method_signature": "seq.deletevalue(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "sort",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void sort()",
+        "full_signature": "public void sort()",
+        "class_method_signature": "seq.sort()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "sortrange",
+        "parameters": "(int left, int right)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void sortrange(int left, int right)",
+        "full_signature": "public void sortrange(int left, int right)",
+        "class_method_signature": "seq.sortrange(int left, int right)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "replace",
+        "parameters": "(Atom args[])",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void replace(Atom args[])",
+        "full_signature": "public void replace(Atom args[])",
+        "class_method_signature": "seq.replace(Atom args[])",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "replacerange",
+        "parameters": "(Atom args[])",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void replacerange(Atom args[])",
+        "full_signature": "public void replacerange(Atom args[])",
+        "class_method_signature": "seq.replacerange(Atom args[])",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "swap",
+        "parameters": "(Atom args[])",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void swap(Atom args[])",
+        "full_signature": "public void swap(Atom args[])",
+        "class_method_signature": "seq.swap(Atom args[])",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "reverse",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void reverse()",
+        "full_signature": "public void reverse()",
+        "class_method_signature": "seq.reverse()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "reverserange",
+        "parameters": "(int idx1, int idx2)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void reverserange(int idx1, int idx2)",
+        "full_signature": "public void reverserange(int idx1, int idx2)",
+        "class_method_signature": "seq.reverserange(int idx1, int idx2)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "reverseVals",
+        "parameters": "(int left, int right)",
+        "modifiers": "protected",
+        "return": "void",
+        "signature": "void reverseVals(int left, int right)",
+        "full_signature": "protected void reverseVals(int left, int right)",
+        "class_method_signature": "seq.reverseVals(int left, int right)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "rotate",
+        "parameters": "(int n)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void rotate(int n)",
+        "full_signature": "public void rotate(int n)",
+        "class_method_signature": "seq.rotate(int n)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "rotaterange",
+        "parameters": "(int left, int right, int n)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void rotaterange(int left, int right, int n)",
+        "full_signature": "public void rotaterange(int left, int right, int n)",
+        "class_method_signature": "seq.rotaterange(int left, int right, int n)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "add",
+        "parameters": "(Atom[] args)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void add(Atom[] args)",
+        "full_signature": "public void add(Atom[] args)",
+        "class_method_signature": "seq.add(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "addrange",
+        "parameters": "(Atom[] args)",
+        "modifiers": "@Deprecated public",
+        "return": "void",
+        "signature": "void addrange(Atom[] args)",
+        "full_signature": "@Deprecated public void addrange(Atom[] args)",
+        "class_method_signature": "seq.addrange(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "addrevrange",
+        "parameters": "(Atom[] args)",
+        "modifiers": "@Deprecated public",
+        "return": "void",
+        "signature": "void addrevrange(Atom[] args)",
+        "full_signature": "@Deprecated public void addrevrange(Atom[] args)",
+        "class_method_signature": "seq.addrevrange(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "multiply",
+        "parameters": "(Atom[] args)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void multiply(Atom[] args)",
+        "full_signature": "public void multiply(Atom[] args)",
+        "class_method_signature": "seq.multiply(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "multiplyrange",
+        "parameters": "(Atom[] args)",
+        "modifiers": "@Deprecated public",
+        "return": "void",
+        "signature": "void multiplyrange(Atom[] args)",
+        "full_signature": "@Deprecated public void multiplyrange(Atom[] args)",
+        "class_method_signature": "seq.multiplyrange(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "multiplyrevrange",
+        "parameters": "(Atom[] args)",
+        "modifiers": "@Deprecated public",
+        "return": "void",
+        "signature": "void multiplyrevrange(Atom[] args)",
+        "full_signature": "@Deprecated public void multiplyrevrange(Atom[] args)",
+        "class_method_signature": "seq.multiplyrevrange(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "invert",
+        "parameters": "(Atom[] args)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void invert(Atom[] args)",
+        "full_signature": "public void invert(Atom[] args)",
+        "class_method_signature": "seq.invert(Atom[] args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "subtractfrom",
+        "parameters": "(Atom... args)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void subtractfrom(Atom... args)",
+        "full_signature": "public void subtractfrom(Atom... args)",
+        "class_method_signature": "seq.subtractfrom(Atom... args)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "max",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void max()",
+        "full_signature": "public void max()",
+        "class_method_signature": "seq.max()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "getMax",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "Number",
+        "signature": "Number getMax()",
+        "full_signature": "public Number getMax()",
+        "class_method_signature": "seq.getMax()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "max",
+        "parameters": "(Atom atom, Number n)",
+        "modifiers": "private",
+        "return": "Number",
+        "signature": "Number max(Atom atom, Number n)",
+        "full_signature": "private Number max(Atom atom, Number n)",
+        "class_method_signature": "seq.max(Atom atom, Number n)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "min",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void min()",
+        "full_signature": "public void min()",
+        "class_method_signature": "seq.min()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "getMin",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "Number",
+        "signature": "Number getMin()",
+        "full_signature": "public Number getMin()",
+        "class_method_signature": "seq.getMin()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "min",
+        "parameters": "(Atom atom, Number n)",
+        "modifiers": "private",
+        "return": "Number",
+        "signature": "Number min(Atom atom, Number n)",
+        "full_signature": "private Number min(Atom atom, Number n)",
+        "class_method_signature": "seq.min(Atom atom, Number n)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "direction",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void direction()",
+        "full_signature": "public void direction()",
+        "class_method_signature": "seq.direction()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "direction",
+        "parameters": "(int dir)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void direction(int dir)",
+        "full_signature": "public void direction(int dir)",
+        "class_method_signature": "seq.direction(int dir)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "advance",
+        "parameters": "(int n)",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void advance(int n)",
+        "full_signature": "public void advance(int n)",
+        "class_method_signature": "seq.advance(int n)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "next",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void next()",
+        "full_signature": "public void next()",
+        "class_method_signature": "seq.next()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "prev",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void prev()",
+        "full_signature": "public void prev()",
+        "class_method_signature": "seq.prev()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "bang",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void bang()",
+        "full_signature": "public void bang()",
+        "class_method_signature": "seq.bang()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "arpeggiating",
+        "parameters": "()",
+        "modifiers": "protected",
+        "return": "boolean",
+        "signature": "boolean arpeggiating()",
+        "full_signature": "protected boolean arpeggiating()",
+        "class_method_signature": "seq.arpeggiating()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "fixIndexBounds",
+        "parameters": "()",
+        "modifiers": "protected",
+        "return": "void",
+        "signature": "void fixIndexBounds()",
+        "full_signature": "protected void fixIndexBounds()",
+        "class_method_signature": "seq.fixIndexBounds()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "output",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void output()",
+        "full_signature": "public void output()",
+        "class_method_signature": "seq.output()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "outputseq",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void outputseq()",
+        "full_signature": "public void outputseq()",
+        "class_method_signature": "seq.outputseq()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "output",
+        "parameters": "(OUTLET outlet, int data)",
+        "modifiers": "protected",
+        "return": "void",
+        "signature": "void output(OUTLET outlet, int data)",
+        "full_signature": "protected void output(OUTLET outlet, int data)",
+        "class_method_signature": "seq.output(OUTLET outlet, int data)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "output",
+        "parameters": "(OUTLET outlet, Item data)",
+        "modifiers": "protected",
+        "return": "void",
+        "signature": "void output(OUTLET outlet, Item data)",
+        "full_signature": "protected void output(OUTLET outlet, Item data)",
+        "class_method_signature": "seq.output(OUTLET outlet, Item data)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "output",
+        "parameters": "(OUTLET outlet, Atom data)",
+        "modifiers": "protected",
+        "return": "void",
+        "signature": "void output(OUTLET outlet, Atom data)",
+        "full_signature": "protected void output(OUTLET outlet, Atom data)",
+        "class_method_signature": "seq.output(OUTLET outlet, Atom data)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "output",
+        "parameters": "(OUTLET outlet, Atom[] data)",
+        "modifiers": "protected",
+        "return": "void",
+        "signature": "void output(OUTLET outlet, Atom[] data)",
+        "full_signature": "protected void output(OUTLET outlet, Atom[] data)",
+        "class_method_signature": "seq.output(OUTLET outlet, Atom[] data)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "outputInfo",
+        "parameters": "(Atom... data)",
+        "modifiers": "protected",
+        "return": "void",
+        "signature": "void outputInfo(Atom... data)",
+        "full_signature": "protected void outputInfo(Atom... data)",
+        "class_method_signature": "seq.outputInfo(Atom... data)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "reset",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void reset()",
+        "full_signature": "public void reset()",
+        "class_method_signature": "seq.reset()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "resetindex",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void resetindex()",
+        "full_signature": "public void resetindex()",
+        "class_method_signature": "seq.resetindex()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "resetiter",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void resetiter()",
+        "full_signature": "public void resetiter()",
+        "class_method_signature": "seq.resetiter()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "resetstep",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void resetstep()",
+        "full_signature": "public void resetstep()",
+        "class_method_signature": "seq.resetstep()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "resetcmode",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void resetcmode()",
+        "full_signature": "public void resetcmode()",
+        "class_method_signature": "seq.resetcmode()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "resetseq",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "void",
+        "signature": "void resetseq()",
+        "full_signature": "public void resetseq()",
+        "class_method_signature": "seq.resetseq()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "onSeqChange",
+        "parameters": "()",
+        "modifiers": "protected",
+        "return": "void",
+        "signature": "void onSeqChange()",
+        "full_signature": "protected void onSeqChange()",
+        "class_method_signature": "seq.onSeqChange()",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "equals",
+        "parameters": "(Object obj)",
+        "modifiers": "public",
+        "return": "boolean",
+        "signature": "boolean equals(Object obj)",
+        "full_signature": "public boolean equals(Object obj)",
+        "class_method_signature": "seq.equals(Object obj)",
+        "testcase": false,
+        "constructor": false
+      },
+      {
+        "identifier": "toString",
+        "parameters": "()",
+        "modifiers": "public",
+        "return": "String",
+        "signature": "String toString()",
+        "full_signature": "public String toString()",
+        "class_method_signature": "seq.toString()",
+        "testcase": false,
+        "constructor": false
+      }
+    ],
+    "file": "src/ajm/seq.java"
+  },
+  "focal_method": {
+    "identifier": "bang",
+    "parameters": "()",
+    "modifiers": "public",
+    "return": "void",
+    "body": "public void bang() {\n\t\tif (!seq.isEmpty()) {\n\t\t\tfixIndexBounds();\n\t\t\toutput();\n\t\t\tif (!arpeggiating()) {\n\t\t\t\tindex(index + step);\n\t\t\t}\n\t\t}\n\t}",
+    "signature": "void bang()",
+    "full_signature": "public void bang()",
+    "class_method_signature": "seq.bang()",
+    "testcase": false,
+    "constructor": false,
+    "invocations": [
+      "isEmpty",
+      "fixIndexBounds",
+      "output",
+      "arpeggiating",
+      "index"
+    ]
+  },
+  "repository": {
+    "repo_id": 81160,
+    "url": "https://github.com/adamjmurray/ajm_objects",
+    "language": "Java",
+    "is_fork": false,
+    "fork_count": 3,
+    "stargazer_count": 25,
+    "size": 27600,
+    "license": "licensed"
+  }
+}
