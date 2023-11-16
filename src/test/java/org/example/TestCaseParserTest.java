@@ -61,4 +61,27 @@ class TestCaseParserTest {
 
     }
 
+    @Test
+    public void testAllAssertionTypesButNotCorrectForm() {
+        String code = """
+            @Test
+            public void testSum() {
+                assertTrue();
+                assertFalse(value, 12);
+                assertNull(value, value2);
+                assertNotNull(value, value2, value4);
+                assertEquals(value);
+                assertNotEquals(value);
+                assertThrows(Exception.class, () -> doFoo(), () -> doBar());
+            }""";
+        TestCase testCase = parser.parseTestCase(code);
+        List<AssertionType> parsedTypes = testCase.testElements().stream()
+                .filter(Assertion.class::isInstance)
+                .map(Assertion.class::cast)
+                .map(Assertion::type)
+                .toList();
+        assertThat(parsedTypes).isEmpty();
+
+    }
+
 }
