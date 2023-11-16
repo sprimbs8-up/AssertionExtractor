@@ -2,6 +2,8 @@ package org.example;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -10,6 +12,7 @@ import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.tokens.MethodTokenExtractor;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class MethodTokenExtractorAssertions {
 
@@ -45,7 +48,7 @@ public class MethodTokenExtractorAssertions {
                 ) {
                     Optional<AssertionType> assertionTypeOpt = AssertionType
                             .parseAssertion(identifierContext.getText());
-                    if (assertionTypeOpt.isPresent() && isValidAssertion(parseTree)) {
+                    if (assertionTypeOpt.isPresent() && isValidAssertion(assertionTypeOpt.get(), child)) {
                         testElements = Stream
                                 .concat(testElements, Stream.of(new TestSequence(List.copyOf(codeStream.toList()))));
                         codeStream = Stream.empty();
@@ -62,8 +65,15 @@ public class MethodTokenExtractorAssertions {
 
         }
 
-        private boolean isValidAssertion(ParseTree possibleAssertion){
-            return true;
+        private boolean isValidAssertion(AssertionType type, ParseTree possibleAssertion) {
+            long count = IntStream.range(0, possibleAssertion.getChildCount())
+                    .mapToObj(possibleAssertion::getChild)
+                    .filter(JavaParser.ExpressionListContext.class::isInstance)
+                    .map(JavaParser.ExpressionListContext.class::cast)
+                    .flatMap(x->x.children.stream())
+                    .filter(Predicate.not(TerminalNode.class::isInstance))
+                    .count() ;
+            return type.getNumParameters() == count;
         }
 
         private Stream<String> parseAssertion(ParseTree assertionChild) {
