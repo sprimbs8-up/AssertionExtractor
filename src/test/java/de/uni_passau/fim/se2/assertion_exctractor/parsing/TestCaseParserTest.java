@@ -1,10 +1,11 @@
-package org.example;
+package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import de.uni_passau.fim.se2.assertion_exctractor.parsing.*;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class TestCaseParserTest {
@@ -53,7 +54,7 @@ class TestCaseParserTest {
             .map(Assertion.class::cast)
             .map(Assertion::type)
             .toList();
-        assertThat(parsedTypes).containsExactly(
+        Assertions.assertThat(parsedTypes).containsExactly(
             AssertionType.ASSERT_TRUE, AssertionType.ASSERT_FALSE, AssertionType.ASSERT_NULL,
             AssertionType.ASSERT_NOT_NULL, AssertionType.ASSERT_EQUALS, AssertionType.ASSERT_NOT_EQUALS,
             AssertionType.ASSERT_THROWS
@@ -80,7 +81,7 @@ class TestCaseParserTest {
                 .map(Assertion.class::cast)
                 .map(Assertion::type)
                 .toList();
-        assertThat(parsedTypes).isEmpty();
+        Assertions.assertThat(parsedTypes).isEmpty();
 
     }
 

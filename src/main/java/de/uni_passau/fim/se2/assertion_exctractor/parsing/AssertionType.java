@@ -1,4 +1,4 @@
-package org.example;
+package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 
 import java.util.Arrays;
 import java.util.Optional;

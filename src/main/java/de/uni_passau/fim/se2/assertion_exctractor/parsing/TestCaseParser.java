@@ -1,4 +1,4 @@
-package org.example;
+package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,12 +11,11 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
-import de.uni_passau.fim.se2.deepcode.toolbox.tokens.MethodTokenExtractor;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class MethodTokenExtractorAssertions {
+public class TestCaseParser {
 
-    public TestCase extractAssertions(final String code) {
+    public TestCase parseTestCase(final String code) {
         final CodeParser codeParser = new CodeParser();
         final MethodTokenVisitor visitor = new MethodTokenVisitor();
         visitor.visitClassBodyDeclaration(codeParser.parseCodeFragment(code).classBodyDeclaration());
