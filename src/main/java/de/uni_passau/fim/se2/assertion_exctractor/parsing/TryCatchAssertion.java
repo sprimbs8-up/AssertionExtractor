@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public record TryCatchAssertion(List<String> tryCatchTokens) implements TestElement {
+
     @Override
     public String toString() {
         return "TRY_CATCH";

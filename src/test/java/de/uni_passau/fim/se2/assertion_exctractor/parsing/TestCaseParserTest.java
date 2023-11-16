@@ -96,10 +96,10 @@ class TestCaseParserTest {
         assertThat(testCase.testElements()).hasSize(3);
         assertThat(testCase.testElements().get(0)).isInstanceOf(TestSequence.class);
         assertThat(testCase.testElements().get(0).tokens())
-                .containsExactly("@ Test public void test ( ) {".split(" "));
+            .containsExactly("@ Test public void test ( ) {".split(" "));
         assertThat(testCase.testElements().get(1)).isInstanceOf(Assertion.class);
         assertThat(testCase.testElements().get(1).tokens())
-                .containsExactly("assertTrue ( value )".split(" "));
+            .containsExactly("assertTrue ( value )".split(" "));
         assertThat(testCase.testElements().get(2)).isInstanceOf(TestSequence.class);
         assertThat(testCase.testElements().get(2).tokens()).containsExactly(";", "}");
 

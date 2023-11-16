@@ -15,7 +15,8 @@ import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
 
 public class TestCaseParser {
 
-    private static class CustomCodeParser extends CodeParser{
+    private static class CustomCodeParser extends CodeParser {
+
         @Override
         public JavaParser parseCodeFragment(String code) {
             JavaParser parser = super.parseCodeFragment(code);
@@ -57,47 +58,53 @@ public class TestCaseParser {
             for (int i = 0; i < parseTree.getChildCount(); i++) {
                 ParseTree child = parseTree.getChild(i);
                 if (
-                        child instanceof JavaParser.MethodCallContext methodCallContext &&
-                                methodCallContext.getChild(0) instanceof JavaParser.IdentifierContext identifierContext
+                    child instanceof JavaParser.MethodCallContext methodCallContext &&
+                        methodCallContext.getChild(0) instanceof JavaParser.IdentifierContext identifierContext
                 ) {
                     Optional<AssertionType> assertionTypeOpt = AssertionType
-                            .parseAssertion(identifierContext.getText());
+                        .parseAssertion(identifierContext.getText());
                     if (assertionTypeOpt.isPresent() && isValidAssertion(assertionTypeOpt.get(), child)) {
                         testElements = Stream
-                                .concat(testElements, Stream.of(new TestSequence(List.copyOf(codeStream.toList()))));
+                            .concat(testElements, Stream.of(new TestSequence(List.copyOf(codeStream.toList()))));
                         codeStream = Stream.empty();
                         testElements = Stream.concat(
-                                testElements,
-                                Stream.of(new Assertion(assertionTypeOpt.get(), getAssertionTokens(child).toList(), parseTree))
+                            testElements,
+                            Stream.of(
+                                new Assertion(assertionTypeOpt.get(), getAssertionTokens(child).toList(), parseTree)
+                            )
                         );
                         continue;
 
                     }
                 }
                 if (
-                        child instanceof JavaParser.StatementContext stCtx
-                                && stCtx.getChildCount() == 3
-                                && stCtx.getChild(0) instanceof TerminalNode tNode
-                                && tNode.getText().equals("try")
-                                && stCtx.getChild(1) instanceof JavaParser.BlockContext blCtx
-
+                    child instanceof JavaParser.StatementContext stCtx
+                        && stCtx.getChildCount() == 3
+                        && stCtx.getChild(0) instanceof TerminalNode tNode
+                        && tNode.getText().equals("try")
+                        && stCtx.getChild(1) instanceof JavaParser.BlockContext blCtx
 
                 ) {
-                    var x = blCtx.children.stream().filter(Predicate.not(TerminalNode.class::isInstance)).reduce((f, s) -> s);
-                    if (x.isPresent()
-                    && x.get().getText().contains("fail")
+                    var x = blCtx.children.stream().filter(Predicate.not(TerminalNode.class::isInstance))
+                        .reduce((f, s) -> s);
+                    if (
+                        x.isPresent()
+                            && x.get().getText().contains("fail")
                             && stCtx.getChild(2) instanceof JavaParser.CatchClauseContext caClaCtx
                             && caClaCtx.children.get(5) instanceof JavaParser.BlockContext caBlockCtx
-                            && caBlockCtx.children.stream().filter(Predicate.not(TerminalNode.class::isInstance)).count() <=2) {
-                    testElements = Stream
+                            && caBlockCtx.children.stream().filter(Predicate.not(TerminalNode.class::isInstance))
+                                .count() <= 2
+                    ) {
+                        testElements = Stream
                             .concat(testElements, Stream.of(new TestSequence(List.copyOf(codeStream.toList()))));
-                    codeStream = Stream.empty();
-                    testElements = Stream.concat(
+                        codeStream = Stream.empty();
+                        testElements = Stream.concat(
                             testElements,
                             Stream.of(new TryCatchAssertion(getAssertionTokens(blCtx).toList()))
-                    );
-                    continue;
-                }}
+                        );
+                        continue;
+                    }
+                }
                 traverseTestCase(child);
             }
 
@@ -105,15 +112,14 @@ public class TestCaseParser {
 
         private boolean isValidAssertion(AssertionType type, ParseTree possibleAssertion) {
             long count = IntStream.range(0, possibleAssertion.getChildCount())
-                    .mapToObj(possibleAssertion::getChild)
-                    .filter(JavaParser.ExpressionListContext.class::isInstance)
-                    .map(JavaParser.ExpressionListContext.class::cast)
-                    .flatMap(x -> x.children.stream())
-                    .filter(Predicate.not(TerminalNode.class::isInstance))
-                    .count();
+                .mapToObj(possibleAssertion::getChild)
+                .filter(JavaParser.ExpressionListContext.class::isInstance)
+                .map(JavaParser.ExpressionListContext.class::cast)
+                .flatMap(x -> x.children.stream())
+                .filter(Predicate.not(TerminalNode.class::isInstance))
+                .count();
             return type.getNumParameters() == count;
         }
-
 
         private Stream<String> getAssertionTokens(ParseTree assertionChild) {
             if (assertionChild.getChildCount() == 0) {
@@ -121,7 +127,7 @@ public class TestCaseParser {
             }
             Stream<String> stream = Stream.empty();
             for (int i = 0; i < assertionChild.getChildCount(); i++) {
-                if( !assertionChild.getChild(i).getText().contains("fail")) {
+                if (!assertionChild.getChild(i).getText().contains("fail")) {
                     stream = Stream.concat(stream, getAssertionTokens(assertionChild.getChild(i)));
                 }
             }
@@ -131,11 +137,11 @@ public class TestCaseParser {
         @Override
         public Void visitBlockStatement(JavaParser.BlockStatementContext ctx) {
             if (
-                    ctx.getChild(0) instanceof JavaParser.StatementContext statementContext &&
-                            statementContext.getChild(0) instanceof JavaParser.ExpressionContext expressionContext &&
-                            expressionContext.getChild(0) instanceof JavaParser.MethodCallContext methodCallContext &&
-                            methodCallContext.getChild(0) instanceof JavaParser.IdentifierContext identifierContext
-                            && identifierContext.children.get(0).getText().contains("assert")
+                ctx.getChild(0) instanceof JavaParser.StatementContext statementContext &&
+                    statementContext.getChild(0) instanceof JavaParser.ExpressionContext expressionContext &&
+                    expressionContext.getChild(0) instanceof JavaParser.MethodCallContext methodCallContext &&
+                    methodCallContext.getChild(0) instanceof JavaParser.IdentifierContext identifierContext
+                    && identifierContext.children.get(0).getText().contains("assert")
             ) {
                 for (var child : methodCallContext.children) {
                     System.out.println(child.getText());

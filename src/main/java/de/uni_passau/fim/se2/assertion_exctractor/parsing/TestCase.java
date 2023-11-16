@@ -1,7 +1,12 @@
 package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 
+import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public record TestCase(List<TestElement> testElements) {
 
@@ -9,21 +14,37 @@ public record TestCase(List<TestElement> testElements) {
         testElements.forEach(System.out::println);
     }
 
-    public String replaceAssertions() {
-        return testElements.stream().map(x -> {
-            if (x instanceof Assertion assertion) {
-                return "<ASSERTION>";
-            }
-            if (x instanceof TryCatchAssertion tryCatchAssertion){
-                List<String> tryCatTokens = tryCatchAssertion.tryCatchTokens();
-                return String.join(" ",tryCatTokens.subList(1,tryCatTokens.size()-1));
+    public String replaceAssertion(int pos) {
+        List<Pair<TestElement, Integer>> assertPosPairs = generateAssertionPositionPair();
+        return assertPosPairs.stream().map(x ->  {
+            if (x.b() == pos) {
+                if (x.a() instanceof Assertion) {
+                    return "<ASSERTION>";
+                } else if (x.a() instanceof TryCatchAssertion tryCatchAssertion) {
+                    List<String> tryCatTokens = tryCatchAssertion.tryCatchTokens();
+                    return String.join(" ", tryCatTokens.subList(1, tryCatTokens.size() - 1));
 
+                }
             }
             return x.toString();
         }).collect(Collectors.joining(" "));
     }
 
+    private List<Pair<TestElement, Integer>> generateAssertionPositionPair() {
+        List<Pair<TestElement, Integer>> assertionsWithPositions = new ArrayList<>();
+        int curPos = 0;
+        for(TestElement el : testElements()){
+            if(!(el instanceof TestSequence)){
+                assertionsWithPositions.add(Pair.of(el,curPos++));
+            } else {
+                assertionsWithPositions.add(Pair.of(el,curPos));
+            }
+        }
+        return assertionsWithPositions;
+    }
+
     public int getNumberAssertions() {
-        return (int) testElements.stream().filter(x-> x instanceof Assertion || x instanceof TryCatchAssertion).count();
+        return (int) testElements.stream().filter(x -> x instanceof Assertion || x instanceof TryCatchAssertion)
+            .count();
     }
 }
