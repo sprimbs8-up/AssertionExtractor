@@ -1,5 +1,8 @@
 plugins {
     id("java")
+    id("com.diffplug.spotless") version "6.21.0"
+
+
 }
 
 group = "org.example"
@@ -20,4 +23,14 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+spotless {
+    java {
+        targetExclude("build/**")
+        importOrderFile("config/spotless/spotless.importorder")
+        eclipse("4.28").configFile("config/spotless/spotless-format.xml")
+        trimTrailingWhitespace()
+        removeUnusedImports()
+    }
 }

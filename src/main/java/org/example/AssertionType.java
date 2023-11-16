@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum AssertionType {
+
     ASSERT_EQUALS("assertEquals"),
     ASSERT_NOT_EQUALS("assertNotEquals"),
     ASSERT_TRUE("assertTrue"),
@@ -11,6 +12,7 @@ public enum AssertionType {
     ASSERT_NULL("assertNull"),
     ASSERT_NOT_NULL("assertNotNull"),
     ASSERT_THROWS("assertThrows");
+
     private final String identifier;
 
     AssertionType(final String identifier) {
