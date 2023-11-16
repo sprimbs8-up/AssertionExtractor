@@ -13,6 +13,7 @@ class TestCaseParserTest {
 
     @Test
     public void testAssertEquals() {
+
         String code = """
             @Test
             public void test() {
@@ -81,6 +82,26 @@ class TestCaseParserTest {
             .map(Assertion::type)
             .toList();
         Assertions.assertThat(parsedTypes).isEmpty();
+
+    }
+
+    @Test
+    public void testAssertForAssertion() {
+        String code = """
+            @Test
+            public void test() {
+                Assert.assertTrue(value);
+            }""";
+        TestCase testCase = parser.parseTestCase(code);
+        assertThat(testCase.testElements()).hasSize(3);
+        assertThat(testCase.testElements().get(0)).isInstanceOf(TestSequence.class);
+        assertThat(testCase.testElements().get(0).tokens())
+                .containsExactly("@ Test public void test ( ) {".split(" "));
+        assertThat(testCase.testElements().get(1)).isInstanceOf(Assertion.class);
+        assertThat(testCase.testElements().get(1).tokens())
+                .containsExactly("assertTrue ( value )".split(" "));
+        assertThat(testCase.testElements().get(2)).isInstanceOf(TestSequence.class);
+        assertThat(testCase.testElements().get(2).tokens()).containsExactly(";", "}");
 
     }
 

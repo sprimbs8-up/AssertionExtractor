@@ -25,9 +25,15 @@ public class TestCaseParser {
     }
 
     public TestCase parseTestCase(final String code) {
+        String s = code;
+        for (AssertionType type : AssertionType.values()) {
+            s = s.replace("org.junit.Assert." + type.getIdentifier(), type.getIdentifier());
+            s = s.replace("junit.Assert." + type.getIdentifier(), type.getIdentifier());
+            s = s.replace("Assert." + type.getIdentifier(), type.getIdentifier());
+        }
         final CodeParser codeParser = new CustomCodeParser();
         final MethodTokenVisitor visitor = new MethodTokenVisitor();
-        visitor.visitClassBodyDeclaration(codeParser.parseCodeFragment(code).classBodyDeclaration());
+        visitor.visitClassBodyDeclaration(codeParser.parseCodeFragment(s).classBodyDeclaration());
         return new TestCase(visitor.testElements.toList());
     }
 

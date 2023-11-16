@@ -15,7 +15,8 @@ public record TestCase(List<TestElement> testElements) {
                 return "<ASSERTION>";
             }
             if (x instanceof TryCatchAssertion tryCatchAssertion){
-                return "<ASSERTION>";
+                List<String> tryCatTokens = tryCatchAssertion.tryCatchTokens();
+                return String.join(" ",tryCatTokens.subList(1,tryCatTokens.size()-1));
 
             }
             return x.toString();
