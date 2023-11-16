@@ -43,8 +43,8 @@ class TestCaseParserTest {
                 assertFalse(value);
                 assertNull(value);
                 assertNotNull(value);
-                assertEquals(value);
-                assertNotEquals(value);
+                assertEquals(value, 5);
+                assertNotEquals(value, 3);
                 assertThrows(Exception.class, () -> doFoo());
             }""";
         TestCase testCase = parser.parseTestCase(code);

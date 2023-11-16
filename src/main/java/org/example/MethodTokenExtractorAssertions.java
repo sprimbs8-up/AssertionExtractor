@@ -11,11 +11,9 @@ import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisito
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.tokens.MethodTokenExtractor;
 
-public class MethodTokenExtractorAssertions extends MethodTokenExtractor {
+public class MethodTokenExtractorAssertions {
 
-    public TestCase extractAssertions(
-        final String code
-    ) {
+    public TestCase extractAssertions(final String code) {
         final CodeParser codeParser = new CodeParser();
         final MethodTokenVisitor visitor = new MethodTokenVisitor();
         visitor.visitClassBodyDeclaration(codeParser.parseCodeFragment(code).classBodyDeclaration());
@@ -42,18 +40,18 @@ public class MethodTokenExtractorAssertions extends MethodTokenExtractor {
             for (int i = 0; i < parseTree.getChildCount(); i++) {
                 ParseTree child = parseTree.getChild(i);
                 if (
-                    child instanceof JavaParser.MethodCallContext methodCallContext &&
-                        methodCallContext.getChild(0) instanceof JavaParser.IdentifierContext identifierContext
+                        child instanceof JavaParser.MethodCallContext methodCallContext &&
+                                methodCallContext.getChild(0) instanceof JavaParser.IdentifierContext identifierContext
                 ) {
                     Optional<AssertionType> assertionTypeOpt = AssertionType
-                        .parseAssertion(identifierContext.getText());
-                    if (assertionTypeOpt.isPresent()) {
+                            .parseAssertion(identifierContext.getText());
+                    if (assertionTypeOpt.isPresent() && isValidAssertion(parseTree)) {
                         testElements = Stream
-                            .concat(testElements, Stream.of(new TestSequence(List.copyOf(codeStream.toList()))));
+                                .concat(testElements, Stream.of(new TestSequence(List.copyOf(codeStream.toList()))));
                         codeStream = Stream.empty();
                         testElements = Stream.concat(
-                            testElements,
-                            Stream.of(new Assertion(assertionTypeOpt.get(), parseAssertion(child).toList()))
+                                testElements,
+                                Stream.of(new Assertion(assertionTypeOpt.get(), parseAssertion(child).toList(), parseTree))
                         );
                         continue;
 
@@ -62,6 +60,10 @@ public class MethodTokenExtractorAssertions extends MethodTokenExtractor {
                 traverseTestCase(child);
             }
 
+        }
+
+        private boolean isValidAssertion(ParseTree possibleAssertion){
+            return true;
         }
 
         private Stream<String> parseAssertion(ParseTree assertionChild) {
@@ -78,11 +80,11 @@ public class MethodTokenExtractorAssertions extends MethodTokenExtractor {
         @Override
         public Void visitBlockStatement(JavaParser.BlockStatementContext ctx) {
             if (
-                ctx.getChild(0) instanceof JavaParser.StatementContext statementContext &&
-                    statementContext.getChild(0) instanceof JavaParser.ExpressionContext expressionContext &&
-                    expressionContext.getChild(0) instanceof JavaParser.MethodCallContext methodCallContext &&
-                    methodCallContext.getChild(0) instanceof JavaParser.IdentifierContext identifierContext
-                    && identifierContext.children.get(0).getText().contains("assert")
+                    ctx.getChild(0) instanceof JavaParser.StatementContext statementContext &&
+                            statementContext.getChild(0) instanceof JavaParser.ExpressionContext expressionContext &&
+                            expressionContext.getChild(0) instanceof JavaParser.MethodCallContext methodCallContext &&
+                            methodCallContext.getChild(0) instanceof JavaParser.IdentifierContext identifierContext
+                            && identifierContext.children.get(0).getText().contains("assert")
             ) {
                 for (var child : methodCallContext.children) {
                     System.out.println(child.getText());
