@@ -15,8 +15,17 @@ import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
 
 public class TestCaseParser {
 
+    private static class CustomCodeParser extends CodeParser{
+        @Override
+        public JavaParser parseCodeFragment(String code) {
+            JavaParser parser = super.parseCodeFragment(code);
+            parser.getErrorListeners().clear();
+            return parser;
+        }
+    }
+
     public TestCase parseTestCase(final String code) {
-        final CodeParser codeParser = new CodeParser();
+        final CodeParser codeParser = new CustomCodeParser();
         final MethodTokenVisitor visitor = new MethodTokenVisitor();
         visitor.visitClassBodyDeclaration(codeParser.parseCodeFragment(code).classBodyDeclaration());
         return new TestCase(visitor.testElements.toList());

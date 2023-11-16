@@ -1,10 +1,16 @@
 package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 
 import java.util.List;
+import java.util.stream.Stream;
 
-public record TryCatchAssertion(List<String> tokens) implements TestElement {
+public record TryCatchAssertion(List<String> tryCatchTokens) implements TestElement {
     @Override
     public String toString() {
-        return String.join(" ", tokens);
+        return "TRY_CATCH";
+    }
+
+    @Override
+    public List<String> tokens() {
+        return Stream.concat(Stream.of(toString()), tryCatchTokens().stream()).toList();
     }
 }
