@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -77,12 +76,32 @@ class TestCaseParserTest {
             }""";
         TestCase testCase = parser.parseTestCase(code);
         List<AssertionType> parsedTypes = testCase.testElements().stream()
-                .filter(Assertion.class::isInstance)
-                .map(Assertion.class::cast)
-                .map(Assertion::type)
-                .toList();
+            .filter(Assertion.class::isInstance)
+            .map(Assertion.class::cast)
+            .map(Assertion::type)
+            .toList();
         Assertions.assertThat(parsedTypes).isEmpty();
 
+    }
+
+    @Test
+    public void testTryCatchAssertionParsing() {
+        String code = """
+            @Test
+            public void testSum() {
+                doThingsBeforeTryCatch();
+                try {
+                    doSomeThings();
+                    doAnotherThing();
+                    doSomeThingsWithException();
+                    Assert.fail();
+                 } catch (Exception e) {
+                    verifyException(e);
+                 }
+                 doThingsAfterTryCatch();
+            }""";
+        TestCase testCase = parser.parseTestCase(code);
+        testCase.print();
     }
 
 }
