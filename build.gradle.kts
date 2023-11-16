@@ -14,7 +14,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation(files("libs/toolbox.jar"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.assertj:assertj-core:3.11.1")
 }
+
 
 tasks.test {
     useJUnitPlatform()

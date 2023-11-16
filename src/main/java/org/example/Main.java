@@ -21,20 +21,8 @@ import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args) {
-        String code = """
-                @Test
-                public void testSum() {
-                    int x = 3;
-                    assertMul(x, 35);
-                    for (var x : childs) {
-                        assertEquals(result.parseInt() , 35);
-                    }
-                    int y = 4;
-                    assertNotNull(y);
-                }""";
-        MethodTokenExtractorAssertions extractor = new MethodTokenExtractorAssertions();
-        TestCase testCase = extractor.extractAssertions(code);
-        testCase.printAndReplaceAssertions();
+
+
 
 
     }

@@ -3,35 +3,16 @@ package org.example;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
-import de.uni_passau.fim.se2.deepcode.toolbox.tokens.CodeTokenExtractor;
 import de.uni_passau.fim.se2.deepcode.toolbox.tokens.MethodTokenExtractor;
-import de.uni_passau.fim.se2.deepcode.toolbox.tokens.MethodTokens;
-import de.uni_passau.fim.se2.deepcode.toolbox.util.StringUtil;
-import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MethodTokenExtractorAssertions extends MethodTokenExtractor {
 
-    /**
-     * Takes a code string as input that has a valid java method syntax. Returns all token strings (without the method
-     * name) separated by white space. Additionally, if required a start and end token will be put in front respectively
-     * end.
-     *
-     * Replaces if given the method declaration name by new labels passed as parameter.
-     *
-     * @param code       The method code.
-     * @return A stream of the processed method tokens (in this case it is a stream of one element).
-     */
     public TestCase extractAssertions(
             final String code
     ) {
@@ -50,12 +31,12 @@ public class MethodTokenExtractorAssertions extends MethodTokenExtractor {
 
         @Override
         public Void visitClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext ctx) {
-            printChild(ctx);
+            traverseTestCase(ctx);
             testElements= Stream.concat(testElements, Stream.of(new TestSequence(List.copyOf(codeStream.toList()))));
             return null;
         }
 
-        private void printChild(ParseTree parseTree){
+        private void traverseTestCase(ParseTree parseTree){
             if(parseTree.getChildCount() == 0){
                 codeStream = Stream.concat(codeStream, Stream.of(parseTree.getText()));
                 return;
@@ -74,7 +55,7 @@ public class MethodTokenExtractorAssertions extends MethodTokenExtractor {
 
                     }
                 }
-                printChild(child);
+                traverseTestCase(child);
             }
 
 
