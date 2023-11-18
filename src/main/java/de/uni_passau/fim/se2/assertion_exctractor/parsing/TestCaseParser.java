@@ -28,6 +28,7 @@ public class TestCaseParser {
     public TestCase parseTestCase(final String code) {
         String s = code;
         for (AssertionType type : AssertionType.values()) {
+            s = s.replace("org.junit.Assert. " + type.getIdentifier(), type.getIdentifier());
             s = s.replace("org.junit.Assert." + type.getIdentifier(), type.getIdentifier());
             s = s.replace("junit.Assert." + type.getIdentifier(), type.getIdentifier());
             s = s.replace("Assert." + type.getIdentifier(), type.getIdentifier());

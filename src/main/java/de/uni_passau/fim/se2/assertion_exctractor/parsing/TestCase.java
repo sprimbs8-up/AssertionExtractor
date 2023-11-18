@@ -26,7 +26,7 @@ public record TestCase(List<TestElement> testElements) {
 
                 }
             }
-            return x.toString();
+            return x.a().toString();
         }).collect(Collectors.joining(" "));
     }
 

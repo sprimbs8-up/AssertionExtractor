@@ -6,6 +6,6 @@ public record TestSequence(List<String> tokens) implements TestElement {
 
     @Override
     public String toString() {
-        return String.join(" ", tokens);
+        return String.join(" ", tokens).replace("\n", " ");
     }
 }

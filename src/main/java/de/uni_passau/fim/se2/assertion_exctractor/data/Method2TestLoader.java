@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
+import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
+import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -20,17 +22,14 @@ public final class Method2TestLoader {
     public static Stream<JSONObject> loadDatasetAsJSON(String baseDir) throws IOException {
         JSONParser parser = new JSONParser();
         List<Path> files = listFiles(Path.of(baseDir));
-        ProgressBar pb = new ProgressBar("Parsing dataset.", files.size());
-        pb.start();
-        Stream<JSONObject> objectStream = files.stream()
-            .map(Path::toFile)
-            .map(Method2TestLoader::createFileReader)
-            .map(reader -> parse(parser, reader))
-            .filter(JSONObject.class::isInstance)
-            .map(JSONObject.class::cast)
-            .peek(ob -> pb.step());
-        pb.stop();
-        return objectStream;
+        ProgressBarContainer.getInstance().setProgressBar("Preparing dataset", files.size());
+        ProgressBarContainer.getInstance().notifyStart();
+        return files.stream()
+                .map(Path::toFile)
+                .map(Method2TestLoader::createFileReader)
+                .map(reader -> parse(parser, reader))
+                .filter(JSONObject.class::isInstance)
+                .map(JSONObject.class::cast);
 
     }
 
@@ -47,8 +46,7 @@ public final class Method2TestLoader {
     private static FileReader createFileReader(File file) {
         try {
             return new FileReader(file);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
@@ -56,8 +54,7 @@ public final class Method2TestLoader {
     private static Object parse(JSONParser parser, FileReader fileReader) {
         try {
             return parser.parse(fileReader);
-        }
-        catch (IOException | ParseException e) {
+        } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
     }
