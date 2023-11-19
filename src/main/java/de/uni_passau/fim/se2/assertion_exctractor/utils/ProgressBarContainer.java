@@ -32,4 +32,8 @@ public final class ProgressBarContainer {
     public void notifyStop(){
         progressBar.stop();
     }
+
+    public int getTotalCount(){
+        return (int) progressBar.getMax();
+    }
 }

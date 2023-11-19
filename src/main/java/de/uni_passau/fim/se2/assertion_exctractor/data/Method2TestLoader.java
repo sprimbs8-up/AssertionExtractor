@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.RandomUtil;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.StatisticsContainer;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
