@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.*;
 import de.uni_passau.fim.se2.assertion_exctractor.processors.ProcessorFactory;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.RandomUtil;
 import org.json.simple.JSONObject;
 
 import de.uni_passau.fim.se2.assertion_exctractor.data.Method2TestLoader;
@@ -31,6 +32,7 @@ public class Main implements Runnable {
 
     @Override
     public void run() {
+        RandomUtil.getInstance().initializeRandom(seed);
         ProcessorFactory.loadProcessor(modelType, dataDir, saveDir, maxAssertions).exportProcessedExamples();
     }
 

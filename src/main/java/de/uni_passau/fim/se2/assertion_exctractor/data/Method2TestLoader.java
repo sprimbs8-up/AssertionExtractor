@@ -6,10 +6,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.RandomUtil;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -21,7 +24,8 @@ public final class Method2TestLoader {
 
     public static Stream<JSONObject> loadDatasetAsJSON(String baseDir) throws IOException {
         JSONParser parser = new JSONParser();
-        List<Path> files = listFiles(Path.of(baseDir));
+        List<Path> files = new ArrayList<>(listFiles(Path.of(baseDir)));
+        Collections.shuffle(files, RandomUtil.getInstance().getRandom());
         ProgressBarContainer.getInstance().setProgressBar("Preparing dataset", files.size());
         ProgressBarContainer.getInstance().notifyStart();
         return files.stream()
