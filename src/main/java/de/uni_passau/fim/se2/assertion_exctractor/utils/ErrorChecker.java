@@ -4,7 +4,8 @@ public class ErrorChecker {
 
     private boolean errorFree = true;
 
-    private ErrorChecker(){}
+    private ErrorChecker() {
+    }
 
     private static final ErrorChecker instance = new ErrorChecker();
 

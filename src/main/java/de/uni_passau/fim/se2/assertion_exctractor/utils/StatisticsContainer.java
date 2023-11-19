@@ -1,11 +1,11 @@
 package de.uni_passau.fim.se2.assertion_exctractor.utils;
 
-import me.tongfei.progressbar.ProgressBar;
-
 public final class StatisticsContainer {
+
     private static StatisticsContainer instance;
 
     private int usedTestCases = 0;
+
     private StatisticsContainer() {
     }
 
@@ -16,11 +16,11 @@ public final class StatisticsContainer {
         return instance;
     }
 
-    public void notifyTestCase(){
+    public void notifyTestCase() {
         usedTestCases++;
     }
 
-    public int getUsedTestCases(){
+    public int getUsedTestCases() {
         return usedTestCases;
     }
 }

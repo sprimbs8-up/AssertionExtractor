@@ -3,6 +3,7 @@ package de.uni_passau.fim.se2.assertion_exctractor.utils;
 import me.tongfei.progressbar.ProgressBar;
 
 public final class ProgressBarContainer {
+
     private static ProgressBarContainer instance;
 
     private ProgressBar progressBar;
@@ -17,23 +18,23 @@ public final class ProgressBarContainer {
         return instance;
     }
 
-    public void setProgressBar(String description, int counter){
-        progressBar = new ProgressBar(description,counter);
+    public void setProgressBar(String description, int counter) {
+        progressBar = new ProgressBar(description, counter);
     }
 
-    public void notifyStart(){
+    public void notifyStart() {
         progressBar.start();
     }
 
-    public void notifyStep(){
+    public void notifyStep() {
         progressBar.step();
     }
 
-    public void notifyStop(){
+    public void notifyStop() {
         progressBar.stop();
     }
 
-    public int getTotalCount(){
+    public int getTotalCount() {
         return (int) progressBar.getMax();
     }
 }

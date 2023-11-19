@@ -1,13 +1,14 @@
 package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 
+import java.util.stream.Stream;
+
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorListener;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import java.util.stream.Stream;
 
 public class FocalMethodParser {
 
@@ -27,7 +28,7 @@ public class FocalMethodParser {
         final MethodTokenVisitor visitor = new MethodTokenVisitor();
         ErrorChecker.getInstance().resetError();
         var codeFragment = codeParser.parseCodeFragment(code);
-        if(ErrorChecker.getInstance().errorOccurred()) {
+        if (ErrorChecker.getInstance().errorOccurred()) {
             return Stream.empty();
         }
         visitor.visitClassBodyDeclaration(codeFragment.classBodyDeclaration());
