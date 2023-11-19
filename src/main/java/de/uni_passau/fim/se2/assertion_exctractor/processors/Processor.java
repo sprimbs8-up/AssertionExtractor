@@ -30,7 +30,7 @@ public abstract class Processor {
     protected Stream<MethodData> loadMethodData(){
         try {
             return Method2TestLoader.loadDatasetAsJSON(dataDir)
-                    .map(MethodData::fromJSONObject)
+                    .flatMap(MethodData::fromPreparation)
                     .peek(x-> ProgressBarContainer.getInstance().notifyStep());
         } catch (IOException e) {
             LOG.error("Error while loading json dataset",e);

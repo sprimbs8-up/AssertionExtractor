@@ -6,6 +6,8 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorListener;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -21,11 +23,13 @@ public class TestCaseParser {
         public JavaParser parseCodeFragment(String code) {
             JavaParser parser = super.parseCodeFragment(code);
             parser.getErrorListeners().clear();
+            parser.addErrorListener(new ErrorListener());
             return parser;
         }
     }
 
-    public TestCase parseTestCase(final String code) {
+
+    public Optional<TestCase> parseTestCase(final String code) {
         String s = code;
         for (AssertionType type : AssertionType.values()) {
             s = s.replace("org.junit.Assert. " + type.getIdentifier(), type.getIdentifier());
@@ -35,8 +39,13 @@ public class TestCaseParser {
         }
         final CodeParser codeParser = new CustomCodeParser();
         final MethodTokenVisitor visitor = new MethodTokenVisitor();
-        visitor.visitClassBodyDeclaration(codeParser.parseCodeFragment(s).classBodyDeclaration());
-        return new TestCase(visitor.testElements.toList());
+        ErrorChecker.getInstance().resetError();
+        var codeFragment = codeParser.parseCodeFragment(s);
+        if(ErrorChecker.getInstance().errorOccurred()) {
+            return Optional.empty();
+        }
+        visitor.visitClassBodyDeclaration(codeFragment.classBodyDeclaration());
+        return Optional.of(new TestCase(visitor.testElements.toList()));
     }
 
     private static class MethodTokenVisitor extends JavaParserBaseVisitor<Void> {

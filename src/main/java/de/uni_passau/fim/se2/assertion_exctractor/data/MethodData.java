@@ -9,18 +9,23 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.stringtemplate.v4.ST;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public record MethodData(TestCase testCase, String focalMethod, String documentation) {
 
-    private final static TestCaseParser PARSER = new TestCaseParser();
+    private final static TestCaseParser TEST_CASE_PARSER = new TestCaseParser();
+    private final static FocalMethodParser FOCAL_METHOD_PARSER = new FocalMethodParser();
 
 
-    public static MethodData fromJSONObject(JSONObject jsonObject){
-        String testCaseString = (String) ((JSONObject) jsonObject.get("test_case")).get("body");
-        String focalMethodString = (String) ((JSONObject) jsonObject.get("focal_method")).get("body");
-        FocalMethodParser focalMethodParser = new FocalMethodParser();
-        return new MethodData(PARSER.parseTestCase(testCaseString),focalMethodParser.parseMethod(focalMethodString).collect(Collectors.joining(" ")), "");
+    public static Stream<MethodData> fromPreparation(PreparedMethodData preparedMethodData) {
+        Optional<TestCase> parsedTestCase = TEST_CASE_PARSER.parseTestCase(preparedMethodData.testMethod());
+        List<String> focalMethodStream = FOCAL_METHOD_PARSER.parseMethod(preparedMethodData.focalMethod()).toList();
+        if (parsedTestCase.isEmpty() || focalMethodStream.isEmpty()) {
+            return Stream.empty();
+        }
+        return Stream.of(new MethodData(parsedTestCase.get(), String.join(" ", focalMethodStream), null));
     }
 }
