@@ -1,6 +1,9 @@
 package de.uni_passau.fim.se2.assertion_exctractor.processors;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
@@ -49,7 +52,7 @@ public abstract class Processor {
             .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
             .toList();
         zip(methodDataStream, createDataTypeList(methodDataStream.size()))
-            .forEach(x -> exportTestCases(x.a().testCase(), x.b()));
+            .forEach(x -> exportTestCases(x.a(), x.b()));
         ProgressBarContainer.getInstance().notifyStop();
         int usedTestCases = StatisticsContainer.getInstance().getUsedTestCases();
         int totalTestCases = ProgressBarContainer.getInstance().getTotalCount();
@@ -58,7 +61,7 @@ public abstract class Processor {
         LOG.info(String.format("This are %.2f", percentage) + "%.");
     }
 
-    protected abstract void exportTestCases(TestCase x, DataType type);
+    protected abstract void exportTestCases(MethodData x, DataType type);
 
     public static <A, B> Stream<Pair<A, B>> zip(List<A> as, List<B> bs) {
         return IntStream.range(0, Math.min(as.size(), bs.size()))
@@ -92,5 +95,19 @@ public abstract class Processor {
             return refresh;
         }
     }
+    protected void writeStringsToFile(String file, AtomicBoolean append, String tokens) {
+        File savePath = Path.of(saveDir, file).toFile();
+        if (!savePath.exists()) {
 
+            savePath.getParentFile().mkdirs();
+
+        }
+        ;
+        try (FileWriter writer = new FileWriter(saveDir + "/" + file, append.get())) {
+            writer.write(tokens + System.getProperty("line.separator"));
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

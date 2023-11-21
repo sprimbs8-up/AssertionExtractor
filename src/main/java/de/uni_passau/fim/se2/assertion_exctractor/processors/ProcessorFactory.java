@@ -7,7 +7,7 @@ public class ProcessorFactory {
     public static Processor loadProcessor(String modelType, String dataDir, String saveDir, int maxAssertions) {
         return switch (modelType) {
             case "atlas" -> new AtlasProcessor(dataDir, saveDir, maxAssertions);
-            case "toga" -> throw new NotImplementedException("TOGA is not implemented.");
+            case "toga" -> new TogaProcessor(dataDir, saveDir, maxAssertions);
             default -> throw new IllegalArgumentException("The model \"modelType\" is not present.");
         };
     }
