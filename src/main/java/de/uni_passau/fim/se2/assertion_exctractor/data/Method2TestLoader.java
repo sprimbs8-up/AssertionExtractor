@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -22,23 +24,26 @@ public final class Method2TestLoader {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public static Stream<PreparedMethodData> loadDatasetAsJSON(String preparedFile) throws IOException {
-        List<PreparedMethodData> files = listFiles(Path.of(preparedFile))
-            .flatMap(Method2TestLoader::parseMethodData)
-            .toList();
-        files = new ArrayList<>(files);
-        Collections.shuffle(files, RandomUtil.getInstance().getRandom());
-        ProgressBarContainer.getInstance().setProgressBar("Preparing dataset", files.size());
+        Supplier<Stream<PreparedMethodData>> files = () -> {
+            try {
+                return listFiles(Path.of(preparedFile))
+                        .map(Method2TestLoader::parseMethodData)
+                        .filter(Objects::nonNull);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        ProgressBarContainer.getInstance().setProgressBar("Preparing dataset",(int) files.get().count());
         ProgressBarContainer.getInstance().notifyStart();
-        return files.stream();
+        return files.get().sorted((x, y) -> x == y ? 0 : RandomUtil.getInstance().getRandom().nextBoolean() ? -1 : 1);
     }
 
-    private static Stream<PreparedMethodData> parseMethodData(String line) {
+    private static PreparedMethodData parseMethodData(String line) {
         try {
-            return Stream.of(OBJECT_MAPPER.readValue(line, PreparedMethodData.class));
-        }
-        catch (JsonProcessingException e) {
+            return OBJECT_MAPPER.readValue(line, PreparedMethodData.class);
+        } catch (JsonProcessingException e) {
             LOGGER.debug("Processing of " + line.substring(0, 50) + "... was not possible", e);
-            return Stream.empty();
+            return null;
         }
     }
 
