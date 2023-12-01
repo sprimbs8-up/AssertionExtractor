@@ -1,14 +1,13 @@
 package de.uni_passau.fim.se2.assertion_exctractor.data;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import jline.internal.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,24 +23,22 @@ public final class Method2TestLoader {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public static Stream<PreparedMethodData> loadDatasetAsJSON(String preparedFile) throws IOException {
-        Supplier<Stream<PreparedMethodData>> files = () -> {
-            try {
-                return listFiles(Path.of(preparedFile))
-                        .map(Method2TestLoader::parseMethodData)
-                        .filter(Objects::nonNull);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        };
-        ProgressBarContainer.getInstance().setProgressBar("Preparing dataset",(int) files.get().count());
+        LOGGER.info("Load data from json");
+        int numberOfLines = readNumberLines(preparedFile);
+        LOGGER.info("Line numbers loaded.");
+        ProgressBarContainer.getInstance().setProgressBar("Preparing dataset",numberOfLines);
         ProgressBarContainer.getInstance().notifyStart();
-        return files.get().sorted((x, y) -> x == y ? 0 : RandomUtil.getInstance().getRandom().nextBoolean() ? -1 : 1);
+        Stream<PreparedMethodData> files = listFiles(Path.of(preparedFile))
+                    .map(Method2TestLoader::parseMethodData)
+                    .filter(Objects::nonNull);
+        return files.sorted((x, y) -> x == y ? 0 : RandomUtil.getInstance().getRandom().nextBoolean() ? -1 : 1);
     }
 
     private static PreparedMethodData parseMethodData(String line) {
         try {
             return OBJECT_MAPPER.readValue(line, PreparedMethodData.class);
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             LOGGER.debug("Processing of " + line.substring(0, 50) + "... was not possible", e);
             return null;
         }
@@ -56,6 +53,29 @@ public final class Method2TestLoader {
                 b.add(line);
             }
             return b.build();
+        }
+    }
+
+    public static int numberLinesOf(String file) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))){
+            int lines = 0;
+            while (reader.readLine() != null) {
+                lines++;
+                System.out.print("\r"+lines);
+            }
+            return lines;
+        } catch (IOException e) {
+            return 0;
+        }
+
+
+    }
+
+    public static int readNumberLines(String file){
+        try (BufferedReader reader = new BufferedReader(new FileReader(file+".lines"))){
+            return Integer.parseInt(reader.readLine());
+        } catch (IOException e) {
+            return numberLinesOf(file);
         }
     }
 }

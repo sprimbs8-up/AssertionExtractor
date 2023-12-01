@@ -1,7 +1,5 @@
 package de.uni_passau.fim.se2.assertion_exctractor.processors;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 public class ProcessorFactory {
 
     public static Processor loadProcessor(String modelType, String dataDir, String saveDir, int maxAssertions) {

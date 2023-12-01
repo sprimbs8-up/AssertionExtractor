@@ -21,7 +21,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.12.7.1")
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("me.tongfei:progressbar:0.5.5")
-//Thanks for using https://jar-download.com
+    implementation(dependencyNotation = "com.opencsv:opencsv:5.9")
 }
 
 
@@ -53,4 +53,3 @@ tasks.register("runnableJar", type = Jar::class) {
 
     with(tasks.jar.get())
 }
-

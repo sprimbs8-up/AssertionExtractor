@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_passau.fim.se2.assertion_exctractor.data.Method2TestLoader;
 import de.uni_passau.fim.se2.assertion_exctractor.data.MethodData;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.*;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.StatisticsContainer;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
@@ -48,7 +47,7 @@ public abstract class Processor {
     public void exportProcessedExamples() {
         List<MethodData> methodDataStream = loadMethodData()
             .filter(data -> data.testCase().getNumberAssertions() <= maxAssertions)
-            .filter(data -> data.testCase().getNumberAssertions() >= 1)
+            .filter(data -> data.testCase().getNumberAssertions() >= 0)
             .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
             .toList();
         zip(methodDataStream, createDataTypeList(methodDataStream.size()))
@@ -59,7 +58,10 @@ public abstract class Processor {
         float percentage = (float) usedTestCases / totalTestCases * 100;
         LOG.info("Collected " + usedTestCases + "/" + totalTestCases + " complete test data instances.");
         LOG.info(String.format("This are %.2f", percentage) + "%.");
+        shutDown();
     }
+
+    protected void shutDown(){}
 
     protected abstract void exportTestCases(MethodData x, DataType type);
 
@@ -95,6 +97,7 @@ public abstract class Processor {
             return refresh;
         }
     }
+
     protected void writeStringsToFile(String file, AtomicBoolean append, String tokens) {
         File savePath = Path.of(saveDir, file).toFile();
         if (!savePath.exists()) {
