@@ -5,15 +5,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import de.uni_passau.fim.se2.assertion_exctractor.converters.MoveToDatapointPStep;
+import de.uni_passau.fim.se2.assertion_exctractor.converters.Raw2FineDataPStep;
+import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_passau.fim.se2.assertion_exctractor.data.Method2TestLoader;
-import de.uni_passau.fim.se2.assertion_exctractor.data.MethodData;
+import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.StatisticsContainer;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
@@ -21,6 +25,8 @@ import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 public abstract class Processor {
 
     private static final Logger LOG = LoggerFactory.getLogger(Processor.class);
+    private final Raw2FineDataPStep raw2fineConverter = new Raw2FineDataPStep();
+    private final MoveToDatapointPStep orderDataset = new MoveToDatapointPStep(80, 10, 10);
     protected final String dataDir;
     protected final String saveDir;
     protected final int maxAssertions;
@@ -31,13 +37,13 @@ public abstract class Processor {
         this.maxAssertions = maxAssertions;
     }
 
-    protected Stream<MethodData> loadMethodData() {
+    protected Stream<FineMethodData> loadMethodData() {
         try {
             return Method2TestLoader.loadDatasetAsJSON(dataDir)
-                .flatMap(MethodData::fromPreparation)
-                .peek(x -> ProgressBarContainer.getInstance().notifyStep());
-        }
-        catch (IOException e) {
+                    .map(raw2fineConverter::convert)
+                    .flatMap(Optional::stream)
+                    .peek(el -> ProgressBarContainer.getInstance().notifyStep());
+        } catch (IOException e) {
             LOG.error("Error while loading json dataset", e);
             throw new RuntimeException(e);
         }
@@ -45,13 +51,12 @@ public abstract class Processor {
     }
 
     public void exportProcessedExamples() {
-        List<MethodData> methodDataStream = loadMethodData()
-            .filter(data -> data.testCase().getNumberAssertions() <= maxAssertions)
-            .filter(data -> data.testCase().getNumberAssertions() >= 0)
-            .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
-            .toList();
-        zip(methodDataStream, createDataTypeList(methodDataStream.size()))
-            .forEach(x -> exportTestCases(x.a(), x.b()));
+         loadMethodData()
+                .filter(data -> data.testCase().getNumberAssertions() <= maxAssertions)
+                .filter(data -> data.testCase().getNumberAssertions() >= 0)
+                .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
+                .map(orderDataset::convert)
+                .forEach(this::exportTestCases);
         ProgressBarContainer.getInstance().notifyStop();
         int usedTestCases = StatisticsContainer.getInstance().getUsedTestCases();
         int totalTestCases = ProgressBarContainer.getInstance().getTotalCount();
@@ -61,42 +66,11 @@ public abstract class Processor {
         shutDown();
     }
 
-    protected void shutDown(){}
-
-    protected abstract void exportTestCases(MethodData x, DataType type);
-
-    public static <A, B> Stream<Pair<A, B>> zip(List<A> as, List<B> bs) {
-        return IntStream.range(0, Math.min(as.size(), bs.size()))
-            .mapToObj(i -> new Pair<>(as.get(i), bs.get(i)));
+    protected void shutDown() {
     }
 
-    private List<DataType> createDataTypeList(int length) {
-        int[] splitting = { 80, 10, 10 };
-        return IntStream.range(0, length).mapToObj(n -> {
-            if (n < splitting[0] * length * 0.01) {
-                return DataType.TRAINING;
-            }
-            else if (n < (splitting[0] + splitting[1]) * length * 0.01) {
-                return DataType.VALIDATION;
-            }
-            return DataType.TESTING;
-        }).toList();
-    }
+    protected abstract void exportTestCases(DataPoint dataPoint);
 
-    protected enum DataType {
-
-        TRAINING(new AtomicBoolean(false)), VALIDATION(new AtomicBoolean(false)), TESTING(new AtomicBoolean(false));
-
-        final AtomicBoolean refresh;
-
-        DataType(AtomicBoolean refresh) {
-            this.refresh = refresh;
-        }
-
-        public AtomicBoolean getRefresh() {
-            return refresh;
-        }
-    }
 
     protected void writeStringsToFile(String file, AtomicBoolean append, String tokens) {
         File savePath = Path.of(saveDir, file).toFile();
@@ -108,8 +82,7 @@ public abstract class Processor {
         ;
         try (FileWriter writer = new FileWriter(saveDir + "/" + file, append.get())) {
             writer.write(tokens + System.getProperty("line.separator"));
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

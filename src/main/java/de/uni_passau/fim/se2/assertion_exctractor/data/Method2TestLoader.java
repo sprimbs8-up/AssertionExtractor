@@ -4,10 +4,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import jline.internal.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,21 +20,20 @@ public final class Method2TestLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(Method2TestLoader.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public static Stream<PreparedMethodData> loadDatasetAsJSON(String preparedFile) throws IOException {
+    public static Stream<RawMethodData> loadDatasetAsJSON(String preparedFile) throws IOException {
         LOGGER.info("Load data from json");
         int numberOfLines = readNumberLines(preparedFile);
         LOGGER.info("Line numbers loaded.");
         ProgressBarContainer.getInstance().setProgressBar("Preparing dataset",numberOfLines);
         ProgressBarContainer.getInstance().notifyStart();
-        Stream<PreparedMethodData> files = listFiles(Path.of(preparedFile))
+        return listFiles(Path.of(preparedFile))
                     .map(Method2TestLoader::parseMethodData)
                     .filter(Objects::nonNull);
-        return files.sorted((x, y) -> x == y ? 0 : RandomUtil.getInstance().getRandom().nextBoolean() ? -1 : 1);
     }
 
-    private static PreparedMethodData parseMethodData(String line) {
+    private static RawMethodData parseMethodData(String line) {
         try {
-            return OBJECT_MAPPER.readValue(line, PreparedMethodData.class);
+            return OBJECT_MAPPER.readValue(line, RawMethodData.class);
         }
         catch (JsonProcessingException e) {
             LOGGER.debug("Processing of " + line.substring(0, 50) + "... was not possible", e);
@@ -45,15 +42,7 @@ public final class Method2TestLoader {
     }
 
     public static Stream<String> listFiles(Path path) throws IOException {
-        try (FileReader fr = new FileReader(String.valueOf(path))) {
-            BufferedReader br = new BufferedReader(fr);  // creates a buffering character input stream
-            Stream.Builder<String> b = Stream.builder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                b.add(line);
-            }
-            return b.build();
-        }
+        return Files.lines(path);
     }
 
     public static int numberLinesOf(String file) {
@@ -61,8 +50,11 @@ public final class Method2TestLoader {
             int lines = 0;
             while (reader.readLine() != null) {
                 lines++;
-                System.out.print("\r"+lines);
+                if (lines % 1000 == 0){
+                    System.out.print("\rCurrently read lines:"+lines);
+                }
             }
+            System.out.print("\r");
             return lines;
         } catch (IOException e) {
             return 0;
@@ -75,7 +67,16 @@ public final class Method2TestLoader {
         try (BufferedReader reader = new BufferedReader(new FileReader(file+".lines"))){
             return Integer.parseInt(reader.readLine());
         } catch (IOException e) {
-            return numberLinesOf(file);
+            int numberLinesOfFile =  numberLinesOf(file);
+            try (FileOutputStream outputStream = new FileOutputStream(file+".lines")) {
+                outputStream.write(numberLinesOfFile);
+            } catch (FileNotFoundException ex) {
+                return numberLinesOfFile;
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            return numberLinesOfFile;
+
         }
     }
 }

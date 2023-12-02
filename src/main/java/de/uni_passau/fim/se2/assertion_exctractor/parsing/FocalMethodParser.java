@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import de.uni_passau.fim.se2.assertion_exctractor.data.JavaDocMethod;
+import de.uni_passau.fim.se2.assertion_exctractor.visitors.JavaDocCollector;
+import de.uni_passau.fim.se2.assertion_exctractor.visitors.MethodTokenVisitor;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -17,6 +20,10 @@ import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
 
 public class FocalMethodParser {
 
+    private final JavaDocCollector javaDocCollector = new JavaDocCollector();
+    private final MethodTokenVisitor methodTokenVisitor = new MethodTokenVisitor();
+    private final CodeParser codeParser = new CustomCodeParser();
+
     private static class CustomCodeParser extends CodeParser {
 
         @Override
@@ -28,86 +35,24 @@ public class FocalMethodParser {
         }
     }
 
-    public Stream<JavaDoc> parseCompleteCode(String code) {
-        final CodeParser codeParser = new CustomCodeParser();
-        JavaDocParser p = new JavaDocParser();
+    public Stream<JavaDocMethod> parseClassToJavaDocMethods(final String code) {
         ErrorChecker.getInstance().resetError();
         var codeFragment = codeParser.parseCodeFragment(code);
         if (ErrorChecker.getInstance().errorOccurred()) {
             return Stream.empty();
         }
-        p.visitCompilationUnit(codeFragment.compilationUnit());
-        return p.builder.build();
+        javaDocCollector.visitCompilationUnit(codeFragment.compilationUnit());
+        return javaDocCollector.getCollectedJavaDocs();
     }
 
-    public Stream<String> parseMethod(final String code) {
-        final CodeParser codeParser = new CustomCodeParser();
-        final MethodTokenVisitor visitor = new MethodTokenVisitor();
+    public Stream<String> parseMethodToMethodTokens(final String code) {
         ErrorChecker.getInstance().resetError();
         var codeFragment = codeParser.parseCodeFragment(code);
         if (ErrorChecker.getInstance().errorOccurred()) {
             return Stream.empty();
         }
-        visitor.visitClassBodyDeclaration(codeFragment.classBodyDeclaration());
-        return visitor.codeStream;
+        methodTokenVisitor.visitClassBodyDeclaration(codeFragment.classBodyDeclaration());
+        return methodTokenVisitor.getCollectedTokens();
     }
 
-    private static class MethodTokenVisitor extends JavaParserBaseVisitor<Void> {
-
-        private Stream<String> codeStream = Stream.empty();
-
-        @Override
-        public Void visitClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext ctx) {
-            traverseTestCase(ctx);
-            return null;
-        }
-
-        @Override
-        public Void visitMethodDeclaration(JavaParser.MethodDeclarationContext ctx) {
-            traverseTestCase(ctx);
-            return null;
-        }
-
-        private void traverseTestCase(ParseTree parseTree) {
-            if (parseTree.getChildCount() == 0) {
-                codeStream = Stream.concat(codeStream, Stream.of(parseTree.getText()));
-                return;
-            }
-            for (int i = 0; i < parseTree.getChildCount(); i++) {
-                ParseTree child = parseTree.getChild(i);
-                traverseTestCase(child);
-            }
-        }
-    }
-
-    private static class JavaDocParser extends JavaParserBaseVisitor<Void> {
-        Stream.Builder<JavaDoc> builder =Stream.builder();
-
-        @Override
-        public Void visitClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext ctx) {
-            if(ctx.children.stream().noneMatch(x->x instanceof ErrorNode)) {
-                var javaDocCtx = ctx.javadoc();
-                var memberDeclaration = ctx.memberDeclaration();
-                if (javaDocCtx != null && memberDeclaration != null && memberDeclaration.methodDeclaration() != null) {
-                    MethodTokenVisitor visitor = new MethodTokenVisitor();
-                    visitor.visitMethodDeclaration(memberDeclaration.methodDeclaration());
-                    Stream<String> c = Stream.concat(ctx.modifier().stream().map(RuleContext::getText), visitor.codeStream);
-                    builder.add(new JavaDoc(cleanJavaDoc(ctx.javadoc().getText()), c.toList()));
-                }
-            }
-            return null;
-        }
-        public String cleanJavaDoc(String rawJavaDoc){
-            return rawJavaDoc.replaceAll("((\r)?\n( )*\\*)|/\\*\\*|/", " ")
-                    .replaceAll("\t"," ")
-                    .replaceAll("\n"," ")
-                    .replaceAll("\r"," ")
-                    .replaceAll(" +"," ")
-                    .strip();
-        }
-    }
-
-
-
-    public record JavaDoc(String text, List<String> methodTokens) {}
 }
