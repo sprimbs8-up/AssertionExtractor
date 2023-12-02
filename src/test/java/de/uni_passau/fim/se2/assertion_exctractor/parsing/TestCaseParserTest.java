@@ -3,6 +3,7 @@ package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,9 @@ class TestCaseParserTest {
                 assertMul(x, 35);
                 assertEquals(result.parseInt() , 35);
             }""";
-        TestCase testCase = parser.parseTestCase(code);
+        Optional<TestCase> testCaseOptional = parser.parseTestCase(code);
+        assertThat(testCaseOptional).isPresent();
+        TestCase testCase = testCaseOptional.get();
         assertThat(testCase.testElements()).hasSize(3);
         assertThat(testCase.testElements().get(0)).isInstanceOf(TestSequence.class);
         assertThat(testCase.testElements().get(0).tokens())
@@ -48,7 +51,9 @@ class TestCaseParserTest {
                 assertNotEquals(value, 3);
                 assertThrows(Exception.class, () -> doFoo());
             }""";
-        TestCase testCase = parser.parseTestCase(code);
+        Optional<TestCase> testCaseOptional = parser.parseTestCase(code);
+        assertThat(testCaseOptional).isPresent();
+        TestCase testCase = testCaseOptional.get();
         List<AssertionType> parsedTypes = testCase.testElements().stream()
             .filter(Assertion.class::isInstance)
             .map(Assertion.class::cast)
@@ -75,7 +80,10 @@ class TestCaseParserTest {
                 assertNotEquals(value);
                 assertThrows(Exception.class, () -> doFoo(), () -> doBar());
             }""";
-        TestCase testCase = parser.parseTestCase(code);
+        Optional<TestCase> testCaseOptional = parser.parseTestCase(code);
+        assertThat(testCaseOptional).isPresent();
+        TestCase testCase = testCaseOptional.get();
+
         List<AssertionType> parsedTypes = testCase.testElements().stream()
             .filter(Assertion.class::isInstance)
             .map(Assertion.class::cast)
@@ -92,7 +100,9 @@ class TestCaseParserTest {
             public void test() {
                 Assert.assertTrue(value);
             }""";
-        TestCase testCase = parser.parseTestCase(code);
+        Optional<TestCase> testCaseOptional = parser.parseTestCase(code);
+        assertThat(testCaseOptional).isPresent();
+        TestCase testCase = testCaseOptional.get();
         assertThat(testCase.testElements()).hasSize(3);
         assertThat(testCase.testElements().get(0)).isInstanceOf(TestSequence.class);
         assertThat(testCase.testElements().get(0).tokens())
@@ -121,8 +131,8 @@ class TestCaseParserTest {
                  }
                  doThingsAfterTryCatch();
             }""";
-        TestCase testCase = parser.parseTestCase(code);
-        testCase.print();
+        Optional<TestCase> testCase = parser.parseTestCase(code);
+        assertThat(testCase).isPresent();
     }
 
 }
