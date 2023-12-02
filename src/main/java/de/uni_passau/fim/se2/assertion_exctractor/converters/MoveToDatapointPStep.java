@@ -20,7 +20,7 @@ public class MoveToDatapointPStep implements DataProcessingStep<FineMethodData, 
         this.testSplit = testSplit;
     }
     @Override
-    public DataPoint convert(FineMethodData methodData) {
+    public DataPoint process(FineMethodData methodData) {
         return new DataPoint(methodData, getNext());
     }
 

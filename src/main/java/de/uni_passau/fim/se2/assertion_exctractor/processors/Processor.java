@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import de.uni_passau.fim.se2.assertion_exctractor.converters.MoveToDatapointPStep;
@@ -20,7 +18,6 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.Method2TestLoader;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.StatisticsContainer;
-import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 public abstract class Processor {
 
@@ -40,7 +37,7 @@ public abstract class Processor {
     protected Stream<FineMethodData> loadMethodData() {
         try {
             return Method2TestLoader.loadDatasetAsJSON(dataDir)
-                    .map(raw2fineConverter::convert)
+                    .map(raw2fineConverter::process)
                     .flatMap(Optional::stream)
                     .peek(el -> ProgressBarContainer.getInstance().notifyStep());
         } catch (IOException e) {
@@ -55,7 +52,7 @@ public abstract class Processor {
                 .filter(data -> data.testCase().getNumberAssertions() <= maxAssertions)
                 .filter(data -> data.testCase().getNumberAssertions() >= 0)
                 .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
-                .map(orderDataset::convert)
+                .map(orderDataset::process)
                 .forEach(this::exportTestCases);
         ProgressBarContainer.getInstance().notifyStop();
         int usedTestCases = StatisticsContainer.getInstance().getUsedTestCases();

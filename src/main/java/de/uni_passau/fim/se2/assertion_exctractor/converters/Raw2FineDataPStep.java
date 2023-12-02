@@ -15,7 +15,7 @@ public class Raw2FineDataPStep implements DataProcessingStep<RawMethodData, Opti
     private final static FocalMethodParser FOCAL_METHOD_PARSER = new FocalMethodParser();
 
     @Override
-    public Optional<FineMethodData> convert(RawMethodData rawMethodData) {
+    public Optional<FineMethodData> process(RawMethodData rawMethodData) {
         Optional<TestCase> parsedTestCase = TEST_CASE_PARSER.parseTestCase(rawMethodData.testMethod());
         List<String> focalMethodTokens = FOCAL_METHOD_PARSER.parseMethodToMethodTokens(rawMethodData.focalMethod()).toList();
         if (parsedTestCase.isEmpty() || focalMethodTokens.isEmpty()) {
