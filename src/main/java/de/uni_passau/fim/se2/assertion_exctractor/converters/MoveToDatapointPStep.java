@@ -3,6 +3,7 @@ package de.uni_passau.fim.se2.assertion_exctractor.converters;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DatasetType;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.RandomUtil;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.Randomness;
 
 public class MoveToDatapointPStep implements DataProcessingStep<FineMethodData, DataPoint> {
@@ -25,7 +26,7 @@ public class MoveToDatapointPStep implements DataProcessingStep<FineMethodData, 
     }
 
     private DatasetType getNext(){
-        int counter = Randomness.nextInt(100);
+        int counter = RandomUtil.getInstance().getRandom().nextInt(100);
         if(counter < trainSplit){
             return DatasetType.TRAINING;
         }
