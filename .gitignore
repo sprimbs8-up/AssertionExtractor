@@ -42,3 +42,5 @@ bin/
 .DS_Store
 /.idea/
 /20089859/
+!**.jsonl
+!**.lines
