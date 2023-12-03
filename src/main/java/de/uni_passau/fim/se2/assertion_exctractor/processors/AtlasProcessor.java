@@ -13,7 +13,6 @@ import de.uni_passau.fim.se2.assertion_exctractor.parsing.TryCatchAssertion;
 
 public class AtlasProcessor extends Processor {
 
-
     public AtlasProcessor(String dataDir, String saveDir, int maxAssertions) {
         super(dataDir, saveDir, maxAssertions);
     }
@@ -23,16 +22,18 @@ public class AtlasProcessor extends Processor {
         FineMethodData methodData = dataPoint.methodData();
         TestCase testCase = methodData.testCase();
         List<List<String>> assertions = testCase.testElements().stream()
-                .filter(((Predicate<TestElement>) Assertion.class::isInstance).or(TryCatchAssertion.class::isInstance))
-                .map(TestElement::tokens)
-                .toList();
+            .filter(((Predicate<TestElement>) Assertion.class::isInstance).or(TryCatchAssertion.class::isInstance))
+            .map(TestElement::tokens)
+            .toList();
         DatasetType type = dataPoint.type();
         for (int i = 0; i < assertions.size(); i++) {
             writeStringsToFile(
-                    dataPoint.type().name().toLowerCase() + "/assertLines.txt", type.getRefresh(), String.join(" ", assertions.get(i))
+                dataPoint.type().name().toLowerCase() + "/assertLines.txt", type.getRefresh(),
+                String.join(" ", assertions.get(i))
             );
             writeStringsToFile(
-                    dataPoint.type().name().toLowerCase() + "/testMethods.txt", type.getRefresh(), testCase.replaceAssertion(i)
+                dataPoint.type().name().toLowerCase() + "/testMethods.txt", type.getRefresh(),
+                testCase.replaceAssertion(i)
             );
             dataPoint.type().getRefresh().set(true);
         }

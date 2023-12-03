@@ -1,10 +1,11 @@
 package de.uni_passau.fim.se2.assertion_exctractor.visitors;
 
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
+import java.util.stream.Stream;
+
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.stream.Stream;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 
 public class MethodTokenVisitor extends JavaParserBaseVisitor<Void> {
 
@@ -33,8 +34,8 @@ public class MethodTokenVisitor extends JavaParserBaseVisitor<Void> {
         }
     }
 
-    public Stream<String> getCollectedTokens(){
-        Stream<String> builtStream =  codeStreamBuilder.build();
+    public Stream<String> getCollectedTokens() {
+        Stream<String> builtStream = codeStreamBuilder.build();
         codeStreamBuilder = Stream.builder();
         return builtStream;
     }

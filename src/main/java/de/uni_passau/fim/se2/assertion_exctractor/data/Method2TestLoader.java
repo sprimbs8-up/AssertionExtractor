@@ -13,7 +13,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
-import de.uni_passau.fim.se2.assertion_exctractor.utils.RandomUtil;
 
 public final class Method2TestLoader {
 
@@ -24,11 +23,11 @@ public final class Method2TestLoader {
         LOGGER.info("Load data from json");
         int numberOfLines = readNumberLines(preparedFile);
         LOGGER.info("Line numbers loaded.");
-        ProgressBarContainer.getInstance().setProgressBar("Preparing dataset",numberOfLines);
+        ProgressBarContainer.getInstance().setProgressBar("Preparing dataset", numberOfLines);
         ProgressBarContainer.getInstance().notifyStart();
         return listFiles(Path.of(preparedFile))
-                    .map(Method2TestLoader::parseMethodData)
-                    .filter(Objects::nonNull);
+            .map(Method2TestLoader::parseMethodData)
+            .filter(Objects::nonNull);
     }
 
     private static RawMethodData parseMethodData(String line) {
@@ -46,33 +45,36 @@ public final class Method2TestLoader {
     }
 
     public static int numberLinesOf(String file) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             int lines = 0;
             while (reader.readLine() != null) {
                 lines++;
-                if (lines % 1000 == 0){
-                    System.out.print("\rCurrently read lines:"+lines);
+                if (lines % 1000 == 0) {
+                    System.out.print("\rCurrently read lines:" + lines);
                 }
             }
             System.out.print("\r");
             return lines;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             return 0;
         }
 
-
     }
 
-    public static int readNumberLines(String file){
-        try (BufferedReader reader = new BufferedReader(new FileReader(file+".lines"))){
+    public static int readNumberLines(String file) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file + ".lines"))) {
             return Integer.parseInt(reader.readLine());
-        } catch (IOException e) {
-            int numberLinesOfFile =  numberLinesOf(file);
-            try (FileOutputStream outputStream = new FileOutputStream(file+".lines")) {
-                outputStream.write(numberLinesOfFile);
-            } catch (FileNotFoundException ex) {
+        }
+        catch (IOException e) {
+            int numberLinesOfFile = numberLinesOf(file);
+            try (FileOutputStream outputStream = new FileOutputStream(file + ".lines")) {
+                outputStream.write(String.valueOf(numberLinesOfFile).getBytes());
+            }
+            catch (FileNotFoundException ex) {
                 return numberLinesOfFile;
-            } catch (IOException ex) {
+            }
+            catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
             return numberLinesOfFile;

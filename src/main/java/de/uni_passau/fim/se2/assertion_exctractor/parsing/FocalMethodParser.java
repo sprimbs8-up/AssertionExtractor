@@ -1,21 +1,13 @@
 package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Stream;
 
 import de.uni_passau.fim.se2.assertion_exctractor.data.JavaDocMethod;
-import de.uni_passau.fim.se2.assertion_exctractor.visitors.JavaDocCollector;
-import de.uni_passau.fim.se2.assertion_exctractor.visitors.MethodTokenVisitor;
-import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorListener;
+import de.uni_passau.fim.se2.assertion_exctractor.visitors.JavaDocCollector;
+import de.uni_passau.fim.se2.assertion_exctractor.visitors.MethodTokenVisitor;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
 
 public class FocalMethodParser {

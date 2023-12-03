@@ -8,14 +8,14 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import de.uni_passau.fim.se2.assertion_exctractor.converters.MoveToDatapointPStep;
-import de.uni_passau.fim.se2.assertion_exctractor.converters.Raw2FineDataPStep;
-import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_passau.fim.se2.assertion_exctractor.data.Method2TestLoader;
+import de.uni_passau.fim.se2.assertion_exctractor.converters.MoveToDatapointPStep;
+import de.uni_passau.fim.se2.assertion_exctractor.converters.Raw2FineDataPStep;
+import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
+import de.uni_passau.fim.se2.assertion_exctractor.data.Method2TestLoader;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.StatisticsContainer;
 
@@ -37,10 +37,11 @@ public abstract class Processor {
     protected Stream<FineMethodData> loadMethodData() {
         try {
             return Method2TestLoader.loadDatasetAsJSON(dataDir)
-                    .map(raw2fineConverter::process)
-                    .flatMap(Optional::stream)
-                    .peek(el -> ProgressBarContainer.getInstance().notifyStep());
-        } catch (IOException e) {
+                .map(raw2fineConverter::process)
+                .flatMap(Optional::stream)
+                .peek(el -> ProgressBarContainer.getInstance().notifyStep());
+        }
+        catch (IOException e) {
             LOG.error("Error while loading json dataset", e);
             throw new RuntimeException(e);
         }
@@ -48,12 +49,13 @@ public abstract class Processor {
     }
 
     public void exportProcessedExamples() {
-         loadMethodData()
-                .filter(data -> data.testCase().getNumberAssertions() <= maxAssertions)
-                .filter(data -> data.testCase().getNumberAssertions() >= 0)
-                .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
-                .map(orderDataset::process)
-                .forEach(this::exportTestCases);
+        setup();
+        loadMethodData()
+            .filter(data -> data.testCase().getNumberAssertions() <= maxAssertions)
+            .filter(data -> data.testCase().getNumberAssertions() >= 0)
+            .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
+            .map(orderDataset::process)
+            .forEach(this::exportTestCases);
         ProgressBarContainer.getInstance().notifyStop();
         int usedTestCases = StatisticsContainer.getInstance().getUsedTestCases();
         int totalTestCases = ProgressBarContainer.getInstance().getTotalCount();
@@ -63,11 +65,24 @@ public abstract class Processor {
         shutDown();
     }
 
+    protected void setup() {
+        Path savePath = Path.of(saveDir);
+        if (!savePath.toFile().exists()) {
+            boolean successfullyCreated = savePath.toFile().mkdirs();
+            if (successfullyCreated) {
+                LOG.info(String.format("Created %s path successfully.", savePath));
+            }
+            else {
+                LOG.warn(String.format("Creating %s path did not work successfully.", savePath));
+
+            }
+        }
+    }
+
     protected void shutDown() {
     }
 
     protected abstract void exportTestCases(DataPoint dataPoint);
-
 
     protected void writeStringsToFile(String file, AtomicBoolean append, String tokens) {
         File savePath = Path.of(saveDir, file).toFile();
@@ -79,7 +94,8 @@ public abstract class Processor {
         ;
         try (FileWriter writer = new FileWriter(saveDir + "/" + file, append.get())) {
             writer.write(tokens + System.getProperty("line.separator"));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
