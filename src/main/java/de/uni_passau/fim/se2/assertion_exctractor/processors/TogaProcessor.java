@@ -122,10 +122,10 @@ public class TogaProcessor extends Processor {
         ) {
             return Optional.of(
                 new String[] {
-                    tryCatchAssertion ? "1" : "0",
-                    testCase.replaceAssertion(assertionPosition),
-                    String.join(" ", focalMethod),
-                    docString
+                    tryCatchAssertion ? "1" : "0",                      // try catch assertion required ?
+                    testCase.replaceAssertion(assertionPosition),       // test case without assertion
+                    String.join(" ", focalMethod),               // focal method tokens
+                    docString                                           // documentation
                 }
             );
 
@@ -149,11 +149,11 @@ public class TogaProcessor extends Processor {
                 return Optional.empty();
             }
             String[] lineContent = new String[] {
-                String.valueOf(idx++),
-                "0",
-                String.join(" ", focalMethod),
-                testCase.replaceAssertion(assertionPosition),
-                String.join(" ", assertion.tokens())
+                String.valueOf(idx++),                          // idx
+                "0",                                            // label
+                String.join(" ", focalMethod),           // focal method tokens
+                testCase.replaceAssertion(assertionPosition),   // test case without assertions
+                String.join(" ", assertion.tokens())     // assertion tokens
             };
             return Optional.of(lineContent);
         }
