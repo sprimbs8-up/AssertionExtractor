@@ -57,8 +57,9 @@ public class TogaProcessor extends Processor {
             Arrays.stream(DatasetType.values()).forEach(type -> {
                 try {
                     writerHashMap
-                            .put(type, new CSVWriter(new FileWriter(saveDir + "/" + type.name().toLowerCase() + ".csv")));
-                } catch (IOException e) {
+                        .put(type, new CSVWriter(new FileWriter(saveDir + "/" + type.name().toLowerCase() + ".csv")));
+                }
+                catch (IOException e) {
                     throw new RuntimeException(e);
                 }
                 writerHashMap.get(type).writeNext(getHeader(), false);
@@ -72,20 +73,20 @@ public class TogaProcessor extends Processor {
             List<String> focalMethod = methodData.focalMethodTokens();
             String docString = methodData.documentation();
             List<TestElement> assertions = testCase.testElements().stream()
-                    .filter(((Predicate<TestElement>) Assertion.class::isInstance).or(TryCatchAssertion.class::isInstance))
-                    .toList();
+                .filter(((Predicate<TestElement>) Assertion.class::isInstance).or(TryCatchAssertion.class::isInstance))
+                .toList();
             for (int i = 0; i < assertions.size(); i++) {
                 boolean tryCatchAssertion = assertions.get(i) instanceof TryCatchAssertion;
                 Optional<String[]> contentOpt = getRowContent(
-                        tryCatchAssertion, testCase, i, focalMethod, docString, assertions.get(i), dataPoint.type()
+                    tryCatchAssertion, testCase, i, focalMethod, docString, assertions.get(i), dataPoint.type()
                 );
                 contentOpt.ifPresent(content -> writerHashMap.get(dataPoint.type()).writeNext(content, false));
             }
         }
 
         protected abstract Optional<String[]> getRowContent(
-                boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod,
-                String docString, TestElement assertion, DatasetType type
+            boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod,
+            String docString, TestElement assertion, DatasetType type
         );
 
         @Override
@@ -93,7 +94,8 @@ public class TogaProcessor extends Processor {
             writerHashMap.keySet().forEach(key -> {
                 try {
                     writerHashMap.get(key).close();
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             });
@@ -111,20 +113,20 @@ public class TogaProcessor extends Processor {
 
         @Override
         protected String[] getHeader() {
-            return new String[]{"label", "test", "fm", "docstring"};
+            return new String[] { "label", "test", "fm", "docstring" };
         }
 
         protected Optional<String[]> getRowContent(
-                boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod,
-                String docString, TestElement assertion, DatasetType type
+            boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod,
+            String docString, TestElement assertion, DatasetType type
         ) {
             return Optional.of(
-                    new String[]{
-                            tryCatchAssertion ? "1" : "0",                      // try catch assertion required ?
-                            testCase.replaceAssertion(assertionPosition),       // test case without assertion
-                            String.join(" ", focalMethod),               // focal method tokens
-                            docString                                           // documentation
-                    }
+                new String[] {
+                    tryCatchAssertion ? "1" : "0",                      // try catch assertion required ?
+                    testCase.replaceAssertion(assertionPosition),       // test case without assertion
+                    String.join(" ", focalMethod),               // focal method tokens
+                    docString                                           // documentation
+                }
             );
 
         }
@@ -140,26 +142,26 @@ public class TogaProcessor extends Processor {
 
         @Override
         protected Optional<String[]> getRowContent(
-                boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod,
-                String docString, TestElement assertion, DatasetType type
+            boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod,
+            String docString, TestElement assertion, DatasetType type
         ) {
             if (tryCatchAssertion) {
                 return Optional.empty();
             }
             int idx = counterMap.compute(type, (x, y) -> y != null ? y + 1 : 0);
-            String[] lineContent = new String[]{
-                    String.valueOf(idx),                            // idx
-                    "0",                                            // label
-                    String.join(" ", focalMethod),           // focal method tokens
-                    testCase.replaceAssertion(assertionPosition),   // test case without assertions
-                    String.join(" ", assertion.tokens())     // assertion tokens
+            String[] lineContent = new String[] {
+                String.valueOf(idx),                            // idx
+                "0",                                            // label
+                String.join(" ", focalMethod),           // focal method tokens
+                testCase.replaceAssertion(assertionPosition),   // test case without assertions
+                String.join(" ", assertion.tokens())     // assertion tokens
             };
             return Optional.of(lineContent);
         }
 
         @Override
         protected String[] getHeader() {
-            return new String[]{"idx", "label", "fm", "test", "assertion"};
+            return new String[] { "idx", "label", "fm", "test", "assertion" };
         }
 
     }

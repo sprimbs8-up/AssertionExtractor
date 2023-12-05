@@ -8,10 +8,6 @@ import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 public record TestCase(List<TestElement> testElements) {
 
-    public void print() {
-        testElements.forEach(System.out::println);
-    }
-
     public String replaceAssertion(int pos) {
         List<Pair<TestElement, Integer>> assertPosPairs = generateAssertionPositionPair();
         return assertPosPairs.stream().map(x -> {
@@ -21,7 +17,7 @@ public record TestCase(List<TestElement> testElements) {
                 }
                 else if (x.a() instanceof TryCatchAssertion tryCatchAssertion) {
                     List<String> tryCatTokens = tryCatchAssertion.tryCatchTokens();
-                    return String.join(" ", tryCatTokens.subList(1, tryCatTokens.size() - 1));
+                    return "<ASSERTION> " + String.join(" ", tryCatTokens.subList(1, tryCatTokens.size() - 1));
 
                 }
             }
