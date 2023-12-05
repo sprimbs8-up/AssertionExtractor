@@ -16,6 +16,8 @@ import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TryCatchAssertion;
 
+import javax.swing.text.html.Option;
+
 public class TogaProcessor extends Processor {
 
     private final Set<IntermediateTogaProcessor> togaProcessors;
@@ -57,12 +59,11 @@ public class TogaProcessor extends Processor {
             Arrays.stream(DatasetType.values()).forEach(type -> {
                 try {
                     writerHashMap
-                        .put(type, new CSVWriter(new FileWriter(saveDir + "/" + type.name().toLowerCase() + ".csv")));
-                }
-                catch (IOException e) {
+                            .put(type, new CSVWriter(new FileWriter(saveDir + "/" + type.name().toLowerCase() + ".csv")));
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                writerHashMap.get(type).writeNext(new String[] { "label", "test", "fm", "docstring" }, false);
+                writerHashMap.get(type).writeNext(getHeader(), false);
             });
         }
 
@@ -73,29 +74,33 @@ public class TogaProcessor extends Processor {
             List<String> focalMethod = methodData.focalMethodTokens();
             String docString = methodData.documentation();
             List<TestElement> assertions = testCase.testElements().stream()
-                .filter(((Predicate<TestElement>) Assertion.class::isInstance).or(TryCatchAssertion.class::isInstance))
-                .toList();
+                    .filter(((Predicate<TestElement>) Assertion.class::isInstance).or(TryCatchAssertion.class::isInstance))
+                    .toList();
             for (int i = 0; i < assertions.size(); i++) {
-                buildLineEntry(dataPoint.type(), assertions, i, testCase, focalMethod, docString);
+                boolean tryCatchAssertion = assertions.get(i) instanceof TryCatchAssertion;
+                Optional<String[]> contentOpt = getRowContent(tryCatchAssertion, testCase, i, focalMethod, docString, assertions.get(i));
+                contentOpt.ifPresent(content -> writerHashMap.get(dataPoint.type()).writeNext(content, false));
             }
         }
+
+        protected abstract Optional<String[]> getRowContent(boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod, String docString, TestElement assertion);
+
+
+
 
         @Override
         protected void shutDown() {
             writerHashMap.keySet().forEach(key -> {
                 try {
                     writerHashMap.get(key).close();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             });
         }
 
-        protected abstract void buildLineEntry(
-            DatasetType type, List<TestElement> assertions, int i, TestCase testCase, List<String> focalMethod,
-            String docString
-        );
+        protected abstract String[] getHeader();
+
     }
 
     private static class TryCatchTogaProcessor extends IntermediateTogaProcessor {
@@ -104,33 +109,47 @@ public class TogaProcessor extends Processor {
             super(dataDir, Path.of(saveDir, "exceptions").toString(), maxAssertions);
         }
 
-        protected void buildLineEntry(
-            DatasetType type, List<TestElement> assertions, int i, TestCase testCase, List<String> focalMethod,
-            String docString
-        ) {
-            boolean tryCatchAssertion = assertions.get(i) instanceof TryCatchAssertion;
-            String[] content = { tryCatchAssertion ? "1" : "0", testCase.replaceAssertion(i),
-                String.join(" ", focalMethod), docString };
-            writerHashMap.get(type).writeNext(content, false);
+        @Override
+        protected String[] getHeader() {
+            return new String[]{"label", "test", "fm", "docstring"};
         }
-    }
+
+        protected Optional<String[]> getRowContent(boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod, String docString, TestElement assertion) {
+            return Optional.of(new String[]{
+                    tryCatchAssertion ? "1" : "0",
+                    testCase.replaceAssertion(assertionPosition),
+                    String.join(" ", focalMethod),
+                    docString
+            });
+
+    }}
 
     private static class AssertionTogaProcessor extends IntermediateTogaProcessor {
+        private int idx = 0;
 
         private AssertionTogaProcessor(String dataDir, String saveDir, int maxAssertions) {
             super(dataDir, Path.of(saveDir, "assertions").toString(), maxAssertions);
         }
 
-        protected void buildLineEntry(
-            DatasetType type, List<TestElement> assertions, int i, TestCase testCase, List<String> focalMethod,
-            String docString
-        ) {
-            boolean tryCatchAssertion = assertions.get(i) instanceof TryCatchAssertion;
-            if (tryCatchAssertion) {
-                String[] content = { String.valueOf(i), testCase.replaceAssertion(i),
-                    String.join(" ", focalMethod), docString };
-                writerHashMap.get(type).writeNext(content, false);
+        @Override
+        protected Optional<String[]> getRowContent(boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod, String docString, TestElement assertion) {
+            if(tryCatchAssertion){
+                return Optional.empty();
             }
+            String[] lineContent = new String[]{
+                String.valueOf(idx++),
+                    "0",
+                    String.join(" ", focalMethod),
+                    testCase.replaceAssertion(assertionPosition),
+                    String.join(" ",assertion.tokens())
+            };
+            return Optional.of(lineContent);
         }
+
+        @Override
+        protected String[] getHeader() {
+            return new String[]{"idx", "label", "fm", "test", "assertion"};
+        }
+
     }
 }
