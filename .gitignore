@@ -62,3 +62,4 @@ bin/
 /data/toga/exceptions/testing.csv
 /data/toga/exceptions/training.csv
 /data/toga/exceptions/validation.csv
+/test/
