@@ -55,8 +55,9 @@ public class Code2SeqProcessor extends Processor {
             Optional<String> result = p.processSingleMethod(testCase.replaceAssertion(idx, null), assertions.get(idx));
             if (result.isPresent()) {
                 writeStringsToFile(
-                        dataPoint.type().name().toLowerCase()+".c2s",dataPoint. type().getRefresh(),result.get()
+                        dataPoint.type().name().toLowerCase()+".c2s",dataPoint.type().getRefresh(),result.get()
                 );
+                dataPoint.type().getRefresh().set(true);
             } else{
                 LOG.warn("");
             }
