@@ -16,11 +16,11 @@ public final class StatisticsContainer {
         return instance;
     }
 
-    public void notifyTestCase() {
+    public synchronized void notifyTestCase() {
         usedTestCases++;
     }
 
-    public int getUsedTestCases() {
+    public synchronized int getUsedTestCases() {
         return usedTestCases;
     }
 }

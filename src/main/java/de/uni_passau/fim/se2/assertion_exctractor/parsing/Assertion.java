@@ -10,4 +10,9 @@ public record Assertion(AssertionType type, List<String> tokens, ParseTree parse
     public String toString() {
         return String.join(" ", tokens);
     }
+
+    @Override
+    public boolean isAssertion() {
+        return true;
+    }
 }

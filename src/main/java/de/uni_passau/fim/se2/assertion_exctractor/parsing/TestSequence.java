@@ -8,4 +8,9 @@ public record TestSequence(List<String> tokens) implements TestElement {
     public String toString() {
         return String.join(" ", tokens).replace("\n", " ");
     }
+
+    @Override
+    public boolean isAssertion() {
+        return false;
+    }
 }

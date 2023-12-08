@@ -44,7 +44,6 @@ public record TestCase(List<TestElement> testElements) {
     }
 
     public int getNumberAssertions() {
-        return (int) testElements.stream().filter(x -> x instanceof Assertion || x instanceof TryCatchAssertion)
-            .count();
+        return (int) testElements.stream().filter(TestElement::isAssertion).count();
     }
 }

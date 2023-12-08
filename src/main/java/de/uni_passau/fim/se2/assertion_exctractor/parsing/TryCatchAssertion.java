@@ -14,4 +14,9 @@ public record TryCatchAssertion(List<String> tryCatchTokens) implements TestElem
     public List<String> tokens() {
         return List.of(toString());
     }
+
+    @Override
+    public boolean isAssertion() {
+        return true;
+    }
 }

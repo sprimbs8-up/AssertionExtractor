@@ -18,6 +18,11 @@ public class AtlasProcessor extends Processor {
     }
 
     @Override
+    protected String getModelName() {
+        return "atlas";
+    }
+
+    @Override
     protected void exportTestCases(DataPoint dataPoint) {
         FineMethodData methodData = dataPoint.methodData();
         TestCase testCase = methodData.testCase();

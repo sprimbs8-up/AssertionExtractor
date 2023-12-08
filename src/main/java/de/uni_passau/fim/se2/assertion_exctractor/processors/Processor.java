@@ -47,15 +47,16 @@ public abstract class Processor {
         }
 
     }
+    protected abstract String getModelName();
 
     public void exportProcessedExamples() {
         setup();
         loadMethodData()
             .filter(data -> data.testCase().getNumberAssertions() <= maxAssertions)
-            .filter(data -> data.testCase().getNumberAssertions() >= 0)
-            .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
-            .map(orderDataset::process)
-            .forEach(this::exportTestCases);
+            .filter(data -> data.testCase().getNumberAssertions() >= 1)
+                .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
+                .map(orderDataset::process)
+                .forEach(this::exportTestCases);
         ProgressBarContainer.getInstance().notifyStop();
         int usedTestCases = StatisticsContainer.getInstance().getUsedTestCases();
         int totalTestCases = ProgressBarContainer.getInstance().getTotalCount();
@@ -85,14 +86,14 @@ public abstract class Processor {
     protected abstract void exportTestCases(DataPoint dataPoint);
 
     protected void writeStringsToFile(String file, AtomicBoolean append, String tokens) {
-        File savePath = Path.of(saveDir, file).toFile();
+        File savePath = Path.of(saveDir, getModelName(), file).toFile();
         if (!savePath.exists()) {
 
             savePath.getParentFile().mkdirs();
 
         }
         ;
-        try (FileWriter writer = new FileWriter(saveDir + "/" + file, append.get())) {
+        try (FileWriter writer = new FileWriter(savePath, append.get())) {
             writer.write(tokens + System.getProperty("line.separator"));
         }
         catch (IOException e) {

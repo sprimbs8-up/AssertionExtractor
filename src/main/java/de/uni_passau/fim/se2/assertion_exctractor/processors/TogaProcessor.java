@@ -26,6 +26,11 @@ public class TogaProcessor extends Processor {
     }
 
     @Override
+    protected String getModelName() {
+        return "toga";
+    }
+
+    @Override
     protected void exportTestCases(DataPoint dataPoint) {
 
         togaProcessors.forEach(processor -> processor.exportTestCases(dataPoint));
@@ -33,8 +38,8 @@ public class TogaProcessor extends Processor {
 
     @Override
     protected void setup() {
-        togaProcessors.add(new TryCatchTogaProcessor(dataDir, saveDir, maxAssertions));
-        togaProcessors.add(new AssertionTogaProcessor(dataDir, saveDir, maxAssertions));
+        togaProcessors.add(new TryCatchTogaProcessor(dataDir, saveDir+"/"+getModelName(), maxAssertions));
+        togaProcessors.add(new AssertionTogaProcessor(dataDir, saveDir+"/"+getModelName(), maxAssertions));
         togaProcessors.forEach(Processor::setup);
     }
 
@@ -49,6 +54,11 @@ public class TogaProcessor extends Processor {
 
         private IntermediateTogaProcessor(String dataDir, String saveDir, int maxAssertions) {
             super(dataDir, saveDir, maxAssertions);
+        }
+
+        @Override
+        protected String getModelName() {
+            return null;
         }
 
         @Override
