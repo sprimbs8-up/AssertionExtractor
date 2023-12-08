@@ -12,6 +12,6 @@ public record TryCatchAssertion(List<String> tryCatchTokens) implements TestElem
 
     @Override
     public List<String> tokens() {
-        return Stream.concat(Stream.of(toString()), tryCatchTokens().stream()).toList();
+        return List.of(toString());
     }
 }

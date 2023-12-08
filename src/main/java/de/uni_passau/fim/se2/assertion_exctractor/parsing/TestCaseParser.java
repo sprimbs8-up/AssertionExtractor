@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import de.uni_passau.fim.se2.assertion_exctractor.utils.AssertionNormalizer;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -29,17 +30,11 @@ public class TestCaseParser {
     }
 
     public Optional<TestCase> parseTestCase(final String code) {
-        String s = code;
-        for (AssertionType type : AssertionType.values()) {
-            s = s.replace("org.junit.Assert. " + type.getIdentifier(), type.getIdentifier());
-            s = s.replace("org.junit.Assert." + type.getIdentifier(), type.getIdentifier());
-            s = s.replace("junit.Assert." + type.getIdentifier(), type.getIdentifier());
-            s = s.replace("Assert." + type.getIdentifier(), type.getIdentifier());
-        }
+        String cleanedCode = AssertionNormalizer.normalizeAssertions(code);
         final CodeParser codeParser = new CustomCodeParser();
         final MethodTokenVisitor visitor = new MethodTokenVisitor();
         ErrorChecker.getInstance().resetError();
-        var codeFragment = codeParser.parseCodeFragment(s);
+        var codeFragment = codeParser.parseCodeFragment(cleanedCode);
         if (ErrorChecker.getInstance().errorOccurred()) {
             return Optional.empty();
         }

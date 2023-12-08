@@ -9,15 +9,19 @@ import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 public record TestCase(List<TestElement> testElements) {
 
     public String replaceAssertion(int pos) {
+        return replaceAssertion(pos, "<ASSERTION>");
+    }
+
+    public String replaceAssertion(int pos, String maskToken) {
         List<Pair<TestElement, Integer>> assertPosPairs = generateAssertionPositionPair();
         return assertPosPairs.stream().map(x -> {
             if (x.b() == pos) {
                 if (x.a() instanceof Assertion) {
-                    return "<ASSERTION>";
+                    return maskToken;
                 }
                 else if (x.a() instanceof TryCatchAssertion tryCatchAssertion) {
                     List<String> tryCatTokens = tryCatchAssertion.tryCatchTokens();
-                    return "<ASSERTION> " + String.join(" ", tryCatTokens.subList(1, tryCatTokens.size() - 1));
+                    return (maskToken != null ?  maskToken+" " :"") + String.join(" ", tryCatTokens.subList(1, tryCatTokens.size() - 1));
 
                 }
             }
