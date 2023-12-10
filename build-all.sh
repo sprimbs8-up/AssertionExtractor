@@ -40,6 +40,6 @@ do
   for assertion_number in "${ASSERTION_ARRAY[@]}"
   do
     echo_colour "$GREEN" "${model} with ${assertion_number} number of assertions"
-    ${JAVA} -jar ${ASSERTION_JAR}  --data-dir "${BASE_FILE}" --save-dir "${SAVE_DIR}/${assertion_number}" --model "${model}" -m "${assertion_number}"
+    ${JAVA} -Xmx256g -jar ${ASSERTION_JAR}  --data-dir "${BASE_FILE}" --save-dir "${SAVE_DIR}/${assertion_number}" --model "${model}" -m "${assertion_number}"
   done
 done

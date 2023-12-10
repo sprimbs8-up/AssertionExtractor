@@ -6,9 +6,13 @@ import de.uni_passau.fim.se2.assertion_exctractor.parsing.Assertion;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TryCatchAssertion;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.AstCodeParser;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.ParseException;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.transformer.util.TransformMode;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOptions;
+import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.ProcessingException;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.code2.Code2Preprocessor;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.code2.transform.AstPath;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.code2.transform.Code2Method;
@@ -17,20 +21,21 @@ import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.code2.transform.path_
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.code2.transform.path_transformers.Code2SeqPathTransformer;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.shared.MethodsExtractor;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.Tokenizer;
+import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Code2SeqProcessor extends Processor {
     private static final Logger LOG = LoggerFactory.getLogger(Code2SeqProcessor.class);
 
-    private static final CommonPreprocessorOptions SINGLE_METHOD_OPTIONS = new CommonPreprocessorOptions(
-            null, null, false, new TransformMode.None()
-    );
+
 
     public Code2SeqProcessor(String dataDir, String saveDir, int maxAssertions) {
         super(dataDir, saveDir, maxAssertions);
@@ -42,7 +47,8 @@ public class Code2SeqProcessor extends Processor {
     }
 
     @Override
-    protected void exportTestCases(DataPoint dataPoint) {
+    protected void exportTestCases(Pair<String, DataPoint> dataPointPair) {
+        DataPoint dataPoint = dataPointPair.b();
         FineMethodData methodData = dataPoint.methodData();
         TestCase testCase = methodData.testCase();
         List<List<String>> assertions = testCase.testElements().stream()
@@ -55,10 +61,10 @@ public class Code2SeqProcessor extends Processor {
             Optional<String> result = p.processSingleMethod(testCase.replaceAssertion(idx, null), assertions.get(idx));
             if (result.isPresent()) {
                 writeStringsToFile(
-                        dataPoint.type().name().toLowerCase()+".c2s",dataPoint.type().getRefresh(),result.get()
+                        dataPoint.type().name().toLowerCase() + ".c2s", dataPoint.type().getRefresh(), result.get()
                 );
                 dataPoint.type().getRefresh().set(true);
-            } else{
+            } else {
                 LOG.warn("");
             }
         }
@@ -85,6 +91,12 @@ public class Code2SeqProcessor extends Processor {
             return this.processSingleElement(code, true).flatMap((el) ->
                     methodExtractor.process(el).stream().map(x -> methodDeclToAstPaths(x, assertionToken)).flatMap(Optional::stream)
             ).findFirst();
+        }
+
+        @Override
+        protected Stream<AstNode> processSingleElement(String code, boolean singleMethod) throws ProcessingException {
+            AstCodeParser codeParser = new AstCodeParser();
+            return codeParser.parseMethodSkipErrors(code).stream().filter(Objects::nonNull).map(AstNode.class::cast);
         }
 
         private Optional<String> methodDeclToAstPaths(MethodDeclaration node, List<String> assertionTokens) {

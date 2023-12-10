@@ -9,6 +9,7 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.RawMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.FocalMethodParser;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCaseParser;
+import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 public class Raw2FineDataPStep implements DataProcessingStep<RawMethodData, Optional<FineMethodData>> {
 
@@ -16,7 +17,11 @@ public class Raw2FineDataPStep implements DataProcessingStep<RawMethodData, Opti
     private final static FocalMethodParser FOCAL_METHOD_PARSER = new FocalMethodParser();
 
     @Override
-    public Optional<FineMethodData> process(RawMethodData rawMethodData) {
+    public Pair<String, Optional<FineMethodData>> process(Pair<String, RawMethodData> rawMethodData) {
+        return rawMethodData.mapB(Raw2FineDataPStep::prepareRawMethodData);
+    }
+
+    private static Optional<FineMethodData> prepareRawMethodData(RawMethodData rawMethodData) {
         Optional<TestCase> parsedTestCase = TEST_CASE_PARSER.parseTestCase(rawMethodData.testMethod());
         List<String> focalMethodTokens = FOCAL_METHOD_PARSER.parseMethodToMethodTokens(rawMethodData.focalMethod())
             .toList();

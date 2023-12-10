@@ -4,6 +4,7 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DatasetType;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.RandomUtil;
+import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 public class MoveToDatapointPStep implements DataProcessingStep<FineMethodData, DataPoint> {
 
@@ -21,8 +22,8 @@ public class MoveToDatapointPStep implements DataProcessingStep<FineMethodData, 
     }
 
     @Override
-    public DataPoint process(FineMethodData methodData) {
-        return new DataPoint(methodData, getNext());
+    public Pair<String, DataPoint> process(Pair<String,FineMethodData> methodData) {
+        return methodData.mapB(b-> new DataPoint(b, getNext()));
     }
 
     private DatasetType getNext() {

@@ -12,6 +12,11 @@ public record Assertion(AssertionType type, List<String> tokens, ParseTree parse
     }
 
     @Override
+    public List<String> onlyTokens() {
+        return tokens;
+    }
+
+    @Override
     public boolean isAssertion() {
         return true;
     }

@@ -15,6 +15,7 @@ import de.uni_passau.fim.se2.assertion_exctractor.parsing.Assertion;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TryCatchAssertion;
+import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 public class TogaProcessor extends Processor {
 
@@ -31,9 +32,8 @@ public class TogaProcessor extends Processor {
     }
 
     @Override
-    protected void exportTestCases(DataPoint dataPoint) {
-
-        togaProcessors.forEach(processor -> processor.exportTestCases(dataPoint));
+    protected void exportTestCases(Pair<String, DataPoint> dataPointPair) {
+        togaProcessors.forEach(processor -> processor.exportTestCases(dataPointPair));
     }
 
     @Override
@@ -77,7 +77,8 @@ public class TogaProcessor extends Processor {
         }
 
         @Override
-        protected void exportTestCases(DataPoint dataPoint) {
+        protected void exportTestCases(Pair<String, DataPoint> dataPointPair) {
+            DataPoint dataPoint = dataPointPair.b();
             FineMethodData methodData = dataPoint.methodData();
             TestCase testCase = methodData.testCase();
             List<String> focalMethod = methodData.focalMethodTokens();
