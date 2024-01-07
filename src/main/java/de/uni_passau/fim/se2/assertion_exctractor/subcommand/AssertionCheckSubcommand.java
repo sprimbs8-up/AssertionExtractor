@@ -1,5 +1,6 @@
 package de.uni_passau.fim.se2.assertion_exctractor.subcommand;
 
+import de.uni_passau.fim.se2.assertion_exctractor.parsing.AssertionParser;
 import de.uni_passau.fim.se2.assertion_exctractor.processors.ProcessorFactory;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.RandomUtil;
 import picocli.CommandLine;
@@ -23,6 +24,6 @@ public class AssertionCheckSubcommand implements Runnable{
 
     @Override
     public void run() {
-        System.out.println(code);
+        new AssertionParser().parseAssertionToParseTree(code);
     }
 }

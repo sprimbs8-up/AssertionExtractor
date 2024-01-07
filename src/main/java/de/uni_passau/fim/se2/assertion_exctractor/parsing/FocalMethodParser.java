@@ -13,8 +13,8 @@ import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
 public class FocalMethodParser {
 
     private final JavaDocCollector javaDocCollector = new JavaDocCollector();
-    private final MethodTokenVisitor methodTokenVisitor = new MethodTokenVisitor();
-    private final CodeParser codeParser = new CustomCodeParser();
+    protected final MethodTokenVisitor methodTokenVisitor = new MethodTokenVisitor();
+    protected final CodeParser codeParser = new CustomCodeParser();
 
     private static class CustomCodeParser extends CodeParser {
 
