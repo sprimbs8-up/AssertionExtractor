@@ -15,15 +15,16 @@ public class AssertionCheckSubcommand implements Runnable{
     @CommandLine.Spec
     protected CommandLine.Model.CommandSpec spec;
     @CommandLine.Option(
-            names = { "-c","--code" },
-            description = "The code of the assertion",
+            names = { "-c","--codes" },
+            description = "The codes of the assertions",
             required = true
     )
-    String code;
+    private String codes;
 
 
     @Override
     public void run() {
-        new AssertionParser().parseAssertionToParseTree(code);
+        AssertionParser a = new AssertionParser();
+        System.out.println(a.areSyntacticCorrectAssertions(codes));
     }
 }
