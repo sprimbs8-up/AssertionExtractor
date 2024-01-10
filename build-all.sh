@@ -19,6 +19,13 @@ readonly BASE_FILE=$1
 readonly SAVE_DIR=$2
 readonly ASSERTION_JAR=build/libs/AssertionExtractor-1.0-SNAPSHOT.jar
 readonly JAVA=java
+readonly HARD_FILE="hard-files.jsonl"
+
+if [ "$HARD_FILE" != "$BASE_FILE" ]
+then
+  echo_colour "$GREEN" "Cleaning hard data (cached)"
+  rm -f "$HARD_FILE*"
+fi
 
 MODELS="atlas:toga:code2seq"
 NUMBER_ASSERTIONS="1"
@@ -33,13 +40,8 @@ then
 fi
 
 readarray -t ASSERTION_ARRAY < <(awk -F':' '{ for( i=1; i<=NF; i++ ) print $i }' <<<"${NUMBER_ASSERTIONS}")
-readarray -t MODEL_ARRAY < <(awk -F':' '{ for( i=1; i<=NF; i++ ) print $i }' <<<"${MODELS}")
-
-for model in "${MODEL_ARRAY[@]}"
+for assertion_number in "${ASSERTION_ARRAY[@]}"
 do
-  for assertion_number in "${ASSERTION_ARRAY[@]}"
-  do
-    echo_colour "$GREEN" "${model} with ${assertion_number} number of assertions"
-    ${JAVA} -Xmx256g -jar ${ASSERTION_JAR}  --data-dir "${BASE_FILE}" --save-dir "${SAVE_DIR}/${assertion_number}" --model "${model}" -m "${assertion_number}"
-  done
+  echo_colour "$GREEN" "Exporting models to ${MODELS} and ${assertion_number} number of assertions..."
+  ${JAVA} -jar ${ASSERTION_JAR}  --data-dir "${BASE_FILE}" --save-dir "${SAVE_DIR}/${assertion_number}" --model "${MODELS}" -m "${assertion_number}"
 done

@@ -33,7 +33,7 @@ public class Main implements Runnable {
     String saveDir;
     @CommandLine.Option(
         names = { "--model" },
-        description = "The model the data should be parsed",
+        description = "The model the data should be parsed. Format model1:model2:model3",
         required = true
     )
     String modelType;
@@ -47,7 +47,7 @@ public class Main implements Runnable {
     @Override
     public void run() {
         RandomUtil.getInstance().initializeRandom(seed);
-        ProcessorFactory.loadProcessor(modelType, dataDir, saveDir, maxAssertions).exportProcessedExamples();
+        ProcessorFactory.loadProcessors(modelType, dataDir, saveDir, maxAssertions).exportProcessedExamples();
     }
 
     public static void main(String[] args) {

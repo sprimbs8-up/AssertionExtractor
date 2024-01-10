@@ -8,7 +8,7 @@ public final class AssertionNormalizer {
 
     public static String normalizeAssertions(String code){
         for(AssertionType type : AssertionType.values()) {
-            code = code.replaceAll("(([a-zA-Z]+)( )*.( )*)*"+type.getIdentifier(), type.getIdentifier());
+            code = code.replaceAll("(([a-zA-Z]+)( )*.( )*)*"+type.getIdentifier(),type.getIdentifier());
         }
         return code;
     }

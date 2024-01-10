@@ -6,6 +6,7 @@ import de.uni_passau.fim.se2.assertion_exctractor.parsing.Assertion;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TryCatchAssertion;
+import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomAstCodeParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.AstCodeParser;
@@ -64,8 +65,6 @@ public class Code2SeqProcessor extends Processor {
                         dataPoint.type().name().toLowerCase() + ".c2s", dataPoint.type().getRefresh(), result.get()
                 );
                 dataPoint.type().getRefresh().set(true);
-            } else {
-                LOG.warn("");
             }
         }
     }
@@ -95,7 +94,7 @@ public class Code2SeqProcessor extends Processor {
 
         @Override
         protected Stream<AstNode> processSingleElement(String code, boolean singleMethod) throws ProcessingException {
-            AstCodeParser codeParser = new AstCodeParser();
+            CustomAstCodeParser codeParser = new CustomAstCodeParser();
             return codeParser.parseMethodSkipErrors(code).stream().filter(Objects::nonNull).map(AstNode.class::cast);
         }
 
@@ -108,7 +107,7 @@ public class Code2SeqProcessor extends Processor {
 
     public record Code2Assertion(List<String> assertionTokens, List<AstPath> features) {
         public String toString() {
-            return String.join("|", assertionTokens) + " " + features.stream().map(AstPath::toString).collect(Collectors.joining(" "));
+            return assertionTokens.stream().map(y->y.replaceAll(" ","###")).collect(Collectors.joining("|")) + " " + features.stream().map(AstPath::toString).collect(Collectors.joining(" "));
         }
     }
 }
