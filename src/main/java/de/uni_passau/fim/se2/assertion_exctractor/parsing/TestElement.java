@@ -6,5 +6,11 @@ public interface TestElement {
 
     List<String> tokens();
 
+    List<String> onlyTokens();
+
+    default String tokenString() {
+        return toString();
+    }
+
     boolean isAssertion();
 }

@@ -10,6 +10,11 @@ public record TestSequence(List<String> tokens) implements TestElement {
     }
 
     @Override
+    public List<String> onlyTokens() {
+        return tokens;
+    }
+
+    @Override
     public boolean isAssertion() {
         return false;
     }

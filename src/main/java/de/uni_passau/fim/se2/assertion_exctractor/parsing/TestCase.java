@@ -1,6 +1,7 @@
 package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public record TestCase(List<TestElement> testElements) {
 
                 }
             }
-            return x.a().toString();
+            return x.a().tokenString();
         }).collect(Collectors.joining(" "));
     }
 
@@ -45,5 +46,10 @@ public record TestCase(List<TestElement> testElements) {
 
     public int getNumberAssertions() {
         return (int) testElements.stream().filter(TestElement::isAssertion).count();
+    }
+
+    @Override
+    public String toString() {
+        return testElements.stream().map( TestElement::onlyTokens).flatMap(Collection::stream).collect(Collectors.joining(" "));
     }
 }

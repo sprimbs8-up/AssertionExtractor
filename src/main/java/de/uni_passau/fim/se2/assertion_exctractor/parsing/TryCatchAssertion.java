@@ -11,8 +11,18 @@ public record TryCatchAssertion(List<String> tryCatchTokens) implements TestElem
     }
 
     @Override
+    public String tokenString() {
+        return String.join(" ", tryCatchTokens);
+    }
+
+    @Override
     public List<String> tokens() {
         return List.of(toString());
+    }
+
+    @Override
+    public List<String> onlyTokens() {
+        return tryCatchTokens;
     }
 
     @Override

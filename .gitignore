@@ -46,3 +46,4 @@ bin/
 *.lines
 data/
 /test/
+/data-new/

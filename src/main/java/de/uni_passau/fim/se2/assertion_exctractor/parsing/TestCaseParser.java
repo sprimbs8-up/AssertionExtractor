@@ -6,28 +6,19 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomCodeParser;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.AssertionNormalizer;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
-import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorListener;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
 
 public class TestCaseParser {
 
-    private static class CustomCodeParser extends CodeParser {
 
-        @Override
-        public JavaParser parseCodeFragment(String code) {
-            JavaParser parser = super.parseCodeFragment(code);
-            parser.getErrorListeners().clear();
-            parser.addErrorListener(new ErrorListener());
-            return parser;
-        }
-    }
 
     public Optional<TestCase> parseTestCase(final String code) {
         String cleanedCode = AssertionNormalizer.normalizeAssertions(code);

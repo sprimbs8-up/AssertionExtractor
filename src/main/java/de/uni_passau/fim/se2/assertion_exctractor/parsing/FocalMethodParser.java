@@ -3,6 +3,7 @@ package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 import java.util.stream.Stream;
 
 import de.uni_passau.fim.se2.assertion_exctractor.data.JavaDocMethod;
+import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomCodeParser;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorListener;
 import de.uni_passau.fim.se2.assertion_exctractor.visitors.JavaDocCollector;
@@ -16,16 +17,6 @@ public class FocalMethodParser {
     protected final MethodTokenVisitor methodTokenVisitor = new MethodTokenVisitor();
     protected final CodeParser codeParser = new CustomCodeParser();
 
-    private static class CustomCodeParser extends CodeParser {
-
-        @Override
-        public JavaParser parseCodeFragment(String code) {
-            JavaParser parser = super.parseCodeFragment(code);
-            parser.getErrorListeners().clear();
-            parser.addErrorListener(new ErrorListener());
-            return parser;
-        }
-    }
 
     public Stream<JavaDocMethod> parseClassToJavaDocMethods(final String code) {
         ErrorChecker.getInstance().resetError();
