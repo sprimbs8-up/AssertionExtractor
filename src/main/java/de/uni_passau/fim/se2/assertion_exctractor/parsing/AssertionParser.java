@@ -23,10 +23,10 @@ public class AssertionParser extends FocalMethodParser {
     private final ObjectMapper mapper = new ObjectMapper();
     public List<Boolean> areSyntacticCorrectAssertions( String codes) {
         try {
-            codes = codes.replace('\'','\"');
             List<String> assertionList = mapper.readValue(codes, TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
             return assertionList.stream().map(this::isSyntacticCorrectAssertion).toList();
         } catch (JsonProcessingException e) {
+            System.err.println(e);
             return Collections.emptyList();
         }
     }
