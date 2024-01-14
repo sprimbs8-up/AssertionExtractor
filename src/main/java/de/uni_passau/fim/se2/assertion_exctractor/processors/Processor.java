@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
+import de.uni_passau.fim.se2.assertion_exctractor.data.RawMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomAstCodeParser;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomCodeParser;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
@@ -16,6 +17,7 @@ import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MemberDeclarator;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.AstCodeParser;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.ParseException;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.transformer.util.TransformMode;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOptions;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.ProcessingException;
@@ -40,7 +42,7 @@ public abstract class Processor {
     protected final String dataDir;
     protected final String saveDir;
     protected final int maxAssertions;
-    private final AstConverterPreprocessor preprocessor = new CustomAstConverterPreprocessor(SINGLE_METHOD_OPTIONS, true, false);
+    private final CustomAstConverterPreprocessor preprocessor = new CustomAstConverterPreprocessor(SINGLE_METHOD_OPTIONS, true, false);
 
 
     protected static final CommonPreprocessorOptions SINGLE_METHOD_OPTIONS = new CommonPreprocessorOptions(
@@ -56,10 +58,10 @@ public abstract class Processor {
     protected Stream<Pair<String, FineMethodData>> loadMethodData() {
         try {
             return Method2TestLoader.loadDatasetAsJSON(dataDir)
+                    .filter(this::isASTConvertible)
                     .map(raw2fineConverter::process)
                     .map(this::flatten)
                     .flatMap(Optional::stream)
-                    .filter(this::isASTConvertible)
                     .peek(el -> ProgressBarContainer.getInstance().notifyStep());
         } catch (IOException e) {
             LOG.error("Error while loading json dataset", e);
@@ -74,25 +76,36 @@ public abstract class Processor {
         return optionalPart.map(x -> Pair.of(firstPart, x));
     }
 
-    private boolean isASTConvertible(Pair<String, FineMethodData> fineMethodDataPair) {
-        FineMethodData fineMethodData = fineMethodDataPair.b();
-        boolean convertible = parseMethod(fineMethodData.testCase().toString()).isPresent()
-                && parseMethod(String.join(" ", fineMethodData.focalMethodTokens())).isPresent();
+    private boolean isASTConvertible(Pair<String, RawMethodData> inputData) {
+        RawMethodData dataPoint = inputData.b();
+
+        boolean focalMethodParseable = isMethodParseable(dataPoint.focalMethod());
+        boolean testMethodParseable = isMethodParseable(dataPoint.testMethod());
+        boolean focalClassParseable = isClassParseable(dataPoint.focalFile());
+        boolean testClassParseable = isClassParseable(dataPoint.testFile());
+        boolean convertible = focalMethodParseable && testMethodParseable && focalClassParseable && testClassParseable;
         if (!convertible) {
-            // LOG.info("Excluded non convertible tokens: {}", fineMethodData.testCase().toString().replaceAll("\\s"," "));
-            StatisticsContainer.getInstance().notifyNotParseable();
-            ErrorChecker.getInstance().currentInstance(fineMethodDataPair.a());
+            StatisticsContainer.getInstance().notifyNotParseable(focalMethodParseable, testMethodParseable, focalClassParseable, testClassParseable);
+            ErrorChecker.getInstance().currentInstance(inputData.a());
         } else {
             StatisticsContainer.getInstance().notifyParsedTestCase();
         }
         return convertible;
     }
 
-    private Optional<String> parseMethod(String methodCode) {
+    private boolean isMethodParseable(String methodCode) {
         try {
-            return preprocessor.processSingleMethod(methodCode);
+            return preprocessor.processSingleMethod(methodCode).isPresent();
         } catch (ProcessingException e) {
-            return Optional.empty();
+            return false;
+        }
+    }
+
+    private boolean isClassParseable(String methodCode) {
+        try {
+            return preprocessor.processSingleClassInstance(methodCode).isPresent();
+        } catch (ProcessingException e) {
+            return false;
         }
     }
 
@@ -155,12 +168,23 @@ public abstract class Processor {
             return this.processSingleElement(code, true).map(Object::toString).findFirst();
         }
 
+        public Optional<String> processSingleClassInstance(String code){
+            return this.processSingleElement(code, false).map(Object::toString).findFirst();
+        }
+
         @Override
         protected Stream<AstNode> processSingleElement(String code, boolean singleMethod) throws ProcessingException {
             AstCodeParser codeParser = new CustomAstCodeParser();
-            Stream<MemberDeclarator<MethodDeclaration>> stream = codeParser.parseMethodSkipErrors(code).stream();
-            Objects.requireNonNull(AstNode.class);
-            return stream.map(AstNode.class::cast);
+            if (singleMethod) {
+                Stream<MemberDeclarator<MethodDeclaration>> stream = codeParser.parseMethodSkipErrors(code).stream();
+                Objects.requireNonNull(AstNode.class);
+                return stream.map(AstNode.class::cast);
+            }
+            try {
+                return Stream.of(codeParser.parseCodeToCompilationUnit(code));
+            } catch (ParseException e) {
+                return Stream.empty();
+            }
         }
     }
 }
