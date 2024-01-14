@@ -10,6 +10,7 @@ public class ProcessorFactory {
             case "atlas" -> new AtlasProcessor(dataDir, saveDir, maxAssertions);
             case "toga" -> new TogaProcessor(dataDir, saveDir, maxAssertions);
             case "code2seq" -> new Code2SeqProcessor(dataDir, saveDir, maxAssertions);
+            case "ata" -> new ATAClassPreprocessor(dataDir, saveDir, maxAssertions);
             default -> throw new IllegalArgumentException("The model \"" + modelType + "\" is not present.");
         };
     }

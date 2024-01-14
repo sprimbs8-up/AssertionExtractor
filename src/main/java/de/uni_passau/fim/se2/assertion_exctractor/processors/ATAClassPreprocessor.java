@@ -7,20 +7,22 @@ import de.uni_passau.fim.se2.assertion_exctractor.parsing.Assertion;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TryCatchAssertion;
+import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomASTConverterPreprocessor;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.CompilationUnit;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-public class AbstractClassPreprocessor extends Processor {
-
-    public AbstractClassPreprocessor(String dataDir, String saveDir, int maxAssertions) {
+public class ATAClassPreprocessor extends Processor {
+    public ATAClassPreprocessor(String dataDir, String saveDir, int maxAssertions) {
         super(dataDir, saveDir, maxAssertions);
     }
 
     @Override
     protected String getModelName() {
-        return "experiment";
+        return "ata";
     }
 
     @Override
@@ -28,6 +30,7 @@ public class AbstractClassPreprocessor extends Processor {
         DataPoint dataPoint = dataPointPair.b();
 
         FineMethodData methodData = dataPoint.methodData();
+        collectConstants(methodData.focalClass());
         TestCase testCase = methodData.testCase();
         List<List<String>> assertions = testCase.testElements().stream()
             .filter(((Predicate<TestElement>) Assertion.class::isInstance).or(TryCatchAssertion.class::isInstance))
@@ -45,6 +48,11 @@ public class AbstractClassPreprocessor extends Processor {
             );
             dataPoint.type().getRefresh().set(true);
         }
+    }
+
+    private void collectConstants(String clazz){
+        //AstNode node = preprocessor.parseSingleClass(clazz).findFirst().get();
+        //CompilationUnit unit = (CompilationUnit) node;
     }
 
 }

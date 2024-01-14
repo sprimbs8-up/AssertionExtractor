@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import de.uni_passau.fim.se2.assertion_exctractor.data.RawMethodData;
+import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomASTConverterPreprocessor;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomAstCodeParser;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomCodeParser;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
@@ -42,7 +43,7 @@ public abstract class Processor {
     protected final String dataDir;
     protected final String saveDir;
     protected final int maxAssertions;
-    private final CustomAstConverterPreprocessor preprocessor = new CustomAstConverterPreprocessor(SINGLE_METHOD_OPTIONS, true, false);
+    protected final CustomASTConverterPreprocessor preprocessor = new CustomASTConverterPreprocessor(SINGLE_METHOD_OPTIONS, true, false);
 
 
     protected static final CommonPreprocessorOptions SINGLE_METHOD_OPTIONS = new CommonPreprocessorOptions(
@@ -103,7 +104,7 @@ public abstract class Processor {
 
     private boolean isClassParseable(String methodCode) {
         try {
-            return preprocessor.processSingleClassInstance(methodCode).isPresent();
+            return preprocessor.parseSingleClass(methodCode).isPresent();
         } catch (ProcessingException e) {
             return false;
         }
@@ -157,34 +158,4 @@ public abstract class Processor {
         }
     }
 
-    private static class CustomAstConverterPreprocessor extends AstConverterPreprocessor {
-
-        public CustomAstConverterPreprocessor(CommonPreprocessorOptions commonOptions, boolean singleMethod, boolean dotGraph) {
-            super(commonOptions, singleMethod, dotGraph);
-        }
-
-        @Override
-        public Optional<String> processSingleMethod(String code) {
-            return this.processSingleElement(code, true).map(Object::toString).findFirst();
-        }
-
-        public Optional<String> processSingleClassInstance(String code){
-            return this.processSingleElement(code, false).map(Object::toString).findFirst();
-        }
-
-        @Override
-        protected Stream<AstNode> processSingleElement(String code, boolean singleMethod) throws ProcessingException {
-            AstCodeParser codeParser = new CustomAstCodeParser();
-            if (singleMethod) {
-                Stream<MemberDeclarator<MethodDeclaration>> stream = codeParser.parseMethodSkipErrors(code).stream();
-                Objects.requireNonNull(AstNode.class);
-                return stream.map(AstNode.class::cast);
-            }
-            try {
-                return Stream.of(codeParser.parseCodeToCompilationUnit(code));
-            } catch (ParseException e) {
-                return Stream.empty();
-            }
-        }
-    }
 }

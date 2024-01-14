@@ -43,6 +43,6 @@ public class Raw2FineDataPStep implements DataProcessingStep<RawMethodData, Opti
             .map(JavaDocMethod::text)
             .findFirst();
 
-        return Optional.of(new FineMethodData(parsedTestCase.get(), focalMethodTokens, javaDocComment.orElse(null)));
+        return Optional.of(new FineMethodData(parsedTestCase.get(), focalMethodTokens, javaDocComment.orElse(null), rawMethodData.focalFile(), rawMethodData.testFile()));
     }
 }
