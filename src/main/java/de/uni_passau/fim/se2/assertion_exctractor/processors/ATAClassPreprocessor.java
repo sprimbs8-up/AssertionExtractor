@@ -4,28 +4,19 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DatasetType;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.*;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomASTConverterPreprocessor;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomAstCodeParser;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomCodeParser;
-import de.uni_passau.fim.se2.assertion_exctractor.visitors.MethodTokenVisitor;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MemberDeclarator;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.TypeDeclarator;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.expression.literal.LiteralValueExpr;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.identifier.SimpleIdentifier;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.switch_node.Switch;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.switch_node.SwitchCase;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.AstCodeParser;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.ParseException;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.visitor.AstVisitorWithDefaults;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
@@ -47,32 +38,35 @@ public class ATAClassPreprocessor extends Processor {
 
         DataPoint dataPoint = dataPointPair.b();
         FineMethodData methodData = dataPoint.methodData();
-        Map<String, String > abstractTokenMap = collectAbstractTokens(methodData);
+        Map<String, String> abstractTokenMap = collectAbstractTokens(methodData);
 
         TestCase testCase = methodData.testCase();
         List<List<String>> assertions = testCase.testElements().stream()
-                .filter(((Predicate<TestElement>) Assertion.class::isInstance).or(TryCatchAssertion.class::isInstance))
-                .map(TestElement::tokens)
-                .map(testTokens -> testTokens.stream().map(token -> abstractTokenMap.getOrDefault(token ,token)).toList())
-                .toList();
+            .filter(((Predicate<TestElement>) Assertion.class::isInstance).or(TryCatchAssertion.class::isInstance))
+            .map(TestElement::tokens)
+            .map(testTokens -> testTokens.stream().map(token -> abstractTokenMap.getOrDefault(token, token)).toList())
+            .toList();
         DatasetType type = dataPoint.type();
         for (int i = 0; i < assertions.size(); i++) {
             writeStringsToFile(
-                    dataPoint.type().name().toLowerCase() + "/assertLines.txt", type.getRefresh(),
-                    String.join(" ", assertions.get(i))
+                dataPoint.type().name().toLowerCase() + "/assertLines.txt", type.getRefresh(),
+                String.join(" ", assertions.get(i))
             );
             writeStringsToFile(
-                    dataPoint.type().name().toLowerCase() + "/testMethods.txt", type.getRefresh(),
-                    "TEST_METHOD: " +
-                    testCase.replaceAssertionStream(i).map(token-> abstractTokenMap.getOrDefault(token, token)).collect(Collectors.joining(" ")) + " FOCAL_METHOD: " +
-                            methodData.focalClassTokens().stream().map(token-> abstractTokenMap.getOrDefault(token, token)).collect(Collectors.joining(" "))
+                dataPoint.type().name().toLowerCase() + "/testMethods.txt", type.getRefresh(),
+                "TEST_METHOD: " +
+                    testCase.replaceAssertionStream(i).map(token -> abstractTokenMap.getOrDefault(token, token))
+                        .collect(Collectors.joining(" "))
+                    + " FOCAL_METHOD: " +
+                    methodData.focalClassTokens().stream().map(token -> abstractTokenMap.getOrDefault(token, token))
+                        .collect(Collectors.joining(" "))
 
             );
-            Map<String, String> invertedSortedMap = new TreeMap<>( (o1, o2) -> {
+            Map<String, String> invertedSortedMap = new TreeMap<>((o1, o2) -> {
                 String[] o1String = o1.split("_");
                 String[] o2String = o2.split("_");
-                int res =  o1String[0].compareTo(o2String[0]);
-                if (res != 0){
+                int res = o1String[0].compareTo(o2String[0]);
+                if (res != 0) {
                     return res;
                 }
                 int o1Int = Integer.parseInt(o1String[1]);
@@ -83,20 +77,21 @@ public class ATAClassPreprocessor extends Processor {
 
             try {
                 writeStringsToFile(
-                        dataPoint.type().name().toLowerCase() + "/dict.jsonl", type.getRefresh(),
-                        MAPPER.writeValueAsString(invertedSortedMap)
+                    dataPoint.type().name().toLowerCase() + "/dict.jsonl", type.getRefresh(),
+                    MAPPER.writeValueAsString(invertedSortedMap)
                 );
-            } catch (JsonProcessingException e) {
+            }
+            catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
             dataPoint.type().getRefresh().set(true);
         }
     }
 
-    private <A,B> Map<B,A> inverseMap(Map<A,B> map){
-        Map<B,A> inversedMap = new HashMap<>();
-        for (Map.Entry<A,B> entry: map.entrySet()){
-            if(inversedMap.containsKey(entry.getValue())){
+    private <A, B> Map<B, A> inverseMap(Map<A, B> map) {
+        Map<B, A> inversedMap = new HashMap<>();
+        for (Map.Entry<A, B> entry : map.entrySet()) {
+            if (inversedMap.containsKey(entry.getValue())) {
                 throw new IllegalStateException("Inverted Map makes problems!");
             }
             inversedMap.put(entry.getValue(), entry.getKey());
@@ -115,28 +110,30 @@ public class ATAClassPreprocessor extends Processor {
         return abstractTokenMap;
     }
 
-    private void collectAbstractTokens(String code, MethodTokensDictionaryReader reader, boolean isClass, Map<String, String> abstractTokens) {
-        AstNode node = isClass ?  parseClass(code) : parseMethod(code);
+    private void collectAbstractTokens(
+        String code, MethodTokensDictionaryReader reader, boolean isClass, Map<String, String> abstractTokens
+    ) {
+        AstNode node = isClass ? parseClass(code) : parseMethod(code);
         node.accept(reader, abstractTokens);
     }
 
     private TypeDeclarator parseClass(String code) {
         return preprocessor.parseSingleClass(code).stream()
-                .filter(TypeDeclarator.class::isInstance)
-                .map(TypeDeclarator.class::cast).
-                findFirst().orElseThrow(() -> new IllegalStateException("The TypeDeclarator should be available!"));
+            .filter(TypeDeclarator.class::isInstance)
+            .map(TypeDeclarator.class::cast).findFirst()
+            .orElseThrow(() -> new IllegalStateException("The TypeDeclarator should be available!"));
     }
+
     private MemberDeclarator<MethodDeclaration> parseMethod(String code) {
         return preprocessor.parseSingleMethod(code).stream()
-                .filter(x->x instanceof MemberDeclarator)
-                .map(x->(MemberDeclarator<MethodDeclaration>) x).
-                findFirst().orElseThrow(() -> new IllegalStateException("The TypeDeclarator should be available!"));
+            .filter(x -> x instanceof MemberDeclarator)
+            .map(x -> (MemberDeclarator<MethodDeclaration>) x).findFirst()
+            .orElseThrow(() -> new IllegalStateException("The TypeDeclarator should be available!"));
     }
 
-
     private static class MethodTokensDictionaryReader implements AstVisitorWithDefaults<Void, Map<String, String>> {
-        private final Map<String, Integer> counterMap = new HashMap<>();
 
+        private final Map<String, Integer> counterMap = new HashMap<>();
 
         private static final String IDENTIFIER = "IDENT";
         private static final String METHOD = "METHOD";
@@ -173,7 +170,8 @@ public class ATAClassPreprocessor extends Processor {
         @Override
         public Void visit(MethodDeclaration node, Map<String, String> map) {
             fillDict(METHOD, node.name().name(), map);
-            node.children().stream().filter(Predicate.not(Predicate.isEqual(node.name()))).forEach(child -> child.accept(this, map));
+            node.children().stream().filter(Predicate.not(Predicate.isEqual(node.name())))
+                .forEach(child -> child.accept(this, map));
             return null;
         }
 
@@ -182,7 +180,6 @@ public class ATAClassPreprocessor extends Processor {
             fillDict(IDENTIFIER, node.name(), map);
             return null;
         }
-
 
         @Override
         public <V> Void visit(LiteralValueExpr<V> node, Map<String, String> arg) {
@@ -194,7 +191,7 @@ public class ATAClassPreprocessor extends Processor {
                     }
                     break;
                 case "String":
-                    fillDict(STRING, "\"" +node.value()+"\"", arg);
+                    fillDict(STRING, "\"" + node.value() + "\"", arg);
                     break;
                 case "BigInteger":
                     fillDict(INTEGER, node.value(), arg);

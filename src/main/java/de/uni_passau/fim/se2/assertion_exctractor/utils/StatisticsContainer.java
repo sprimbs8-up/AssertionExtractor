@@ -67,7 +67,7 @@ public final class StatisticsContainer {
         parsedTestCases++;
     }
 
-    public synchronized void notifiedUnusableTestCaseWithoutAssertions(){
+    public synchronized void notifiedUnusableTestCaseWithoutAssertions() {
         afterAssertionExtraction++;
     }
 

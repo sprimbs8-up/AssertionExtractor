@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 public record TestCase(List<TestElement> testElements) {
@@ -19,11 +18,13 @@ public record TestCase(List<TestElement> testElements) {
     }
 
     public String replaceAssertion(int pos, String maskToken) {
-       return replaceAssertionStream(pos,maskToken) .collect(Collectors.joining(" "));
+        return replaceAssertionStream(pos, maskToken).collect(Collectors.joining(" "));
     }
-    public Stream<String> replaceAssertionStream(int pos){
+
+    public Stream<String> replaceAssertionStream(int pos) {
         return replaceAssertionStream(pos, ASSERTION_MASK);
     }
+
     public Stream<String> replaceAssertionStream(int pos, String maskToken) {
         List<Pair<TestElement, Integer>> assertPosPairs = generateAssertionPositionPair();
         return assertPosPairs.stream().flatMap(x -> {
@@ -33,7 +34,10 @@ public record TestCase(List<TestElement> testElements) {
                 }
                 else if (x.a() instanceof TryCatchAssertion tryCatchAssertion) {
                     List<String> tryCatTokens = tryCatchAssertion.tryCatchTokens();
-                    return   Stream.concat(Optional.ofNullable(maskToken).stream(), tryCatTokens.subList(1, tryCatTokens.size() - 1).stream());
+                    return Stream.concat(
+                        Optional.ofNullable(maskToken).stream(),
+                        tryCatTokens.subList(1, tryCatTokens.size() - 1).stream()
+                    );
                 }
             }
             return x.a().tokens().stream();

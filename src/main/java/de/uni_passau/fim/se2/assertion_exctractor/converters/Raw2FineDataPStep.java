@@ -46,11 +46,14 @@ public class Raw2FineDataPStep implements DataProcessingStep<RawMethodData, Opti
         if (parsedTestCase.isEmpty() || focalMethodTokens.isEmpty()) {
             return Optional.empty();
         }
-        String codeWithoutAssertions = parsedTestCase.get().testElements().stream().filter(Predicate.not(TestElement::isAssertion)).map(TestElement::tokenString).collect(Collectors.joining(" "));
-        if(FOCAL_METHOD_PARSER.parseMethodToMethodTokens(codeWithoutAssertions).findAny().isEmpty()){
+        String codeWithoutAssertions = parsedTestCase.get().testElements().stream()
+            .filter(Predicate.not(TestElement::isAssertion)).map(TestElement::tokenString)
+            .collect(Collectors.joining(" "));
+        if (FOCAL_METHOD_PARSER.parseMethodToMethodTokens(codeWithoutAssertions).findAny().isEmpty()) {
             StatisticsContainer.getInstance().notifiedUnusableTestCaseWithoutAssertions();
             return Optional.empty();
-        };
+        }
+        ;
         Optional<String> javaDocComment = FOCAL_METHOD_PARSER.parseClassToJavaDocMethods(rawMethodData.focalFile())
             .filter(method -> method.methodTokens().equals(focalMethodTokens))
             .map(JavaDocMethod::text)
