@@ -86,7 +86,7 @@ public abstract class Processor {
         boolean testClassParseable = isClassParseable(dataPoint.testFile());
         boolean convertible = focalMethodParseable && testMethodParseable && focalClassParseable && testClassParseable;
         if (!convertible) {
-            StatisticsContainer.getInstance().notifyNotParseable(focalMethodParseable, testMethodParseable, focalClassParseable, testClassParseable);
+            StatisticsContainer.getInstance().notifyNotParseable(!focalMethodParseable, !testMethodParseable, !focalClassParseable, !testClassParseable);
             ErrorChecker.getInstance().currentInstance(inputData.a());
         } else {
             StatisticsContainer.getInstance().notifyParsedTestCase();
