@@ -51,7 +51,6 @@ public class Raw2FineDataPStep implements DataProcessingStep<RawMethodData, Opti
             StatisticsContainer.getInstance().notifiedUnusableTestCaseWithoutAssertions();
             return Optional.empty();
         };
-        System.out.println(codeWithoutAssertions);
         Optional<String> javaDocComment = FOCAL_METHOD_PARSER.parseClassToJavaDocMethods(rawMethodData.focalFile())
             .filter(method -> method.methodTokens().equals(focalMethodTokens))
             .map(JavaDocMethod::text)

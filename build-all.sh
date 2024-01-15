@@ -27,7 +27,7 @@ then
   rm -f "$HARD_FILE*"
 fi
 
-MODELS="atlas:toga:code2seq"
+MODELS="atlas:toga:code2seq:ata"
 NUMBER_ASSERTIONS="1"
 if [ "$#" -gt 2 ]
 then

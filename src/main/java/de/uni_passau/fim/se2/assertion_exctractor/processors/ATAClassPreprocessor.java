@@ -63,7 +63,10 @@ public class ATAClassPreprocessor extends Processor {
             );
             writeStringsToFile(
                     dataPoint.type().name().toLowerCase() + "/testMethods.txt", type.getRefresh(),
-                    testCase.replaceAssertionStream(i).map(token-> abstractTokenMap.getOrDefault(token, token)).collect(Collectors.joining(" "))
+                    "TEST_METHOD: " +
+                    testCase.replaceAssertionStream(i).map(token-> abstractTokenMap.getOrDefault(token, token)).collect(Collectors.joining(" ")) + " FOCAL_METHOD: " +
+                            methodData.focalClassTokens().stream().map(token-> abstractTokenMap.getOrDefault(token, token)).collect(Collectors.joining(" "))
+
             );
             Map<String, String> invertedSortedMap = new TreeMap<>( (o1, o2) -> {
                 String[] o1String = o1.split("_");
