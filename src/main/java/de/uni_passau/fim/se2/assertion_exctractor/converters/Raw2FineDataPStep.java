@@ -9,6 +9,7 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.RawMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.FocalMethodParser;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCaseParser;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.AssertionNormalizer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.StatisticsContainer;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
@@ -22,12 +23,12 @@ public class Raw2FineDataPStep implements DataProcessingStep<RawMethodData, Opti
 
     @Override
     public Pair<String, Optional<FineMethodData>> process(Pair<String, RawMethodData> rawMethodData) {
-        return rawMethodData.map2(x->x, x->prepareRawMethodData(rawMethodData));
+        return rawMethodData.map2(x -> x, x -> prepareRawMethodData(rawMethodData));
     }
 
     private static Optional<FineMethodData> prepareRawMethodData(Pair<String, RawMethodData> rawMethodDataPair) {
         RawMethodData rawMethodData = rawMethodDataPair.b();
-        if(rawMethodData.testMethod().length() > MAX_TESTCASE_LENGTH) {
+        if (rawMethodData.testMethod().length() > MAX_TESTCASE_LENGTH) {
             StatisticsContainer.getInstance().notifyTooLongTestCase();
             ErrorChecker.getInstance().logCurrentInstanceTooLong(rawMethodDataPair.a());
             return Optional.empty();
@@ -35,6 +36,10 @@ public class Raw2FineDataPStep implements DataProcessingStep<RawMethodData, Opti
         Optional<TestCase> parsedTestCase = TEST_CASE_PARSER.parseTestCase(rawMethodData.testMethod());
         List<String> focalMethodTokens = FOCAL_METHOD_PARSER.parseMethodToMethodTokens(rawMethodData.focalMethod())
             .toList();
+        List<String> focalClassTokens = FOCAL_METHOD_PARSER
+            .parseMethodToMethodTokens(AssertionNormalizer.removeJavaDocs(rawMethodData.focalFile())).toList();
+        List<String> testClassTokens = FOCAL_METHOD_PARSER
+            .parseMethodToMethodTokens(AssertionNormalizer.removeJavaDocs(rawMethodData.testFile())).toList();
         if (parsedTestCase.isEmpty() || focalMethodTokens.isEmpty()) {
             return Optional.empty();
         }
@@ -43,6 +48,10 @@ public class Raw2FineDataPStep implements DataProcessingStep<RawMethodData, Opti
             .map(JavaDocMethod::text)
             .findFirst();
 
-        return Optional.of(new FineMethodData(parsedTestCase.get(), focalMethodTokens, javaDocComment.orElse(null), rawMethodData.focalFile(), rawMethodData.testFile()));
+        return Optional.of(
+            new FineMethodData(
+                parsedTestCase.get(), focalMethodTokens, javaDocComment.orElse(null), focalClassTokens, testClassTokens
+            )
+        );
     }
 }

@@ -15,8 +15,11 @@ public class ProcessorFactory {
         };
     }
 
-    public static CombinedProcessor loadProcessors(String modelsTypes, String dataDir, String saveDir, int maxAssertions){
-        List<Processor> processors = Arrays.stream(modelsTypes.split(":")).distinct().map(model-> loadProcessor(model, dataDir,saveDir,maxAssertions)).toList();
-        return new CombinedProcessor(dataDir, saveDir,maxAssertions,processors);
+    public static CombinedProcessor loadProcessors(
+        String modelsTypes, String dataDir, String saveDir, int maxAssertions
+    ) {
+        List<Processor> processors = Arrays.stream(modelsTypes.split(":")).distinct()
+            .map(model -> loadProcessor(model, dataDir, saveDir, maxAssertions)).toList();
+        return new CombinedProcessor(dataDir, saveDir, maxAssertions, processors);
     }
 }

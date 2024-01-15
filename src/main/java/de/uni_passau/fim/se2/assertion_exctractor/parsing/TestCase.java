@@ -22,7 +22,8 @@ public record TestCase(List<TestElement> testElements) {
                 }
                 else if (x.a() instanceof TryCatchAssertion tryCatchAssertion) {
                     List<String> tryCatTokens = tryCatchAssertion.tryCatchTokens();
-                    return (maskToken != null ?  maskToken+" " :"") + String.join(" ", tryCatTokens.subList(1, tryCatTokens.size() - 1));
+                    return (maskToken != null ? maskToken + " " : "")
+                        + String.join(" ", tryCatTokens.subList(1, tryCatTokens.size() - 1));
 
                 }
             }
@@ -50,6 +51,7 @@ public record TestCase(List<TestElement> testElements) {
 
     @Override
     public String toString() {
-        return testElements.stream().map( TestElement::onlyTokens).flatMap(Collection::stream).collect(Collectors.joining(" "));
+        return testElements.stream().map(TestElement::onlyTokens).flatMap(Collection::stream)
+            .collect(Collectors.joining(" "));
     }
 }

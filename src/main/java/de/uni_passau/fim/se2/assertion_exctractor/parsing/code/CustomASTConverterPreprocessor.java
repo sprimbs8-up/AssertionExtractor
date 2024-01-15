@@ -1,6 +1,10 @@
 package de.uni_passau.fim.se2.assertion_exctractor.parsing.code;
 
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import de.uni_passau.fim.se2.assertion_exctractor.utils.AssertionNormalizer;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.CompilationUnit;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MemberDeclarator;
@@ -11,13 +15,11 @@ import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOpt
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.ProcessingException;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.ast_conversion.AstConverterPreprocessor;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
+public class CustomASTConverterPreprocessor extends AstConverterPreprocessor {
 
-public class CustomASTConverterPreprocessor  extends AstConverterPreprocessor {
-
-    public CustomASTConverterPreprocessor(CommonPreprocessorOptions commonOptions, boolean singleMethod, boolean dotGraph) {
+    public CustomASTConverterPreprocessor(
+        CommonPreprocessorOptions commonOptions, boolean singleMethod, boolean dotGraph
+    ) {
         super(commonOptions, singleMethod, dotGraph);
     }
 
@@ -26,7 +28,7 @@ public class CustomASTConverterPreprocessor  extends AstConverterPreprocessor {
         return this.processSingleElement(code, true).map(Object::toString).findFirst();
     }
 
-    public Optional<String> processSingleClassInstance(String code){
+    public Optional<String> processSingleClassInstance(String code) {
         return this.processSingleElement(code, false).map(Object::toString).findFirst();
     }
 
@@ -35,14 +37,14 @@ public class CustomASTConverterPreprocessor  extends AstConverterPreprocessor {
     }
 
     public Optional<AstNode> parseSingleClass(String code) {
-        return this.processSingleElement(code, false)
-                .filter(CompilationUnit.class::isInstance)
-                .map(CompilationUnit.class::cast)
-                .map(CompilationUnit::typeDeclarations)
-                .filter(x->x.size()==1)
-                .map(x->x.get(0))
-                .map(AstNode.class::cast)
-                .findAny();
+        return this.processSingleElement(AssertionNormalizer.removeJavaDocs(code), false)
+            .filter(CompilationUnit.class::isInstance)
+            .map(CompilationUnit.class::cast)
+            .map(CompilationUnit::typeDeclarations)
+            .filter(x -> x.size() == 1)
+            .map(x -> x.get(0))
+            .map(AstNode.class::cast)
+            .findAny();
     }
 
     @Override
@@ -55,10 +57,10 @@ public class CustomASTConverterPreprocessor  extends AstConverterPreprocessor {
         }
         try {
             // see https://stackoverflow.com/questions/9078528/tool-to-remove-javadoc-comments
-            String cleanedCode =code.replaceAll("/\\*\\*(?s:(?!\\*/).)*\\*/","") ;
-            var node = codeParser.parseCodeToCompilationUnit(cleanedCode);
+            var node = codeParser.parseCodeToCompilationUnit(code);
             return Stream.of(node);
-        } catch (ParseException e) {
+        }
+        catch (ParseException e) {
             return Stream.empty();
         }
     }

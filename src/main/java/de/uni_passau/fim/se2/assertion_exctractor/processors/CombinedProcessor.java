@@ -1,13 +1,17 @@
 package de.uni_passau.fim.se2.assertion_exctractor.processors;
 
+import java.util.List;
+
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
-import java.util.List;
+public class CombinedProcessor extends Processor {
 
-public class CombinedProcessor extends Processor{
     private final List<? extends Processor> combinedProcessors;
-    public CombinedProcessor(String dataDir, String saveDir, int maxAssertions, List<? extends Processor> combinedProcessors) {
+
+    public CombinedProcessor(
+        String dataDir, String saveDir, int maxAssertions, List<? extends Processor> combinedProcessors
+    ) {
         super(dataDir, saveDir, maxAssertions);
         this.combinedProcessors = combinedProcessors;
     }
@@ -27,9 +31,8 @@ public class CombinedProcessor extends Processor{
         return null;
     }
 
-
     @Override
     protected void exportTestCases(Pair<String, DataPoint> dataPoint) {
-        combinedProcessors.forEach(x->x.exportTestCases(dataPoint));
+        combinedProcessors.forEach(x -> x.exportTestCases(dataPoint));
     }
 }

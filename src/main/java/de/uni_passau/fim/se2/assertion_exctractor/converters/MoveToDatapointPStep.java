@@ -22,8 +22,8 @@ public class MoveToDatapointPStep implements DataProcessingStep<FineMethodData, 
     }
 
     @Override
-    public Pair<String, DataPoint> process(Pair<String,FineMethodData> methodData) {
-        return methodData.mapB(b-> new DataPoint(b, getNext()));
+    public Pair<String, DataPoint> process(Pair<String, FineMethodData> methodData) {
+        return methodData.mapB(b -> new DataPoint(b, getNext()));
     }
 
     private DatasetType getNext() {

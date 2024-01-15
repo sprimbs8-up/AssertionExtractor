@@ -6,8 +6,6 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
-import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
+import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 public final class Method2TestLoader {
 
@@ -28,14 +27,15 @@ public final class Method2TestLoader {
         ProgressBarContainer.getInstance().setProgressBar("Preparing dataset", numberOfLines);
         ProgressBarContainer.getInstance().notifyStart();
         return listFiles(Path.of(preparedFile))
-                .map(Method2TestLoader::parseMethodData)
-                .filter(Objects::nonNull);
+            .map(Method2TestLoader::parseMethodData)
+            .filter(Objects::nonNull);
     }
 
     private static Pair<String, RawMethodData> parseMethodData(String line) {
         try {
             return Pair.of(line, OBJECT_MAPPER.readValue(line, RawMethodData.class));
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             LOGGER.debug("Processing of " + line.substring(0, 50) + "... was not possible", e);
             return null;
         }
@@ -56,7 +56,8 @@ public final class Method2TestLoader {
             }
             System.out.print("\r");
             return lines;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             return 0;
         }
 
@@ -65,13 +66,16 @@ public final class Method2TestLoader {
     public static int readNumberLines(String file) {
         try (BufferedReader reader = new BufferedReader(new FileReader(file + ".lines"))) {
             return Integer.parseInt(reader.readLine());
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             int numberLinesOfFile = numberLinesOf(file);
             try (FileOutputStream outputStream = new FileOutputStream(file + ".lines")) {
                 outputStream.write(String.valueOf(numberLinesOfFile).getBytes());
-            } catch (FileNotFoundException ex) {
+            }
+            catch (FileNotFoundException ex) {
                 return numberLinesOfFile;
-            } catch (IOException ex) {
+            }
+            catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
             return numberLinesOfFile;

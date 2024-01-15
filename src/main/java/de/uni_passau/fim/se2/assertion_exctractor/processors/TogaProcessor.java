@@ -38,9 +38,10 @@ public class TogaProcessor extends Processor {
 
     @Override
     protected void setup() {
-        togaProcessors.add(new TryCatchTogaProcessor(dataDir, saveDir+"/"+getModelName(), maxAssertions));
-        togaProcessors.add(new AssertionTogaProcessor(dataDir, saveDir+"/"+getModelName(), maxAssertions));
-        togaProcessors.add(new AssertionExceptionsTogaProcessor(dataDir, saveDir+"/"+getModelName(), maxAssertions));
+        togaProcessors.add(new TryCatchTogaProcessor(dataDir, saveDir + "/" + getModelName(), maxAssertions));
+        togaProcessors.add(new AssertionTogaProcessor(dataDir, saveDir + "/" + getModelName(), maxAssertions));
+        togaProcessors
+            .add(new AssertionExceptionsTogaProcessor(dataDir, saveDir + "/" + getModelName(), maxAssertions));
         togaProcessors.forEach(Processor::setup);
     }
 
@@ -177,6 +178,7 @@ public class TogaProcessor extends Processor {
         }
 
     }
+
     private static class AssertionExceptionsTogaProcessor extends IntermediateTogaProcessor {
 
         private final Map<DatasetType, Integer> counterMap = new EnumMap<>(DatasetType.class);
@@ -187,23 +189,23 @@ public class TogaProcessor extends Processor {
 
         @Override
         protected Optional<String[]> getRowContent(
-                boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod,
-                String docString, TestElement assertion, DatasetType type
+            boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod,
+            String docString, TestElement assertion, DatasetType type
         ) {
             int idx = counterMap.compute(type, (x, y) -> y != null ? y + 1 : 0);
             String[] lineContent = new String[] {
-                    String.valueOf(idx),                            // idx
-                    String.join(" ", focalMethod),           // focal method tokens
-                    testCase.replaceAssertion(assertionPosition),   // test case without assertions
-                    tryCatchAssertion? "TRY_CATCH" : String.join(" ", assertion.tokens()),     // assertion tokens
-                    docString
+                String.valueOf(idx),                            // idx
+                String.join(" ", focalMethod),           // focal method tokens
+                testCase.replaceAssertion(assertionPosition),   // test case without assertions
+                tryCatchAssertion ? "TRY_CATCH" : String.join(" ", assertion.tokens()),     // assertion tokens
+                docString
             };
             return Optional.of(lineContent);
         }
 
         @Override
         protected String[] getHeader() {
-            return new String[] { "idx",  "fm", "test", "assertion", "docstring" };
+            return new String[] { "idx", "fm", "test", "assertion", "docstring" };
         }
 
     }

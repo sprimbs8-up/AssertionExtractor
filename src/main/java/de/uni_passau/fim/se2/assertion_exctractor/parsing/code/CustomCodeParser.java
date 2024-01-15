@@ -6,7 +6,6 @@ import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
 
 public class CustomCodeParser extends CodeParser {
 
-
     @Override
     public JavaParser parseCodeFragment(String code) {
         JavaParser parser = super.parseCodeFragment(code);

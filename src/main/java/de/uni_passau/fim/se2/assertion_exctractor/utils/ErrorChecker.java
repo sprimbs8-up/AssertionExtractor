@@ -13,7 +13,6 @@ public class ErrorChecker {
     private static final SpecialFileExporter EXPORTER_TOO_LONG_FILES = new SpecialFileExporter(TOO_LONG);
     private static final SpecialFileExporter EXPORTER_CORRUPT_FILES = new SpecialFileExporter(NOT_PARSEABLE_FILE);
 
-
     private ErrorChecker() {
     }
 
@@ -45,19 +44,21 @@ public class ErrorChecker {
     }
 
     private static class SpecialFileExporter {
+
         private boolean append = false;
         private final String filename;
 
-        SpecialFileExporter(String filename){
+        SpecialFileExporter(String filename) {
             this.filename = filename;
         }
 
         public void log(String instance) {
 
             try (FileWriter fw = new FileWriter(filename, append)) {
-                fw.write(instance + "\n");//appends the string to the file
+                fw.write(instance + "\n");// appends the string to the file
                 append = true;
-            } catch (IOException ioe) {
+            }
+            catch (IOException ioe) {
                 System.err.println("IOException: " + ioe.getMessage());
             }
         }

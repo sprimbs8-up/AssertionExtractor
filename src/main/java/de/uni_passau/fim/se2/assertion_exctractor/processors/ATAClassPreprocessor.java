@@ -1,5 +1,8 @@
 package de.uni_passau.fim.se2.assertion_exctractor.processors;
 
+import java.util.*;
+import java.util.function.Predicate;
+
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DatasetType;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
@@ -7,15 +10,10 @@ import de.uni_passau.fim.se2.assertion_exctractor.parsing.Assertion;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TryCatchAssertion;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomASTConverterPreprocessor;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.CompilationUnit;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
-import java.util.List;
-import java.util.function.Predicate;
-
 public class ATAClassPreprocessor extends Processor {
+
     public ATAClassPreprocessor(String dataDir, String saveDir, int maxAssertions) {
         super(dataDir, saveDir, maxAssertions);
     }
@@ -30,7 +28,7 @@ public class ATAClassPreprocessor extends Processor {
         DataPoint dataPoint = dataPointPair.b();
 
         FineMethodData methodData = dataPoint.methodData();
-        collectConstants(methodData.focalClass());
+        handleClassTokens(methodData.focalClassTokens());
         TestCase testCase = methodData.testCase();
         List<List<String>> assertions = testCase.testElements().stream()
             .filter(((Predicate<TestElement>) Assertion.class::isInstance).or(TryCatchAssertion.class::isInstance))
@@ -50,9 +48,8 @@ public class ATAClassPreprocessor extends Processor {
         }
     }
 
-    private void collectConstants(String clazz){
-        //AstNode node = preprocessor.parseSingleClass(clazz).findFirst().get();
-        //CompilationUnit unit = (CompilationUnit) node;
+    private void handleClassTokens(List<String> classTokens) {
+        System.out.println(String.join(" ", classTokens));
     }
 
 }

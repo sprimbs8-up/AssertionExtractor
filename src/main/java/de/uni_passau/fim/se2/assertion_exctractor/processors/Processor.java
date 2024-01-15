@@ -4,26 +4,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import de.uni_passau.fim.se2.assertion_exctractor.data.RawMethodData;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomASTConverterPreprocessor;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomAstCodeParser;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomCodeParser;
-import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MemberDeclarator;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.AstCodeParser;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.ParseException;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.transformer.util.TransformMode;
-import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOptions;
-import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.ProcessingException;
-import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.ast_conversion.AstConverterPreprocessor;
-import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +16,15 @@ import de.uni_passau.fim.se2.assertion_exctractor.converters.Raw2FineDataPStep;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.data.Method2TestLoader;
+import de.uni_passau.fim.se2.assertion_exctractor.data.RawMethodData;
+import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomASTConverterPreprocessor;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.StatisticsContainer;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.transformer.util.TransformMode;
+import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOptions;
+import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.ProcessingException;
+import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 public abstract class Processor {
 
@@ -43,11 +34,12 @@ public abstract class Processor {
     protected final String dataDir;
     protected final String saveDir;
     protected final int maxAssertions;
-    protected final CustomASTConverterPreprocessor preprocessor = new CustomASTConverterPreprocessor(SINGLE_METHOD_OPTIONS, true, false);
-
+    protected final CustomASTConverterPreprocessor preprocessor = new CustomASTConverterPreprocessor(
+        SINGLE_METHOD_OPTIONS, true, false
+    );
 
     protected static final CommonPreprocessorOptions SINGLE_METHOD_OPTIONS = new CommonPreprocessorOptions(
-            null, null, false, new TransformMode.None()
+        null, null, false, new TransformMode.None()
     );
 
     public Processor(final String dataDir, final String saveDir, final int maxAssertions) {
@@ -59,12 +51,13 @@ public abstract class Processor {
     protected Stream<Pair<String, FineMethodData>> loadMethodData() {
         try {
             return Method2TestLoader.loadDatasetAsJSON(dataDir)
-                    .filter(this::isASTConvertible)
-                    .map(raw2fineConverter::process)
-                    .map(this::flatten)
-                    .flatMap(Optional::stream)
-                    .peek(el -> ProgressBarContainer.getInstance().notifyStep());
-        } catch (IOException e) {
+                .filter(this::isASTConvertible)
+                .map(raw2fineConverter::process)
+                .map(this::flatten)
+                .flatMap(Optional::stream)
+                .peek(el -> ProgressBarContainer.getInstance().notifyStep());
+        }
+        catch (IOException e) {
             LOG.error("Error while loading json dataset", e);
             throw new RuntimeException(e);
         }
@@ -86,9 +79,12 @@ public abstract class Processor {
         boolean testClassParseable = isClassParseable(dataPoint.testFile());
         boolean convertible = focalMethodParseable && testMethodParseable && focalClassParseable && testClassParseable;
         if (!convertible) {
-            StatisticsContainer.getInstance().notifyNotParseable(!focalMethodParseable, !testMethodParseable, !focalClassParseable, !testClassParseable);
+            StatisticsContainer.getInstance().notifyNotParseable(
+                !focalMethodParseable, !testMethodParseable, !focalClassParseable, !testClassParseable
+            );
             ErrorChecker.getInstance().currentInstance(inputData.a());
-        } else {
+        }
+        else {
             StatisticsContainer.getInstance().notifyParsedTestCase();
         }
         return convertible;
@@ -97,7 +93,8 @@ public abstract class Processor {
     private boolean isMethodParseable(String methodCode) {
         try {
             return preprocessor.processSingleMethod(methodCode).isPresent();
-        } catch (ProcessingException e) {
+        }
+        catch (ProcessingException e) {
             return false;
         }
     }
@@ -105,7 +102,8 @@ public abstract class Processor {
     private boolean isClassParseable(String methodCode) {
         try {
             return preprocessor.parseSingleClass(methodCode).isPresent();
-        } catch (ProcessingException e) {
+        }
+        catch (ProcessingException e) {
             return false;
         }
     }
@@ -115,11 +113,11 @@ public abstract class Processor {
     public void exportProcessedExamples() {
         setup();
         loadMethodData()
-                .filter(data -> data.b().testCase().getNumberAssertions() <= maxAssertions)
-                .filter(data -> data.b().testCase().getNumberAssertions() >= 1)
-                .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
-                .map(orderDataset::process)
-                .forEach(this::exportTestCases);
+            .filter(data -> data.b().testCase().getNumberAssertions() <= maxAssertions)
+            .filter(data -> data.b().testCase().getNumberAssertions() >= 1)
+            .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
+            .map(orderDataset::process)
+            .forEach(this::exportTestCases);
         ProgressBarContainer.getInstance().notifyStop();
         StatisticsContainer.getInstance().logPreprocessingStats();
         shutDown();
@@ -131,7 +129,8 @@ public abstract class Processor {
             boolean successfullyCreated = savePath.toFile().mkdirs();
             if (successfullyCreated) {
                 LOG.info(String.format("Created %s path successfully.", savePath));
-            } else {
+            }
+            else {
                 LOG.warn(String.format("Creating %s path did not work successfully.", savePath));
 
             }
@@ -153,7 +152,8 @@ public abstract class Processor {
         ;
         try (FileWriter writer = new FileWriter(savePath, append.get())) {
             writer.write(tokens + System.getProperty("line.separator"));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
