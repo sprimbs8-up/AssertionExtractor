@@ -1,5 +1,6 @@
 package de.uni_passau.fim.se2.assertion_exctractor.parsing.code;
 
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.CompilationUnit;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MemberDeclarator;
@@ -53,10 +54,13 @@ public class CustomASTConverterPreprocessor  extends AstConverterPreprocessor {
             return stream.map(AstNode.class::cast);
         }
         try {
-            var node = codeParser.parseCodeToCompilationUnit(code);
+            // see https://stackoverflow.com/questions/9078528/tool-to-remove-javadoc-comments
+            String cleanedCode =code.replaceAll("/\\*\\*(?s:(?!\\*/).)*\\*/","") ;
+            var node = codeParser.parseCodeToCompilationUnit(cleanedCode);
             return Stream.of(node);
         } catch (ParseException e) {
             return Stream.empty();
         }
     }
+
 }
