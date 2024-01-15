@@ -3,32 +3,41 @@ package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 public record TestCase(List<TestElement> testElements) {
 
+    public static final String ASSERTION_MASK = "<ASSERTION>";
+
     public String replaceAssertion(int pos) {
-        return replaceAssertion(pos, "<ASSERTION>");
+        return replaceAssertion(pos, ASSERTION_MASK);
     }
 
     public String replaceAssertion(int pos, String maskToken) {
+       return replaceAssertionStream(pos,maskToken) .collect(Collectors.joining(" "));
+    }
+    public Stream<String> replaceAssertionStream(int pos){
+        return replaceAssertionStream(pos, ASSERTION_MASK);
+    }
+    public Stream<String> replaceAssertionStream(int pos, String maskToken) {
         List<Pair<TestElement, Integer>> assertPosPairs = generateAssertionPositionPair();
-        return assertPosPairs.stream().map(x -> {
+        return assertPosPairs.stream().flatMap(x -> {
             if (x.b() == pos) {
                 if (x.a() instanceof Assertion) {
-                    return maskToken;
+                    return Optional.ofNullable(maskToken).stream();
                 }
                 else if (x.a() instanceof TryCatchAssertion tryCatchAssertion) {
                     List<String> tryCatTokens = tryCatchAssertion.tryCatchTokens();
-                    return (maskToken != null ? maskToken + " " : "")
-                        + String.join(" ", tryCatTokens.subList(1, tryCatTokens.size() - 1));
-
+                    return   Stream.concat(Optional.ofNullable(maskToken).stream(), tryCatTokens.subList(1, tryCatTokens.size() - 1).stream());
                 }
             }
-            return x.a().tokenString();
-        }).collect(Collectors.joining(" "));
+            return x.a().tokens().stream();
+        });
     }
 
     private List<Pair<TestElement, Integer>> generateAssertionPositionPair() {

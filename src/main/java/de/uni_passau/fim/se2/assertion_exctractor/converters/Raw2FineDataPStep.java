@@ -2,6 +2,8 @@ package de.uni_passau.fim.se2.assertion_exctractor.converters;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.data.JavaDocMethod;
@@ -9,6 +11,7 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.RawMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.FocalMethodParser;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCaseParser;
+import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.AssertionNormalizer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.StatisticsContainer;
@@ -43,6 +46,12 @@ public class Raw2FineDataPStep implements DataProcessingStep<RawMethodData, Opti
         if (parsedTestCase.isEmpty() || focalMethodTokens.isEmpty()) {
             return Optional.empty();
         }
+        String codeWithoutAssertions = parsedTestCase.get().testElements().stream().filter(Predicate.not(TestElement::isAssertion)).map(TestElement::tokenString).collect(Collectors.joining(" "));
+        if(FOCAL_METHOD_PARSER.parseMethodToMethodTokens(codeWithoutAssertions).findAny().isEmpty()){
+            StatisticsContainer.getInstance().notifiedUnusableTestCaseWithoutAssertions();
+            return Optional.empty();
+        };
+        System.out.println(codeWithoutAssertions);
         Optional<String> javaDocComment = FOCAL_METHOD_PARSER.parseClassToJavaDocMethods(rawMethodData.focalFile())
             .filter(method -> method.methodTokens().equals(focalMethodTokens))
             .map(JavaDocMethod::text)

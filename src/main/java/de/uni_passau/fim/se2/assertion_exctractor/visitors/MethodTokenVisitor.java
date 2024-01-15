@@ -12,6 +12,12 @@ public class MethodTokenVisitor extends JavaParserBaseVisitor<Void> {
     private Stream.Builder<String> codeStreamBuilder = Stream.builder();
 
     @Override
+    public Void visitTypeDeclaration(JavaParser.TypeDeclarationContext ctx) {
+        traverseTestCase(ctx);
+        return null;
+    }
+
+    @Override
     public Void visitClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext ctx) {
         traverseTestCase(ctx);
         return null;

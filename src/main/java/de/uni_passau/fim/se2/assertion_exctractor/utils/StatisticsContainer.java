@@ -21,6 +21,7 @@ public final class StatisticsContainer {
     private int notParseable = 0;
     private int parsedTestCases = 0;
     private int tooLongTestCases = 0;
+    private int afterAssertionExtraction = 0;
 
     private final Map<String, Integer> notParsableMap = new HashMap<>();
 
@@ -66,6 +67,10 @@ public final class StatisticsContainer {
         parsedTestCases++;
     }
 
+    public synchronized void notifiedUnusableTestCaseWithoutAssertions(){
+        afterAssertionExtraction++;
+    }
+
     public synchronized void notifyTooLongTestCase() {
         tooLongTestCases++;
     }
@@ -77,22 +82,24 @@ public final class StatisticsContainer {
         float percentageTooLong = (float) tooLongTestCases / (parsedTestCases + notParseable + tooLongTestCases) * 100;
         LOG.info("================================================================");
         LOG.info("Statistics:");
-        LOG.info("---------------------------------------------------------------");
-        LOG.info("Usable test cases:                        {}", usedTestCases);
-        LOG.info("                  (in percentage):        {}%", percentageUsed);
-        LOG.info("---------------------------------------------------------------");
-        LOG.info("Too long test cases:                      {}", tooLongTestCases);
-        LOG.info("                  (in percentage):        {}%", percentageTooLong);
-        LOG.info("---------------------------------------------------------------");
-        LOG.info("Corrupt instances (of usable test cases): {}", notParseable);
-        LOG.info("                  (in percentage):        {}%", percentageCorrupt);
-        LOG.info("                  ---------------------------------------------");
-        LOG.info("                  (focal methods):        {}", notParsableMap.get(FOCAL_METHOD));
-        LOG.info("                  (test methods):         {}", notParsableMap.get(TEST_METHOD));
-        LOG.info("                  (focal classes):        {}", notParsableMap.get(FOCAL_CLASS));
-        LOG.info("                  (test Classes):         {}", notParsableMap.get(TEST_CLASS));
-        LOG.info("---------------------------------------------------------------");
-        LOG.info("Total testCases:                          {}", totalTestCases);
+        LOG.info("----------------------------------------------------------------");
+        LOG.info("Usable test cases:                         {}", usedTestCases);
+        LOG.info("                  (in percentage):         {}%", percentageUsed);
+        LOG.info("----------------------------------------------------------------");
+        LOG.info("Too long test cases:                       {}", tooLongTestCases);
+        LOG.info("                  (in percentage):         {}%", percentageTooLong);
+        LOG.info("----------------------------------------------------------------");
+        LOG.info("Corrupt instances (of usable test cases):  {}", notParseable);
+        LOG.info("                  (in percentage):         {}%", percentageCorrupt);
+        LOG.info("                  ----------------------------------------------");
+        LOG.info("                  (focal methods):         {}", notParsableMap.get(FOCAL_METHOD));
+        LOG.info("                  (test methods):          {}", notParsableMap.get(TEST_METHOD));
+        LOG.info("                  (focal classes):         {}", notParsableMap.get(FOCAL_CLASS));
+        LOG.info("                  (test Classes):          {}", notParsableMap.get(TEST_CLASS));
+        LOG.info("                  ----------------------------------------------");
+        LOG.info("                  (after assertion clean): {}", afterAssertionExtraction);
+        LOG.info("----------------------------------------------------------------");
+        LOG.info("Total testCases:                           {}", totalTestCases);
         LOG.info("================================================================");
     }
 
