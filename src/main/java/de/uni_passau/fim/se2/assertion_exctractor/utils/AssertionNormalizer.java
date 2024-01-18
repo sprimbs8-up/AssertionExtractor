@@ -1,6 +1,6 @@
 package de.uni_passau.fim.se2.assertion_exctractor.utils;
 
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.AssertionType;
+import de.uni_passau.fim.se2.assertion_exctractor.data.AssertionType;
 
 public final class AssertionNormalizer {
 

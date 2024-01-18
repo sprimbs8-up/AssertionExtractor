@@ -1,4 +1,4 @@
-package de.uni_passau.fim.se2.assertion_exctractor.data;
+package de.uni_passau.fim.se2.assertion_exctractor.loading;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import de.uni_passau.fim.se2.assertion_exctractor.data.RawMethodData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Optional;
 
+import de.uni_passau.fim.se2.assertion_exctractor.data.Assertion;
+import de.uni_passau.fim.se2.assertion_exctractor.data.AssertionType;
+import de.uni_passau.fim.se2.assertion_exctractor.data.TestCase;
+import de.uni_passau.fim.se2.assertion_exctractor.data.TestSequence;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

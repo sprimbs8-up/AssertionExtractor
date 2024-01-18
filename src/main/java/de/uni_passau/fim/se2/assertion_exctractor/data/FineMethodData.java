@@ -2,8 +2,6 @@ package de.uni_passau.fim.se2.assertion_exctractor.data;
 
 import java.util.List;
 
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
-
 /**
  * The FineMethodData record represents fine-grained information about a method after preprocessing. It encapsulates
  * details such as the test case, focal method tokens, documentation, focal class tokens, and test class tokens.

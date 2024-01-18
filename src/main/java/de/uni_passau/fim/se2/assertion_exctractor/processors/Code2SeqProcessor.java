@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestElement;
+import de.uni_passau.fim.se2.assertion_exctractor.data.TestCase;
+import de.uni_passau.fim.se2.assertion_exctractor.data.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomAstCodeParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;

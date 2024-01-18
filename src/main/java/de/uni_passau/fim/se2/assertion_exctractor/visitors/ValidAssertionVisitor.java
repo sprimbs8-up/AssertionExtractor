@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.AssertionType;
+import de.uni_passau.fim.se2.assertion_exctractor.data.AssertionType;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 

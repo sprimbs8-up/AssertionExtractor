@@ -7,10 +7,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
-import de.uni_passau.fim.se2.assertion_exctractor.data.DatasetType;
-import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.*;
+import de.uni_passau.fim.se2.assertion_exctractor.data.*;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MemberDeclarator;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;

@@ -1,4 +1,4 @@
-package de.uni_passau.fim.se2.assertion_exctractor.parsing;
+package de.uni_passau.fim.se2.assertion_exctractor.data;
 
 import java.util.ArrayList;
 import java.util.Collection;

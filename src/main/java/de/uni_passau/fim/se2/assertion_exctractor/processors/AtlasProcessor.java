@@ -6,10 +6,10 @@ import java.util.function.Predicate;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DatasetType;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.Assertion;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCase;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestElement;
-import de.uni_passau.fim.se2.assertion_exctractor.parsing.TryCatchAssertion;
+import de.uni_passau.fim.se2.assertion_exctractor.data.Assertion;
+import de.uni_passau.fim.se2.assertion_exctractor.data.TestCase;
+import de.uni_passau.fim.se2.assertion_exctractor.data.TestElement;
+import de.uni_passau.fim.se2.assertion_exctractor.data.TryCatchAssertion;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 public class AtlasProcessor extends Processor {

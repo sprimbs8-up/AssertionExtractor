@@ -15,7 +15,7 @@ import de.uni_passau.fim.se2.assertion_exctractor.converters.Raw2FineDataPStep;
 import de.uni_passau.fim.se2.assertion_exctractor.converters.TrainSplitPreprocessingStep;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
-import de.uni_passau.fim.se2.assertion_exctractor.data.Method2TestLoader;
+import de.uni_passau.fim.se2.assertion_exctractor.loading.Method2TestLoader;
 import de.uni_passau.fim.se2.assertion_exctractor.data.RawMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomASTConverterPreprocessor;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
