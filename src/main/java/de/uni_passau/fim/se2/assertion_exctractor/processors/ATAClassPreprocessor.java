@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -105,7 +104,8 @@ public class ATAClassPreprocessor extends Processor {
         MethodTokensDictionaryReader reader = new MethodTokensDictionaryReader();
 
         Map<String, String> abstractTokenMap = new HashMap<>();
-        Arrays.stream(AssertionType.values()).forEach(type -> abstractTokenMap.put(type.getIdentifier(), "ASSERT_"+type.ordinal()));
+        Arrays.stream(AssertionType.values())
+            .forEach(type -> abstractTokenMap.put(type.getIdentifier(), "ASSERT_" + type.ordinal()));
         collectAbstractTokens(String.join(" ", methodData.testCase().toString()), reader, false, abstractTokenMap);
         collectAbstractTokens(String.join(" ", methodData.focalMethodTokens()), reader, false, abstractTokenMap);
         collectAbstractTokens(String.join(" ", methodData.testClassTokens()), reader, true, abstractTokenMap);

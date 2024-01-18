@@ -68,7 +68,7 @@ public final class StatisticsContainer {
     }
 
     public synchronized void notifyNotParseableAfter(
-            boolean focalMethod, boolean testMethod
+        boolean focalMethod, boolean testMethod
     ) {
         notParseable++;
         BiFunction<String, Integer, Integer> updateFunction = (x, y) -> (y != null ? y + 1 : 1);

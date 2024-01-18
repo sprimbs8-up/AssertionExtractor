@@ -8,8 +8,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MemberDeclarator;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +51,7 @@ public abstract class Processor {
     protected Stream<Pair<String, FineMethodData>> loadMethodData() {
         try {
             return Method2TestLoader.loadDatasetAsJSON(dataDir)
-                    .peek(el -> ProgressBarContainer.getInstance().notifyStep())
+                .peek(el -> ProgressBarContainer.getInstance().notifyStep())
                 .filter(this::isASTConvertible)
                 .map(raw2fineConverter::process)
                 .map(this::flatten)
@@ -99,9 +97,10 @@ public abstract class Processor {
 
         boolean convertible = focalMethodParseable && testMethodParseable;
         if (!convertible) {
-            StatisticsContainer.getInstance().notifyNotParseableAfter(                    !focalMethodParseable, !testMethodParseable            );
+            StatisticsContainer.getInstance().notifyNotParseableAfter(!focalMethodParseable, !testMethodParseable);
             ErrorChecker.getInstance().currentInstance(inputData.a());
-        } else {
+        }
+        else {
             StatisticsContainer.getInstance().notifyParsedTestCase();
         }
         return convertible;

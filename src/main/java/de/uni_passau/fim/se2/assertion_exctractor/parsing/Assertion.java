@@ -14,7 +14,8 @@ public record Assertion(AssertionType type, List<String> tokens, ParseTree parse
 
     @Override
     public List<String> onlyTokens() {
-        return Stream.concat(Stream.concat(Stream.of(type.getIdentifier(),"("), tokens.stream()),Stream.of(")")).toList();
+        return Stream.concat(Stream.concat(Stream.of(type.getIdentifier(), "("), tokens.stream()), Stream.of(")"))
+            .toList();
     }
 
     @Override

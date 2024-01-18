@@ -17,7 +17,7 @@ import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 
-public class AssertionParser extends FocalMethodParser {
+public class AssertionParser extends TokenParser {
 
     private final ValidAssertionVisitor validAssertionVisitor = new ValidAssertionVisitor();
     private final ObjectMapper mapper = new ObjectMapper();
