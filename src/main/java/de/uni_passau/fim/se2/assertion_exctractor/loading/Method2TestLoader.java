@@ -6,13 +6,13 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import de.uni_passau.fim.se2.assertion_exctractor.data.RawMethodData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.uni_passau.fim.se2.assertion_exctractor.data.RawMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
