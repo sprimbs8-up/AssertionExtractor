@@ -13,6 +13,8 @@ public final class StatisticsContainer {
     private static final String TEST_METHOD = "test-method";
     private static final String FOCAL_CLASS = "focal-class";
     private static final String TEST_CLASS = "test-class";
+    private static final String TEST_METHOD_AFTER = "test-method-after";
+    private static final String FOCAL_METHOD_AFTER = "focal-method-after";
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContainer.class);
 
     private static StatisticsContainer instance;
@@ -30,6 +32,8 @@ public final class StatisticsContainer {
         this.notParsableMap.put(FOCAL_CLASS, 0);
         this.notParsableMap.put(TEST_METHOD, 0);
         this.notParsableMap.put(TEST_CLASS, 0);
+        this.notParsableMap.put(TEST_METHOD_AFTER, 0);
+        this.notParsableMap.put(FOCAL_METHOD_AFTER, 0);
 
     }
 
@@ -63,6 +67,19 @@ public final class StatisticsContainer {
         }
     }
 
+    public synchronized void notifyNotParseableAfter(
+            boolean focalMethod, boolean testMethod
+    ) {
+        notParseable++;
+        BiFunction<String, Integer, Integer> updateFunction = (x, y) -> (y != null ? y + 1 : 1);
+        if (focalMethod) {
+            notParsableMap.compute(FOCAL_METHOD_AFTER, updateFunction);
+        }
+        if (testMethod) {
+            notParsableMap.compute(TEST_METHOD_AFTER, updateFunction);
+        }
+    }
+
     public synchronized void notifyParsedTestCase() {
         parsedTestCases++;
     }
@@ -80,27 +97,29 @@ public final class StatisticsContainer {
         float percentageUsed = (float) usedTestCases / totalTestCases * 100;
         float percentageCorrupt = (float) notParseable / (parsedTestCases + notParseable + tooLongTestCases) * 100;
         float percentageTooLong = (float) tooLongTestCases / (parsedTestCases + notParseable + tooLongTestCases) * 100;
-        LOG.info("================================================================");
+        LOG.info("==================================================================");
         LOG.info("Statistics:");
-        LOG.info("----------------------------------------------------------------");
-        LOG.info("Usable test cases:                         {}", usedTestCases);
-        LOG.info("                  (in percentage):         {}%", percentageUsed);
-        LOG.info("----------------------------------------------------------------");
-        LOG.info("Too long test cases:                       {}", tooLongTestCases);
-        LOG.info("                  (in percentage):         {}%", percentageTooLong);
-        LOG.info("----------------------------------------------------------------");
-        LOG.info("Corrupt instances (of usable test cases):  {}", notParseable);
-        LOG.info("                  (in percentage):         {}%", percentageCorrupt);
-        LOG.info("                  ----------------------------------------------");
-        LOG.info("                  (focal methods):         {}", notParsableMap.get(FOCAL_METHOD));
-        LOG.info("                  (test methods):          {}", notParsableMap.get(TEST_METHOD));
-        LOG.info("                  (focal classes):         {}", notParsableMap.get(FOCAL_CLASS));
-        LOG.info("                  (test Classes):          {}", notParsableMap.get(TEST_CLASS));
-        LOG.info("                  ----------------------------------------------");
-        LOG.info("                  (after assertion clean): {}", afterAssertionExtraction);
-        LOG.info("----------------------------------------------------------------");
-        LOG.info("Total testCases:                           {}", totalTestCases);
-        LOG.info("================================================================");
+        LOG.info("------------------------------------------------------------------");
+        LOG.info("Usable test cases:                                    {}", usedTestCases);
+        LOG.info("                  (in percentage):                    {}%", percentageUsed);
+        LOG.info("------------------------------------------------------------------");
+        LOG.info("Too long test cases:                                  {}", tooLongTestCases);
+        LOG.info("                  (in percentage):                    {}%", percentageTooLong);
+        LOG.info("------------------------------------------------------------------");
+        LOG.info("Corrupt instances (of usable test cases):             {}", notParseable);
+        LOG.info("                  (in percentage):                    {}%", percentageCorrupt);
+        LOG.info("                  ------------------------------------------------");
+        LOG.info("                  (focal methods):                    {}", notParsableMap.get(FOCAL_METHOD));
+        LOG.info("                  (test Classes):                     {}", notParsableMap.get(TEST_CLASS));
+        LOG.info("                  (test methods):                     {}", notParsableMap.get(TEST_METHOD));
+        LOG.info("                  (focal classes):                    {}", notParsableMap.get(FOCAL_CLASS));
+        LOG.info("                  ------------------------------------------------");
+        LOG.info("                  (after assertion clean):            {}", afterAssertionExtraction);
+        LOG.info("                  (test instances after extraction):  {}", notParsableMap.get(TEST_METHOD_AFTER));
+        LOG.info("                  (focal instances after extraction): {}", notParsableMap.get(FOCAL_METHOD_AFTER));
+        LOG.info("------------------------------------------------------------------");
+        LOG.info("Total testCases:                                      {}", totalTestCases);
+        LOG.info("===================================================================");
     }
 
 }

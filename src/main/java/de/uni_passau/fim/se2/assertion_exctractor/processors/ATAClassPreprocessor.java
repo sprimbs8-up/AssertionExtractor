@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -63,6 +64,7 @@ public class ATAClassPreprocessor extends Processor {
 
             );
             Map<String, String> invertedSortedMap = new TreeMap<>((o1, o2) -> {
+
                 String[] o1String = o1.split("_");
                 String[] o2String = o2.split("_");
                 int res = o1String[0].compareTo(o2String[0]);
@@ -103,6 +105,7 @@ public class ATAClassPreprocessor extends Processor {
         MethodTokensDictionaryReader reader = new MethodTokensDictionaryReader();
 
         Map<String, String> abstractTokenMap = new HashMap<>();
+        Arrays.stream(AssertionType.values()).forEach(type -> abstractTokenMap.put(type.getIdentifier(), "ASSERT_"+type.ordinal()));
         collectAbstractTokens(String.join(" ", methodData.testCase().toString()), reader, false, abstractTokenMap);
         collectAbstractTokens(String.join(" ", methodData.focalMethodTokens()), reader, false, abstractTokenMap);
         collectAbstractTokens(String.join(" ", methodData.testClassTokens()), reader, true, abstractTokenMap);
@@ -128,7 +131,7 @@ public class ATAClassPreprocessor extends Processor {
         return preprocessor.parseSingleMethod(code).stream()
             .filter(x -> x instanceof MemberDeclarator)
             .map(x -> (MemberDeclarator<MethodDeclaration>) x).findFirst()
-            .orElseThrow(() -> new IllegalStateException("The TypeDeclarator should be available!"));
+            .orElseThrow(() -> new IllegalStateException("The MethodDeclarator should be available!"));
     }
 
     private static class MethodTokensDictionaryReader implements AstVisitorWithDefaults<Void, Map<String, String>> {
@@ -145,7 +148,6 @@ public class ATAClassPreprocessor extends Processor {
         private static final String SHORT = "SHORT";
         private static final String DOUBLE = "DOUBLE";
         private static final String FLOAT = "FLOAT";
-        private static final String UNKNOWN_TYPE = "UNKNOWN_TYPE";
 
         private MethodTokensDictionaryReader() {
             counterMap.put(IDENTIFIER, -1);
@@ -158,7 +160,7 @@ public class ATAClassPreprocessor extends Processor {
             counterMap.put(SHORT, -1);
             counterMap.put(DOUBLE, -1);
             counterMap.put(FLOAT, -1);
-            counterMap.put(UNKNOWN_TYPE, -1);
+
         }
 
         @Override
@@ -196,9 +198,6 @@ public class ATAClassPreprocessor extends Processor {
                 case "BigInteger":
                     fillDict(INTEGER, node.value(), arg);
                     break;
-                case "Boolean":
-                    fillDict(BOOLEAN, node.value(), arg);
-                    break;
                 case "Float":
                     fillDict(FLOAT, node.value(), arg);
                     break;
@@ -211,12 +210,9 @@ public class ATAClassPreprocessor extends Processor {
                 case "Short":
                     fillDict(SHORT, node.value(), arg);
                     break;
-                default:
-                    fillDict(UNKNOWN_TYPE, node.value(), arg);
-                    throw new RuntimeException("TEST");
 
             }
-            return AstVisitorWithDefaults.super.visit(node, arg);
+            return null;
         }
 
         private <V> void fillDict(String identifier, V token, Map<String, String> map) {
