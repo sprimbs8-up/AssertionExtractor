@@ -1,6 +1,5 @@
 package de.uni_passau.fim.se2.assertion_exctractor.parsing;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -19,14 +18,16 @@ public class TokenParser {
     protected final CodeParser codeParser = new CustomCodeParser();
 
     public Stream<JavaDocMethod> parseClassToJavaDocMethods(final String code) {
-        return traverseASTTree(code,javaDocCollector, javaDocCollector::getCollectedJavaDocs);
+        return traverseASTTree(code, javaDocCollector, javaDocCollector::getCollectedJavaDocs);
     }
 
     public Stream<String> convertCodeToTokenStrings(final String code) {
-        return traverseASTTree(code,methodTokenVisitor, methodTokenVisitor::getCollectedTokens);
+        return traverseASTTree(code, methodTokenVisitor, methodTokenVisitor::getCollectedTokens);
     }
 
-    private <T> Stream<T> traverseASTTree(String code, JavaParserBaseVisitor<Void> visitor, Supplier<Stream<T>> returnConsumer) {
+    private <T> Stream<T> traverseASTTree(
+        String code, JavaParserBaseVisitor<Void> visitor, Supplier<Stream<T>> returnConsumer
+    ) {
         ErrorChecker.getInstance().resetError();
         var codeFragment = codeParser.parseCodeFragment(code);
         if (ErrorChecker.getInstance().errorOccurred()) {

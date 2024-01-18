@@ -19,6 +19,7 @@ public final class Method2TestLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Method2TestLoader.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    public static final String LINES_SUFFIX = ".lines";
 
     public static Stream<Pair<String, RawMethodData>> loadDatasetAsJSON(String preparedFile) throws IOException {
         LOGGER.info("Load data from json");
@@ -64,12 +65,12 @@ public final class Method2TestLoader {
     }
 
     public static int readNumberLines(String file) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file + ".lines"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file + LINES_SUFFIX))) {
             return Integer.parseInt(reader.readLine());
         }
         catch (IOException e) {
             int numberLinesOfFile = numberLinesOf(file);
-            try (FileOutputStream outputStream = new FileOutputStream(file + ".lines")) {
+            try (FileOutputStream outputStream = new FileOutputStream(file + LINES_SUFFIX)) {
                 outputStream.write(String.valueOf(numberLinesOfFile).getBytes());
             }
             catch (FileNotFoundException ex) {

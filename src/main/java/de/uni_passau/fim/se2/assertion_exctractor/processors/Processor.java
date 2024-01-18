@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_passau.fim.se2.assertion_exctractor.converters.MoveToDatapointPStep;
 import de.uni_passau.fim.se2.assertion_exctractor.converters.Raw2FineDataPStep;
+import de.uni_passau.fim.se2.assertion_exctractor.converters.TrainSplitPreprocessingStep;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.data.Method2TestLoader;
@@ -30,7 +30,7 @@ public abstract class Processor {
 
     private static final Logger LOG = LoggerFactory.getLogger(Processor.class);
     private final Raw2FineDataPStep raw2fineConverter = new Raw2FineDataPStep();
-    private final MoveToDatapointPStep orderDataset = new MoveToDatapointPStep(80, 10, 10);
+    private final TrainSplitPreprocessingStep orderDataset = new TrainSplitPreprocessingStep(80, 10, 10);
     protected final String dataDir;
     protected final String saveDir;
     protected final int maxAssertions;

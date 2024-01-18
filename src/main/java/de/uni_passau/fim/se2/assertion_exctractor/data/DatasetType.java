@@ -6,7 +6,7 @@ public enum DatasetType {
 
     TRAINING(new AtomicBoolean(false)), VALIDATION(new AtomicBoolean(false)), TESTING(new AtomicBoolean(false));
 
-    final AtomicBoolean refresh;
+    private final AtomicBoolean refresh;
 
     DatasetType(AtomicBoolean refresh) {
         this.refresh = refresh;
