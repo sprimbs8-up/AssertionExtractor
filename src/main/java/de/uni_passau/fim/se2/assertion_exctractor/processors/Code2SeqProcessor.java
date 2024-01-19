@@ -26,7 +26,7 @@ import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.code2.transform.path_
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.shared.MethodsExtractor;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
-public class Code2SeqProcessor extends Processor {
+public class Code2SeqProcessor extends AssertionPreprocessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(Code2SeqProcessor.class);
 

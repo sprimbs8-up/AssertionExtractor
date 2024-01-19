@@ -21,14 +21,20 @@ import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomASTConverte
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.StatisticsContainer;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.transformer.util.TransformMode;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOptions;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.ProcessingException;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
-public abstract class Processor {
+/**
+ * The AssertionPreprocessor abstract class is responsible for preprocessing and exporting examples for model training.
+ * Subclasses need to implement specific methods for loading, processing, and exporting the data.
+ *
+ */
+public abstract class AssertionPreprocessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Processor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AssertionPreprocessor.class);
     private final Raw2FineDataPStep raw2fineConverter = new Raw2FineDataPStep();
     private final TrainSplitPreprocessingStep orderDataset = new TrainSplitPreprocessingStep(80, 10, 10);
     protected final String dataDir;
@@ -42,19 +48,32 @@ public abstract class Processor {
         null, null, false, new TransformMode.None()
     );
 
-    public Processor(final String dataDir, final String saveDir, final int maxAssertions) {
+    /**
+     * Constructs an AssertionPreprocessor with the specified parameters.
+     *
+     * @param dataDir       The directory containing the raw data.
+     * @param saveDir       The directory where the processed data will be saved.
+     * @param maxAssertions The maximum number of assertions allowed in a test case.
+     */
+    public AssertionPreprocessor(final String dataDir, final String saveDir, final int maxAssertions) {
         this.dataDir = dataDir;
         this.saveDir = saveDir;
         this.maxAssertions = maxAssertions;
     }
 
+    /**
+     * Loads the raw method data, processes it, and returns a stream of pairs containing string identifiers and the
+     * corresponding fine-grained method data.
+     *
+     * @return A stream of pairs containing string identifiers and fine-grained method data.
+     */
     protected Stream<Pair<String, FineMethodData>> loadMethodData() {
         try {
             return Method2TestLoader.loadDatasetAsJSON(dataDir)
                 .peek(el -> ProgressBarContainer.getInstance().notifyStep())
                 .filter(this::isASTConvertible)
                 .map(raw2fineConverter::process)
-                .map(this::flatten)
+                .map(Utils::flatten)
                 .flatMap(Optional::stream)
                 .filter(this::isASTConvertibleAnyMore);
         }
@@ -65,10 +84,81 @@ public abstract class Processor {
 
     }
 
-    private <A, B> Optional<Pair<A, B>> flatten(Pair<A, Optional<B>> pair) {
-        Optional<B> optionalPart = pair.b();
-        A firstPart = pair.a();
-        return optionalPart.map(x -> Pair.of(firstPart, x));
+    /**
+     * Retrieves the name of the model.
+     *
+     * @return A {@link String} representing the model name.
+     */
+    protected abstract String getModelName();
+
+    /**
+     * Exports processed examples by performing the necessary setup, loading method data, filtering, processing, and
+     * exporting test cases. Also, notifies relevant containers and logs preprocessing statistics.
+     */
+    public void exportProcessedExamples() {
+        setup();
+        loadMethodData()
+            .filter(data -> data.b().testCase().getNumberAssertions() <= maxAssertions)
+            .filter(data -> data.b().testCase().getNumberAssertions() >= 1)
+            .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
+            .map(orderDataset::process)
+            .forEach(this::exportTestCases);
+        ProgressBarContainer.getInstance().notifyStop();
+        StatisticsContainer.getInstance().logPreprocessingStats();
+        shutDown();
+    }
+
+    /**
+     * Performs necessary setup, including creating the save directory if it does not exist.
+     */
+    protected void setup() {
+        Path savePath = Path.of(saveDir);
+        if (!savePath.toFile().exists()) {
+            boolean successfullyCreated = savePath.toFile().mkdirs();
+            if (successfullyCreated) {
+                LOG.info(String.format("Created %s path successfully.", savePath));
+            }
+            else {
+                LOG.warn(String.format("Creating %s path did not work successfully.", savePath));
+
+            }
+        }
+    }
+
+    /**
+     * Performs any necessary shutdown operations.
+     */
+    protected void shutDown() {
+    }
+
+    /**
+     * Exports test cases based on the provided data point.
+     *
+     * @param dataPoint The data point containing the processed test case.
+     */
+    protected abstract void exportTestCases(Pair<String, DataPoint> dataPoint);
+
+    /**
+     * Writes the given string tokens to a file with the specified filename in the save directory.
+     *
+     * @param file   The filename to write the tokens to.
+     * @param append An {@code AtomicBoolean} indicating whether to append to an existing file.
+     * @param tokens The string tokens to write to the file.
+     */
+    protected void writeStringsToFile(String file, AtomicBoolean append, String tokens) {
+        File savePath = Path.of(saveDir, getModelName(), file).toFile();
+        if (!savePath.exists()) {
+
+            savePath.getParentFile().mkdirs();
+
+        }
+        ;
+        try (FileWriter writer = new FileWriter(savePath, append.get())) {
+            writer.write(tokens + System.getProperty("line.separator"));
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private boolean isASTConvertible(Pair<String, RawMethodData> inputData) {
@@ -121,56 +211,6 @@ public abstract class Processor {
         }
         catch (ProcessingException e) {
             return false;
-        }
-    }
-
-    protected abstract String getModelName();
-
-    public void exportProcessedExamples() {
-        setup();
-        loadMethodData()
-            .filter(data -> data.b().testCase().getNumberAssertions() <= maxAssertions)
-            .filter(data -> data.b().testCase().getNumberAssertions() >= 1)
-            .peek(x -> StatisticsContainer.getInstance().notifyTestCase())
-            .map(orderDataset::process)
-            .forEach(this::exportTestCases);
-        ProgressBarContainer.getInstance().notifyStop();
-        StatisticsContainer.getInstance().logPreprocessingStats();
-        shutDown();
-    }
-
-    protected void setup() {
-        Path savePath = Path.of(saveDir);
-        if (!savePath.toFile().exists()) {
-            boolean successfullyCreated = savePath.toFile().mkdirs();
-            if (successfullyCreated) {
-                LOG.info(String.format("Created %s path successfully.", savePath));
-            }
-            else {
-                LOG.warn(String.format("Creating %s path did not work successfully.", savePath));
-
-            }
-        }
-    }
-
-    protected void shutDown() {
-    }
-
-    protected abstract void exportTestCases(Pair<String, DataPoint> dataPoint);
-
-    protected void writeStringsToFile(String file, AtomicBoolean append, String tokens) {
-        File savePath = Path.of(saveDir, getModelName(), file).toFile();
-        if (!savePath.exists()) {
-
-            savePath.getParentFile().mkdirs();
-
-        }
-        ;
-        try (FileWriter writer = new FileWriter(savePath, append.get())) {
-            writer.write(tokens + System.getProperty("line.separator"));
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

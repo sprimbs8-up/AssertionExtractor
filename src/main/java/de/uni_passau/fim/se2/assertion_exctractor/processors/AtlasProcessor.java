@@ -12,7 +12,7 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.data.TryCatchAssertion;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
-public class AtlasProcessor extends Processor {
+public class AtlasProcessor extends AssertionPreprocessor {
 
     public AtlasProcessor(String dataDir, String saveDir, int maxAssertions) {
         super(dataDir, saveDir, maxAssertions);

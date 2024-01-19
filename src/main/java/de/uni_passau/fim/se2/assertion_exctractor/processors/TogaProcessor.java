@@ -17,7 +17,7 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.data.TryCatchAssertion;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
-public class TogaProcessor extends Processor {
+public class TogaProcessor extends AssertionPreprocessor {
 
     private final Set<IntermediateTogaProcessor> togaProcessors;
 
@@ -42,15 +42,15 @@ public class TogaProcessor extends Processor {
         togaProcessors.add(new AssertionTogaProcessor(dataDir, saveDir + "/" + getModelName(), maxAssertions));
         togaProcessors
             .add(new AssertionExceptionsTogaProcessor(dataDir, saveDir + "/" + getModelName(), maxAssertions));
-        togaProcessors.forEach(Processor::setup);
+        togaProcessors.forEach(AssertionPreprocessor::setup);
     }
 
     @Override
     protected void shutDown() {
-        togaProcessors.forEach(Processor::shutDown);
+        togaProcessors.forEach(AssertionPreprocessor::shutDown);
     }
 
-    private static abstract class IntermediateTogaProcessor extends Processor {
+    private static abstract class IntermediateTogaProcessor extends AssertionPreprocessor {
 
         protected final HashMap<DatasetType, CSVWriter> writerHashMap = new HashMap<>();
 

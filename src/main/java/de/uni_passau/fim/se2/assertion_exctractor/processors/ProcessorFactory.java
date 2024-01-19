@@ -5,12 +5,14 @@ import java.util.List;
 
 public class ProcessorFactory {
 
-    private static Processor loadProcessor(String modelType, String dataDir, String saveDir, int maxAssertions) {
+    private static AssertionPreprocessor loadProcessor(
+        String modelType, String dataDir, String saveDir, int maxAssertions
+    ) {
         return switch (modelType) {
             case "atlas" -> new AtlasProcessor(dataDir, saveDir, maxAssertions);
             case "toga" -> new TogaProcessor(dataDir, saveDir, maxAssertions);
             case "code2seq" -> new Code2SeqProcessor(dataDir, saveDir, maxAssertions);
-            case "ata" -> new ATAClassPreprocessor(dataDir, saveDir, maxAssertions);
+            case "asserT5" -> new JavaAsserT5Preprocessor(dataDir, saveDir, maxAssertions);
             default -> throw new IllegalArgumentException("The model \"" + modelType + "\" is not present.");
         };
     }
@@ -18,7 +20,7 @@ public class ProcessorFactory {
     public static CombinedProcessor loadProcessors(
         String modelsTypes, String dataDir, String saveDir, int maxAssertions
     ) {
-        List<Processor> processors = Arrays.stream(modelsTypes.split(":")).distinct()
+        List<AssertionPreprocessor> processors = Arrays.stream(modelsTypes.split(":")).distinct()
             .map(model -> loadProcessor(model, dataDir, saveDir, maxAssertions)).toList();
         return new CombinedProcessor(dataDir, saveDir, maxAssertions, processors);
     }

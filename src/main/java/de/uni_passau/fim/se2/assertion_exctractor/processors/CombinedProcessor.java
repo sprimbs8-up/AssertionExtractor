@@ -5,12 +5,12 @@ import java.util.List;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
-public class CombinedProcessor extends Processor {
+public class CombinedProcessor extends AssertionPreprocessor {
 
-    private final List<? extends Processor> combinedProcessors;
+    private final List<? extends AssertionPreprocessor> combinedProcessors;
 
     public CombinedProcessor(
-        String dataDir, String saveDir, int maxAssertions, List<? extends Processor> combinedProcessors
+        String dataDir, String saveDir, int maxAssertions, List<? extends AssertionPreprocessor> combinedProcessors
     ) {
         super(dataDir, saveDir, maxAssertions);
         this.combinedProcessors = combinedProcessors;
@@ -18,12 +18,12 @@ public class CombinedProcessor extends Processor {
 
     @Override
     protected void setup() {
-        combinedProcessors.forEach(Processor::setup);
+        combinedProcessors.forEach(AssertionPreprocessor::setup);
     }
 
     @Override
     protected void shutDown() {
-        combinedProcessors.forEach(Processor::shutDown);
+        combinedProcessors.forEach(AssertionPreprocessor::shutDown);
     }
 
     @Override

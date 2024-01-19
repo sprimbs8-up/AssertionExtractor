@@ -28,10 +28,6 @@ public class CustomASTConverterPreprocessor extends AstConverterPreprocessor {
         return this.processSingleElement(code, true).map(Object::toString).findFirst();
     }
 
-    public Optional<String> processSingleClassInstance(String code) {
-        return this.processSingleElement(code, false).map(Object::toString).findFirst();
-    }
-
     public Optional<AstNode> parseSingleMethod(String code) {
         return this.processSingleElement(code, true).findAny();
     }
@@ -56,7 +52,6 @@ public class CustomASTConverterPreprocessor extends AstConverterPreprocessor {
             return stream.map(AstNode.class::cast);
         }
         try {
-            // see https://stackoverflow.com/questions/9078528/tool-to-remove-javadoc-comments
             var node = codeParser.parseCodeToCompilationUnit(code);
             return Stream.of(node);
         }
