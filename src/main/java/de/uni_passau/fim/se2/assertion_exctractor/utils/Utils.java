@@ -17,18 +17,43 @@ import de.uni_passau.fim.se2.deepcode.toolbox.ast.transformer.util.TransformMode
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOptions;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
+/**
+ * The Utils class provides utility methods for various common operations, such as flattening pairs, inverting maps,
+ * normalizing assertions, removing JavaDocs, and collecting abstract tokens from code. It also includes methods for
+ * parsing classes and methods using a custom AST converter preprocessor.
+ */
 public final class Utils {
 
+    /**
+     * Common preprocessor options for handling single methods.
+     */
     public static final CommonPreprocessorOptions SINGLE_METHOD_OPTIONS = new CommonPreprocessorOptions(
         null, null, false, new TransformMode.None()
     );
 
+    /**
+     * Flattens a pair containing an element and an optional element into a new pair.
+     *
+     * @param pair The input pair.
+     * @param <A>  The type of the first element in the pair.
+     * @param <B>  The type of the optional second element in the pair.
+     * @return An Optional Pair containing the first and second elements if the optional is present.
+     */
     public static <A, B> Optional<Pair<A, B>> flatten(Pair<A, Optional<B>> pair) {
         Optional<B> optionalPart = pair.b();
         A firstPart = pair.a();
         return optionalPart.map(x -> Pair.of(firstPart, x));
     }
 
+    /**
+     * Inverts the keys and values of a map, ensuring unique values in the inverted map.
+     *
+     * @param map The input map to be inverted.
+     * @param <A> The type of keys in the input map.
+     * @param <B> The type of values in the input map.
+     * @return An inverted map with values as keys and keys as values.
+     * @throws IllegalStateException if the inverted map would contain duplicate values.
+     */
     public static <A, B> Map<B, A> inverseMap(Map<A, B> map) {
         Map<B, A> inversedMap = new HashMap<>();
         for (Map.Entry<A, B> entry : map.entrySet()) {
@@ -40,6 +65,12 @@ public final class Utils {
         return inversedMap;
     }
 
+    /**
+     * Normalizes assertions in the given code by replacing variations with the assertion type identifier.
+     *
+     * @param code The input code containing assertions.
+     * @return The code with normalized assertions.
+     */
     public static String normalizeAssertions(String code) {
         for (AssertionType type : AssertionType.values()) {
             code = code.replaceAll("(([a-zA-Z]+)( )*.( )*)*" + type.getIdentifier(), type.getIdentifier());
@@ -47,10 +78,23 @@ public final class Utils {
         return code;
     }
 
+    /**
+     * Removes JavaDoc comments from the given code.
+     *
+     * @param code The input code containing JavaDoc comments.
+     * @return The code with JavaDoc comments removed.
+     */
     public static String removeJavaDocs(String code) {
         return code.replaceAll("/\\*\\*(?s:(?!\\*/).)*\\*/", "");
     }
 
+    /**
+     * Collects abstract tokens from the given method data using a custom AST converter preprocessor.
+     *
+     * @param methodData   The fine-grained method data to collect tokens from.
+     * @param preprocessor The custom AST converter preprocessor.
+     * @return A map of abstract tokens and their corresponding representations.
+     */
     public static Map<String, String> collectAbstractTokens(
         FineMethodData methodData, CustomASTConverterPreprocessor preprocessor
     ) {
@@ -71,6 +115,13 @@ public final class Utils {
         return abstractTokenMap;
     }
 
+    /**
+     * Collects abstract tokens from the given method data using a custom AST converter preprocessor.
+     *
+     * @param methodData   The fine-grained method data to collect tokens from.
+     * @param preprocessor The custom AST converter preprocessor.
+     * @return A map of abstract tokens and their corresponding representations.
+     */
     public static Map<String, String> collectAbstractMethodTokens(
         FineMethodData methodData, CustomASTConverterPreprocessor preprocessor
     ) {

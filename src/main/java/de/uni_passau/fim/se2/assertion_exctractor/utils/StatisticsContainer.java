@@ -7,7 +7,13 @@ import java.util.function.BiFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link StatisticsContainer} class is a singleton container for tracking and logging statistics related to the
+ * preprocessing of test cases. It provides methods for notifying various events such as parsing, errors, and extraction
+ * during the preprocessing phase.
+ */
 public final class StatisticsContainer {
+    // Constants for statistics categories
 
     private static final String FOCAL_METHOD = "focal-method";
     private static final String TEST_METHOD = "test-method";
@@ -15,9 +21,14 @@ public final class StatisticsContainer {
     private static final String TEST_CLASS = "test-class";
     private static final String TEST_METHOD_AFTER = "test-method-after";
     private static final String FOCAL_METHOD_AFTER = "focal-method-after";
+
+    // Logger for logging statistics
+
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContainer.class);
+    // Singleton instance
 
     private static StatisticsContainer instance;
+    // Counters for statistics
 
     private int usedTestCases = 0;
     private int notParseable = 0;
@@ -26,6 +37,7 @@ public final class StatisticsContainer {
     private int afterAssertionExtraction = 0;
 
     private final Map<String, Integer> notParsableMap = new HashMap<>();
+    // Private constructor to enforce singleton pattern
 
     private StatisticsContainer() {
         this.notParsableMap.put(FOCAL_METHOD, 0);
@@ -37,6 +49,11 @@ public final class StatisticsContainer {
 
     }
 
+    /**
+     * Returns the singleton instance of the StatisticsContainer class.
+     *
+     * @return The singleton instance of the StatisticsContainer class.
+     */
     public static StatisticsContainer getInstance() {
         if (instance == null) {
             instance = new StatisticsContainer();
@@ -44,10 +61,21 @@ public final class StatisticsContainer {
         return instance;
     }
 
+    /**
+     * Notifies that a test case is being processed.
+     */
     public synchronized void notifyTestCase() {
         usedTestCases++;
     }
 
+    /**
+     * Notifies that a test case is not parseable, and updates the counters.
+     *
+     * @param focalMethod True if the focal method is not parseable, false otherwise.
+     * @param testMethod  True if the test method is not parseable, false otherwise.
+     * @param focalClass  True if the focal class is not parseable, false otherwise.
+     * @param testClass   True if the test class is not parseable, false otherwise.
+     */
     public synchronized void notifyNotParseable(
         boolean focalMethod, boolean testMethod, boolean focalClass, boolean testClass
     ) {
@@ -67,6 +95,12 @@ public final class StatisticsContainer {
         }
     }
 
+    /**
+     * Notifies that an after assertion extraction is not parseable, and updates the counters.
+     *
+     * @param focalMethod True if the focal method is not parseable, false otherwise.
+     * @param testMethod  True if the test method is not parseable, false otherwise.
+     */
     public synchronized void notifyNotParseableAfter(
         boolean focalMethod, boolean testMethod
     ) {
@@ -80,18 +114,30 @@ public final class StatisticsContainer {
         }
     }
 
+    /**
+     * Notifies that a test case has been successfully parsed.
+     */
     public synchronized void notifyParsedTestCase() {
         parsedTestCases++;
     }
 
+    /**
+     * Notifies that an unusable test case without assertions has been encountered.
+     */
     public synchronized void notifiedUnusableTestCaseWithoutAssertions() {
         afterAssertionExtraction++;
     }
 
+    /**
+     * Notifies that a test case is too long.
+     */
     public synchronized void notifyTooLongTestCase() {
         tooLongTestCases++;
     }
 
+    /**
+     * Logs the preprocessing statistics, including counts and percentages.
+     */
     public void logPreprocessingStats() {
         int totalTestCases = ProgressBarContainer.getInstance().getTotalCount();
         float percentageUsed = (float) usedTestCases / totalTestCases * 100;
