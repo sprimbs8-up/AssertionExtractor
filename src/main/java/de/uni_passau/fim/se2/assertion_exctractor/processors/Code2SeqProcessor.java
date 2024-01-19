@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +14,7 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.data.TestCase;
 import de.uni_passau.fim.se2.assertion_exctractor.data.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomAstCodeParser;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOptions;
@@ -30,9 +30,10 @@ import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 class Code2SeqProcessor extends AssertionPreprocessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(Code2SeqProcessor.class);
-    private static final   Code2SeqPreprocessorAdapter PREPROCESSOR_ADAPTER = new Code2SeqPreprocessorAdapter(
-            Utils.SINGLE_METHOD_OPTIONS, true, 8, 12, 1, 1000, new Code2SeqPathTransformer()
+    private static final Code2SeqPreprocessorAdapter PREPROCESSOR_ADAPTER = new Code2SeqPreprocessorAdapter(
+        Utils.SINGLE_METHOD_OPTIONS, true, 8, 12, 1, 1000, new Code2SeqPathTransformer()
     );
+
     public Code2SeqProcessor(String dataDir, String saveDir, int maxAssertions) {
         super(dataDir, saveDir, maxAssertions);
     }
@@ -53,7 +54,8 @@ class Code2SeqProcessor extends AssertionPreprocessor {
             .toList();
 
         for (int idx = 0; idx < assertions.size(); idx++) {
-            Optional<String> result = PREPROCESSOR_ADAPTER.processSingleMethod(testCase.replaceAssertion(idx, null), assertions.get(idx));
+            Optional<String> result = PREPROCESSOR_ADAPTER
+                .processSingleMethod(testCase.replaceAssertion(idx, null), assertions.get(idx));
             if (result.isPresent()) {
                 writeStringsToFile(
                     dataPoint.type().name().toLowerCase() + ".c2s", dataPoint.type().getRefresh(), result.get()

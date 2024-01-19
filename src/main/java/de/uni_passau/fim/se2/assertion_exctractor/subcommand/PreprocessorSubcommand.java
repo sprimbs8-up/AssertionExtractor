@@ -48,6 +48,7 @@ public class PreprocessorSubcommand implements Runnable {
     @Override
     public void run() {
         RandomUtil.getInstance().initializeRandom(seed);
-        AssertionPreprocessorFactory.loadProcessors(modelType, dataDir, saveDir, maxAssertions).exportProcessedExamples();
+        AssertionPreprocessorFactory.loadProcessors(modelType, dataDir, saveDir, maxAssertions)
+            .exportProcessedExamples();
     }
 }

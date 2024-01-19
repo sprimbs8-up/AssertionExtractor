@@ -1,6 +1,5 @@
 package de.uni_passau.fim.se2.assertion_exctractor.processors;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -42,8 +41,6 @@ public abstract class AssertionPreprocessor {
     protected final CustomASTConverterPreprocessor preprocessor = new CustomASTConverterPreprocessor(
         Utils.SINGLE_METHOD_OPTIONS, true, false
     );
-
-
 
     /**
      * Constructs an AssertionPreprocessor with the specified parameters.
@@ -154,8 +151,10 @@ public abstract class AssertionPreprocessor {
             throw new RuntimeException(e);
         }
     }
+
     /**
-     * Checks if the raw method data contained in the provided {@link Pair} is convertible to Abstract Syntax Trees (AST).
+     * Checks if the raw method data contained in the provided {@link Pair} is convertible to Abstract Syntax Trees
+     * (AST).
      *
      * @param inputData The Pair containing the class file path and corresponding RawMethodData.
      * @return {@code true} if the raw method data is convertible to AST for both focal and test methods and classes,
@@ -185,7 +184,8 @@ public abstract class AssertionPreprocessor {
     }
 
     /**
-     * Checks if the fine-grained method data contained in the provided {@link Pair} is convertible to Abstract Syntax Trees (AST).
+     * Checks if the fine-grained method data contained in the provided {@link Pair} is convertible to Abstract Syntax
+     * Trees (AST).
      *
      * @param inputData The Pair containing the class file path and corresponding FineMethodData.
      * @return {@code true} if the fine-grained method data is convertible to AST for both focal method and test case,
@@ -222,6 +222,7 @@ public abstract class AssertionPreprocessor {
             return false;
         }
     }
+
     /**
      * Checks if the given class code is parseable by the preprocessor.
      *

@@ -6,13 +6,13 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.uni_passau.fim.se2.assertion_exctractor.data.*;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomCodeParser;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
