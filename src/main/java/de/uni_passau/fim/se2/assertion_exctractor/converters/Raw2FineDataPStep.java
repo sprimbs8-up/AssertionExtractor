@@ -12,9 +12,9 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.TestCase;
 import de.uni_passau.fim.se2.assertion_exctractor.data.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TestCaseParser;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.TokenParser;
-import de.uni_passau.fim.se2.assertion_exctractor.utils.AssertionNormalizer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.StatisticsContainer;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 /**
@@ -68,9 +68,9 @@ public class Raw2FineDataPStep implements DataProcessingStep<RawMethodData, Opti
         List<String> focalMethodTokens = FOCAL_METHOD_PARSER.convertCodeToTokenStrings(rawMethodData.focalMethod())
             .toList();
         List<String> focalClassTokens = FOCAL_METHOD_PARSER
-            .convertCodeToTokenStrings(AssertionNormalizer.removeJavaDocs(rawMethodData.focalFile())).toList();
+            .convertCodeToTokenStrings(Utils.removeJavaDocs(rawMethodData.focalFile())).toList();
         List<String> testClassTokens = FOCAL_METHOD_PARSER
-            .convertCodeToTokenStrings(AssertionNormalizer.removeJavaDocs(rawMethodData.testFile())).toList();
+            .convertCodeToTokenStrings(Utils.removeJavaDocs(rawMethodData.testFile())).toList();
 
         // Check if parsing results in a valid test case and focal method tokens.
         if (parsedTestCase.isEmpty() || focalMethodTokens.isEmpty()) {

@@ -1,6 +1,6 @@
 package de.uni_passau.fim.se2.assertion_exctractor.subcommand;
 
-import de.uni_passau.fim.se2.assertion_exctractor.processors.ProcessorFactory;
+import de.uni_passau.fim.se2.assertion_exctractor.processors.AssertionPreprocessorFactory;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.RandomUtil;
 import picocli.CommandLine;
 
@@ -48,6 +48,6 @@ public class PreprocessorSubcommand implements Runnable {
     @Override
     public void run() {
         RandomUtil.getInstance().initializeRandom(seed);
-        ProcessorFactory.loadProcessors(modelType, dataDir, saveDir, maxAssertions).exportProcessedExamples();
+        AssertionPreprocessorFactory.loadProcessors(modelType, dataDir, saveDir, maxAssertions).exportProcessedExamples();
     }
 }

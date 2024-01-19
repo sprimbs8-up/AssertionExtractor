@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import de.uni_passau.fim.se2.assertion_exctractor.utils.AssertionNormalizer;
+import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.CompilationUnit;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MemberDeclarator;
@@ -33,7 +33,7 @@ public class CustomASTConverterPreprocessor extends AstConverterPreprocessor {
     }
 
     public Optional<AstNode> parseSingleClass(String code) {
-        return this.processSingleElement(AssertionNormalizer.removeJavaDocs(code), false)
+        return this.processSingleElement(Utils.removeJavaDocs(code), false)
             .filter(CompilationUnit.class::isInstance)
             .map(CompilationUnit.class::cast)
             .map(CompilationUnit::typeDeclarations)

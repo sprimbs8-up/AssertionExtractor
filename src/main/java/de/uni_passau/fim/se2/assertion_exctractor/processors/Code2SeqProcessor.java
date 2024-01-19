@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +27,12 @@ import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.code2.transform.path_
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.shared.MethodsExtractor;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
-public class Code2SeqProcessor extends AssertionPreprocessor {
+class Code2SeqProcessor extends AssertionPreprocessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(Code2SeqProcessor.class);
-
+    private static final   Code2SeqPreprocessorAdapter PREPROCESSOR_ADAPTER = new Code2SeqPreprocessorAdapter(
+            Utils.SINGLE_METHOD_OPTIONS, true, 8, 12, 1, 1000, new Code2SeqPathTransformer()
+    );
     public Code2SeqProcessor(String dataDir, String saveDir, int maxAssertions) {
         super(dataDir, saveDir, maxAssertions);
     }
@@ -48,12 +51,9 @@ public class Code2SeqProcessor extends AssertionPreprocessor {
             .filter(TestElement::isAssertion)
             .map(TestElement::tokens)
             .toList();
-        Code2SeqPreprocessorAdapter p = new Code2SeqPreprocessorAdapter(
-            SINGLE_METHOD_OPTIONS, true, 8, 12, 1, 1000, new Code2SeqPathTransformer()
-        );
 
         for (int idx = 0; idx < assertions.size(); idx++) {
-            Optional<String> result = p.processSingleMethod(testCase.replaceAssertion(idx, null), assertions.get(idx));
+            Optional<String> result = PREPROCESSOR_ADAPTER.processSingleMethod(testCase.replaceAssertion(idx, null), assertions.get(idx));
             if (result.isPresent()) {
                 writeStringsToFile(
                     dataPoint.type().name().toLowerCase() + ".c2s", dataPoint.type().getRefresh(), result.get()
@@ -109,7 +109,7 @@ public class Code2SeqProcessor extends AssertionPreprocessor {
         }
     }
 
-    public record Code2Assertion(List<String> assertionTokens, List<AstPath> features) {
+    private record Code2Assertion(List<String> assertionTokens, List<AstPath> features) {
 
         public String toString() {
             return assertionTokens.stream().map(y -> y.replaceAll(" ", "###")).collect(Collectors.joining("|")) + " "

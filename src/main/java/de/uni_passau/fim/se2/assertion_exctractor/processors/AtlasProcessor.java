@@ -1,8 +1,11 @@
 package de.uni_passau.fim.se2.assertion_exctractor.processors;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.uni_passau.fim.se2.assertion_exctractor.data.Assertion;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DatasetType;

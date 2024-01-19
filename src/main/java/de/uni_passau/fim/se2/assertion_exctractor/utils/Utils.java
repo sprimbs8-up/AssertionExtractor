@@ -7,16 +7,21 @@ import java.util.Optional;
 
 import de.uni_passau.fim.se2.assertion_exctractor.data.AssertionType;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
+import de.uni_passau.fim.se2.assertion_exctractor.data.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.parsing.code.CustomASTConverterPreprocessor;
 import de.uni_passau.fim.se2.assertion_exctractor.visitors.MethodTokensDictionaryCollector;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MemberDeclarator;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.TypeDeclarator;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.transformer.util.TransformMode;
+import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOptions;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 public final class Utils {
-
+    public static final CommonPreprocessorOptions SINGLE_METHOD_OPTIONS = new CommonPreprocessorOptions(
+            null, null, false, new TransformMode.None()
+    );
     public static <A, B> Optional<Pair<A, B>> flatten(Pair<A, Optional<B>> pair) {
         Optional<B> optionalPart = pair.b();
         A firstPart = pair.a();
@@ -32,6 +37,17 @@ public final class Utils {
             inversedMap.put(entry.getValue(), entry.getKey());
         }
         return inversedMap;
+    }
+
+    public static String normalizeAssertions(String code) {
+        for (AssertionType type : AssertionType.values()) {
+            code = code.replaceAll("(([a-zA-Z]+)( )*.( )*)*" + type.getIdentifier(), type.getIdentifier());
+        }
+        return code;
+    }
+
+    public static String removeJavaDocs(String code) {
+        return code.replaceAll("/\\*\\*(?s:(?!\\*/).)*\\*/", "");
     }
 
     public static Map<String, String> collectAbstractTokens(

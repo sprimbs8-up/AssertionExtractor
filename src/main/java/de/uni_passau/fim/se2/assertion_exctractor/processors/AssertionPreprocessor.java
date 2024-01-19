@@ -1,5 +1,6 @@
 package de.uni_passau.fim.se2.assertion_exctractor.processors;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,8 +23,6 @@ import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ProgressBarContainer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.StatisticsContainer;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.transformer.util.TransformMode;
-import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOptions;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.ProcessingException;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
@@ -41,12 +40,10 @@ public abstract class AssertionPreprocessor {
     protected final String saveDir;
     protected final int maxAssertions;
     protected final CustomASTConverterPreprocessor preprocessor = new CustomASTConverterPreprocessor(
-        SINGLE_METHOD_OPTIONS, true, false
+        Utils.SINGLE_METHOD_OPTIONS, true, false
     );
 
-    protected static final CommonPreprocessorOptions SINGLE_METHOD_OPTIONS = new CommonPreprocessorOptions(
-        null, null, false, new TransformMode.None()
-    );
+
 
     /**
      * Constructs an AssertionPreprocessor with the specified parameters.
@@ -71,11 +68,11 @@ public abstract class AssertionPreprocessor {
         try {
             return Method2TestLoader.loadDatasetAsJSON(dataDir)
                 .peek(el -> ProgressBarContainer.getInstance().notifyStep())
-                .filter(this::isASTConvertible)
+                .filter(this::areRawMethodDataASTConvertible)
                 .map(raw2fineConverter::process)
                 .map(Utils::flatten)
                 .flatMap(Optional::stream)
-                .filter(this::isASTConvertibleAnyMore);
+                .filter(this::areFineMethodDataASTConvertible);
         }
         catch (IOException e) {
             LOG.error("Error while loading json dataset", e);
@@ -148,11 +145,8 @@ public abstract class AssertionPreprocessor {
     protected void writeStringsToFile(String file, AtomicBoolean append, String tokens) {
         File savePath = Path.of(saveDir, getModelName(), file).toFile();
         if (!savePath.exists()) {
-
             savePath.getParentFile().mkdirs();
-
         }
-        ;
         try (FileWriter writer = new FileWriter(savePath, append.get())) {
             writer.write(tokens + System.getProperty("line.separator"));
         }
@@ -160,15 +154,26 @@ public abstract class AssertionPreprocessor {
             throw new RuntimeException(e);
         }
     }
-
-    private boolean isASTConvertible(Pair<String, RawMethodData> inputData) {
+    /**
+     * Checks if the raw method data contained in the provided {@link Pair} is convertible to Abstract Syntax Trees (AST).
+     *
+     * @param inputData The Pair containing the class file path and corresponding RawMethodData.
+     * @return {@code true} if the raw method data is convertible to AST for both focal and test methods and classes,
+     *         {@code false} otherwise.
+     */
+    private boolean areRawMethodDataASTConvertible(Pair<String, RawMethodData> inputData) {
         RawMethodData dataPoint = inputData.b();
 
+        // Check the AST convertibility of focal and test methods and classes
         boolean focalMethodParseable = isMethodParseable(dataPoint.focalMethod());
         boolean testMethodParseable = isMethodParseable(dataPoint.testMethod());
         boolean focalClassParseable = isClassParseable(dataPoint.focalFile());
         boolean testClassParseable = isClassParseable(dataPoint.testFile());
+
+        // Check if all components are convertible to AST
         boolean convertible = focalMethodParseable && testMethodParseable && focalClassParseable && testClassParseable;
+
+        // If not convertible, notify statistics and handle errors
         if (!convertible) {
             StatisticsContainer.getInstance().notifyNotParseable(
                 !focalMethodParseable, !testMethodParseable, !focalClassParseable, !testClassParseable
@@ -179,7 +184,14 @@ public abstract class AssertionPreprocessor {
         return convertible;
     }
 
-    private boolean isASTConvertibleAnyMore(Pair<String, FineMethodData> inputData) {
+    /**
+     * Checks if the fine-grained method data contained in the provided {@link Pair} is convertible to Abstract Syntax Trees (AST).
+     *
+     * @param inputData The Pair containing the class file path and corresponding FineMethodData.
+     * @return {@code true} if the fine-grained method data is convertible to AST for both focal method and test case,
+     *         {@code false} otherwise.
+     */
+    private boolean areFineMethodDataASTConvertible(Pair<String, FineMethodData> inputData) {
         FineMethodData dataPoint = inputData.b();
 
         boolean focalMethodParseable = isMethodParseable(String.join(" ", dataPoint.focalMethodTokens()));
@@ -196,6 +208,12 @@ public abstract class AssertionPreprocessor {
         return convertible;
     }
 
+    /**
+     * Checks if the given method code is parseable by the preprocessor.
+     *
+     * @param methodCode The code of the method to be parsed.
+     * @return {@code true} if the method code is parseable, {@code false} otherwise.
+     */
     private boolean isMethodParseable(String methodCode) {
         try {
             return preprocessor.processSingleMethod(methodCode).isPresent();
@@ -204,10 +222,15 @@ public abstract class AssertionPreprocessor {
             return false;
         }
     }
-
-    private boolean isClassParseable(String methodCode) {
+    /**
+     * Checks if the given class code is parseable by the preprocessor.
+     *
+     * @param classCode The code of the class to be parsed.
+     * @return {@code true} if the class code is parseable, {@code false} otherwise.
+     */
+    private boolean isClassParseable(String classCode) {
         try {
-            return preprocessor.parseSingleClass(methodCode).isPresent();
+            return preprocessor.parseSingleClass(classCode).isPresent();
         }
         catch (ProcessingException e) {
             return false;
