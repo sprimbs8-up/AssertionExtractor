@@ -10,28 +10,28 @@ class AssertionNormalizerTest {
     @Test
     void testRegex() {
         String s = "org.junit.Assert.assertEquals(asfd, asdfs)";
-        String cleanedCode = AssertionNormalizer.normalizeAssertions(s);
+        String cleanedCode = Utils.normalizeAssertions(s);
         assertThat(cleanedCode).isEqualTo("assertEquals(asfd, asdfs)");
     }
 
     @Test
     void testRegex2() {
         String s = "org .junit.Assert .assertEquals(asfd, asdfs)";
-        String cleanedCode = AssertionNormalizer.normalizeAssertions(s);
+        String cleanedCode = Utils.normalizeAssertions(s);
         assertThat(cleanedCode).isEqualTo("assertEquals(asfd, asdfs)");
     }
 
     @Test
     void testRegex3() {
         String s = "org . junit . Assert . assertEquals(asfd, asdfs)";
-        String cleanedCode = AssertionNormalizer.normalizeAssertions(s);
+        String cleanedCode = Utils.normalizeAssertions(s);
         assertThat(cleanedCode).isEqualTo("assertEquals(asfd, asdfs)");
     }
 
     @Test
     void testRegex4() {
         String s = "org . junit . Assert . noValidAssertion(asfd, asdfs)";
-        String cleanedCode = AssertionNormalizer.normalizeAssertions(s);
+        String cleanedCode = Utils.normalizeAssertions(s);
         assertThat(cleanedCode).isEqualTo("org . junit . Assert . noValidAssertion(asfd, asdfs)");
     }
 
@@ -55,7 +55,7 @@ class AssertionNormalizerTest {
                 assertNotNull(foo);
             }
             """;
-        String cleanedCode = AssertionNormalizer.normalizeAssertions(s);
+        String cleanedCode = Utils.normalizeAssertions(s);
         assertThat(cleanedCode).isEqualTo(expected);
     }
 }
