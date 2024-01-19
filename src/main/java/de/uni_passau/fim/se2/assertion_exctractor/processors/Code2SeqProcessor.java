@@ -6,9 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.assertion_exctractor.data.FineMethodData;
 import de.uni_passau.fim.se2.assertion_exctractor.data.TestCase;
@@ -27,9 +24,16 @@ import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.code2.transform.path_
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.shared.MethodsExtractor;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
+/**
+ * The {@link Code2SeqProcessor} class extends the AssertionPreprocessor and is specifically designed for processing
+ * assertion data using the "code2seq" model. It utilizes the Code2SeqPreprocessorAdapter to preprocess code and
+ * generate sequences for the Code2Seq model.
+ */
 class Code2SeqProcessor extends AssertionPreprocessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Code2SeqProcessor.class);
+    /**
+     * Adapter for preprocessing code and generating sequences for the Code2Seq model.
+     */
     private static final Code2SeqPreprocessorAdapter PREPROCESSOR_ADAPTER = new Code2SeqPreprocessorAdapter(
         Utils.SINGLE_METHOD_OPTIONS, true, 8, 12, 1, 1000, new Code2SeqPathTransformer()
     );
@@ -43,6 +47,12 @@ class Code2SeqProcessor extends AssertionPreprocessor {
         return "code2seq";
     }
 
+    /**
+     * Exports test cases by processing the provided data point pair and writing the results to a file in the code2seq
+     * format.
+     *
+     * @param dataPointPair The pair containing a string and corresponding data point.
+     */
     @Override
     protected void exportTestCases(Pair<String, DataPoint> dataPointPair) {
         DataPoint dataPoint = dataPointPair.b();
@@ -65,6 +75,10 @@ class Code2SeqProcessor extends AssertionPreprocessor {
         }
     }
 
+    /**
+     * The Code2SeqPreprocessorAdapter class is an internal class that extends Code2Preprocessor and serves as an
+     * adapter for processing code and generating sequences for the Code2Seq model.
+     */
     private static class Code2SeqPreprocessorAdapter extends Code2Preprocessor {
 
         private final int maxPathWidth;
@@ -111,6 +125,10 @@ class Code2SeqProcessor extends AssertionPreprocessor {
         }
     }
 
+    /**
+     * The Code2Assertion record represents the processed data for the Code2Seq model, including assertion tokens and
+     * corresponding AST paths.
+     */
     private record Code2Assertion(List<String> assertionTokens, List<AstPath> features) {
 
         public String toString() {

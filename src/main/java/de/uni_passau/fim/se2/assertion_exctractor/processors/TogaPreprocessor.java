@@ -17,11 +17,20 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.TestElement;
 import de.uni_passau.fim.se2.assertion_exctractor.data.TryCatchAssertion;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
-public class TogaProcessor extends AssertionPreprocessor {
+/**
+ * The {@link TogaPreprocessor} class extends the AssertionPreprocessor and is designed for processing assertion data
+ * using the Toga model. It includes specific processors for different types of assertions, such as Try-Catch assertions
+ * and regular assertions. The processed data is written to CSV files with different headers based on the assertion
+ * type.
+ */
+public class TogaPreprocessor extends AssertionPreprocessor {
 
+    /**
+     * Set of IntermediateTogaProcessor instances that handle specific types of assertions.
+     */
     private final Set<IntermediateTogaProcessor> togaProcessors;
 
-    public TogaProcessor(String dataDir, String saveDir, int maxAssertions) {
+    public TogaPreprocessor(String dataDir, String saveDir, int maxAssertions) {
         super(dataDir, saveDir, maxAssertions);
         togaProcessors = new HashSet<>();
     }
@@ -31,6 +40,11 @@ public class TogaProcessor extends AssertionPreprocessor {
         return "toga";
     }
 
+    /**
+     * Delegates the exportTestCases operation to each individual Toga processor in the set.
+     *
+     * @param dataPointPair The pair containing a string and corresponding data point.
+     */
     @Override
     protected void exportTestCases(Pair<String, DataPoint> dataPointPair) {
         togaProcessors.forEach(processor -> processor.exportTestCases(dataPointPair));
@@ -41,7 +55,7 @@ public class TogaProcessor extends AssertionPreprocessor {
         togaProcessors.add(new TryCatchTogaProcessor(dataDir, saveDir + "/" + getModelName(), maxAssertions));
         togaProcessors.add(new AssertionTogaProcessor(dataDir, saveDir + "/" + getModelName(), maxAssertions));
         togaProcessors
-            .add(new AssertionExceptionsTogaProcessor(dataDir, saveDir + "/" + getModelName(), maxAssertions));
+            .add(new CombinedTogaPreprocessor(dataDir, saveDir + "/" + getModelName(), maxAssertions));
         togaProcessors.forEach(AssertionPreprocessor::setup);
     }
 
@@ -50,6 +64,10 @@ public class TogaProcessor extends AssertionPreprocessor {
         togaProcessors.forEach(AssertionPreprocessor::shutDown);
     }
 
+    /**
+     * The IntermediateTogaProcessor class is an abstract class that extends AssertionPreprocessor and provides common
+     * functionality for Toga processors.
+     */
     private static abstract class IntermediateTogaProcessor extends AssertionPreprocessor {
 
         protected final HashMap<DatasetType, CSVWriter> writerHashMap = new HashMap<>();
@@ -97,6 +115,18 @@ public class TogaProcessor extends AssertionPreprocessor {
             }
         }
 
+        /**
+         * Retrieves the content for a single row in the CSV file associated with the Toga processor.
+         *
+         * @param tryCatchAssertion Whether the assertion is a Try-Catch assertion.
+         * @param testCase          The test case associated with the assertion.
+         * @param assertionPosition The position of the assertion in the test case.
+         * @param focalMethod       The tokens of the focal method.
+         * @param docString         The documentation string associated with the method.
+         * @param assertion         The TestElement representing the assertion.
+         * @param type              The DatasetType associated with the data point.
+         * @return An optional containing the content for a single row, or empty if not applicable.
+         */
         protected abstract Optional<String[]> getRowContent(
             boolean tryCatchAssertion, TestCase testCase, int assertionPosition, List<String> focalMethod,
             String docString, TestElement assertion, DatasetType type
@@ -118,6 +148,9 @@ public class TogaProcessor extends AssertionPreprocessor {
 
     }
 
+    /**
+     * The TryCatchTogaProcessor class extends IntermediateTogaProcessor and handles Try-Catch assertions.
+     */
     private static class TryCatchTogaProcessor extends IntermediateTogaProcessor {
 
         private TryCatchTogaProcessor(String dataDir, String saveDir, int maxAssertions) {
@@ -145,6 +178,9 @@ public class TogaProcessor extends AssertionPreprocessor {
         }
     }
 
+    /**
+     * The AssertionTogaProcessor class extends IntermediateTogaProcessor and handles regular assertions.
+     */
     private static class AssertionTogaProcessor extends IntermediateTogaProcessor {
 
         private final Map<DatasetType, Integer> counterMap = new EnumMap<>(DatasetType.class);
@@ -165,9 +201,9 @@ public class TogaProcessor extends AssertionPreprocessor {
             String[] lineContent = new String[] {
                 String.valueOf(idx),                            // idx
                 "0",                                            // label
-                String.join(" ", focalMethod),           // focal method tokens
+                String.join(" ", focalMethod),          // focal method tokens
                 testCase.replaceAssertion(assertionPosition),   // test case without assertions
-                String.join(" ", assertion.tokens())     // assertion tokens
+                String.join(" ", assertion.tokens())    // assertion tokens
             };
             return Optional.of(lineContent);
         }
@@ -179,11 +215,15 @@ public class TogaProcessor extends AssertionPreprocessor {
 
     }
 
-    private static class AssertionExceptionsTogaProcessor extends IntermediateTogaProcessor {
+    /**
+     * The CombinedTogaPreprocessor class extends the IntermediateTogaProcessor and handles combined assertions for the
+     * Toga model. It writes the processed data to a CSV file with a specific header for combined assertions.
+     */
+    private static class CombinedTogaPreprocessor extends IntermediateTogaProcessor {
 
         private final Map<DatasetType, Integer> counterMap = new EnumMap<>(DatasetType.class);
 
-        private AssertionExceptionsTogaProcessor(String dataDir, String saveDir, int maxAssertions) {
+        private CombinedTogaPreprocessor(String dataDir, String saveDir, int maxAssertions) {
             super(dataDir, Path.of(saveDir, "combined").toString(), maxAssertions);
         }
 
@@ -195,7 +235,7 @@ public class TogaProcessor extends AssertionPreprocessor {
             int idx = counterMap.compute(type, (x, y) -> y != null ? y + 1 : 0);
             String[] lineContent = new String[] {
                 String.valueOf(idx),                            // idx
-                String.join(" ", focalMethod),           // focal method tokens
+                String.join(" ", focalMethod),          // focal method tokens
                 testCase.replaceAssertion(assertionPosition),   // test case without assertions
                 tryCatchAssertion ? "TRY_CATCH" : String.join(" ", assertion.tokens()),     // assertion tokens
                 docString

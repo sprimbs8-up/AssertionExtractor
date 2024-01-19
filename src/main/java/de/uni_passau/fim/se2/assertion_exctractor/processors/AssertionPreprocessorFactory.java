@@ -5,20 +5,20 @@ import java.util.List;
 
 /**
  * Factory class responsible for loading and creating instances different {@link AssertionPreprocessor} wrapped in
- * {@link CombinedProcessor} based on specified model types.
+ * {@link CombinedAssertionPreprocessor} based on specified model types.
  */
 public class AssertionPreprocessorFactory {
 
     /**
-     * Loads processors based on the provided model types and creates a {@link CombinedProcessor}.
+     * Loads processors based on the provided model types and creates a {@link CombinedAssertionPreprocessor}.
      *
      * @param modelsTypes   A colon-separated string specifying the model types to load as list.
      * @param dataDir       The directory containing data used by the processors.
      * @param saveDir       The directory where the processors can save their output.
      * @param maxAssertions The maximum number of assertions to be processed by the combined processor.
-     * @return A {@link CombinedProcessor} instance with loaded processors.
+     * @return A {@link CombinedAssertionPreprocessor} instance with loaded processors.
      */
-    public static CombinedProcessor loadProcessors(
+    public static CombinedAssertionPreprocessor loadProcessors(
         String modelsTypes, String dataDir, String saveDir, int maxAssertions
     ) {
         String[] types = modelsTypes.split(":");
@@ -26,7 +26,7 @@ public class AssertionPreprocessorFactory {
             .distinct()
             .map(model -> loadProcessor(model, dataDir, saveDir, maxAssertions))
             .toList();
-        return new CombinedProcessor(dataDir, saveDir, maxAssertions, processors);
+        return new CombinedAssertionPreprocessor(dataDir, saveDir, maxAssertions, processors);
     }
 
     /**
@@ -44,7 +44,7 @@ public class AssertionPreprocessorFactory {
     ) {
         return switch (modelType) {
             case "atlas" -> new AtlasPreprocessor(dataDir, saveDir, maxAssertions);
-            case "toga" -> new TogaProcessor(dataDir, saveDir, maxAssertions);
+            case "toga" -> new TogaPreprocessor(dataDir, saveDir, maxAssertions);
             case "code2seq" -> new Code2SeqProcessor(dataDir, saveDir, maxAssertions);
             case "asserT5" -> new JavaAsserT5Preprocessor(dataDir, saveDir, maxAssertions);
             default -> throw new IllegalArgumentException("The model \"" + modelType + "\" is not present.");

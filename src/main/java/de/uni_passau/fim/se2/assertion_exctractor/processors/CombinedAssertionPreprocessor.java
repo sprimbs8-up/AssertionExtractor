@@ -5,11 +5,16 @@ import java.util.List;
 import de.uni_passau.fim.se2.assertion_exctractor.data.DataPoint;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
-public class CombinedProcessor extends AssertionPreprocessor {
+/**
+ * The {@link CombinedAssertionPreprocessor} class is an extension of the {@link AssertionPreprocessor} that allows
+ * combining multiple AssertionPreprocessors. It delegates setup, shutdown, and test case export operations to each
+ * individual preprocessor in the list of combined processors.
+ */
+public class CombinedAssertionPreprocessor extends AssertionPreprocessor {
 
     private final List<? extends AssertionPreprocessor> combinedProcessors;
 
-    public CombinedProcessor(
+    public CombinedAssertionPreprocessor(
         String dataDir, String saveDir, int maxAssertions, List<? extends AssertionPreprocessor> combinedProcessors
     ) {
         super(dataDir, saveDir, maxAssertions);

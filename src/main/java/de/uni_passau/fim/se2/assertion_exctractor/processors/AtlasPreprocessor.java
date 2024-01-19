@@ -19,6 +19,11 @@ import de.uni_passau.fim.se2.assertion_exctractor.utils.TokenAbstractionComparat
 import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
+/**
+ * The {@link AtlasPreprocessor} class extends the {@link AssertionPreprocessor} and is designed specifically for
+ * processing assertion data using the "atlas" model. It provides methods to export test cases in both abstract and raw
+ * formats, along with utility methods for writing data to files.
+ */
 public class AtlasPreprocessor extends AssertionPreprocessor {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
