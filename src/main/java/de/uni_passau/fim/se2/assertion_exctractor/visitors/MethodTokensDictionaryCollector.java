@@ -5,15 +5,23 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.expression.literal.LiteralValueExpr;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.identifier.SimpleIdentifier;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.visitor.AstVisitorWithDefaults;
 
+/**
+ * The {@link MethodTokensDictionaryCollector} class is an AST visitor that collects method-related tokens from a Java
+ * AST (Abstract Syntax Tree) using the {@link JavaParser} library. It generates a dictionary mapping unique tokens to
+ * their corresponding identifier strings.
+ */
 public class MethodTokensDictionaryCollector implements AstVisitorWithDefaults<Void, Map<String, String>> {
+    // Counter map to track the occurrences of different token types
 
     private final Map<String, Integer> counterMap = new HashMap<>();
+    // Constant identifiers for different token types
 
     private static final String IDENTIFIER = "IDENT";
     private static final String METHOD = "METHOD";
@@ -26,6 +34,9 @@ public class MethodTokensDictionaryCollector implements AstVisitorWithDefaults<V
     private static final String DOUBLE = "DOUBLE";
     private static final String FLOAT = "FLOAT";
 
+    /**
+     * Initializes the MethodTokensDictionaryCollector with initial values for token type counters.
+     */
     public MethodTokensDictionaryCollector() {
         counterMap.put(IDENTIFIER, -1);
         counterMap.put(METHOD, -1);
@@ -63,31 +74,18 @@ public class MethodTokensDictionaryCollector implements AstVisitorWithDefaults<V
     @Override
     public <V> Void visit(LiteralValueExpr<V> node, Map<String, String> arg) {
         switch (node.value().getClass().getSimpleName()) {
-            case "Character":
+            case "Character" -> {
                 char value = (char) node.value();
                 if (Character.isAlphabetic(value) || Character.isDigit(value)) {
                     fillDict(CHARACTER, "'" + node.value() + "'", arg);
                 }
-                break;
-            case "String":
-                fillDict(STRING, "\"" + node.value() + "\"", arg);
-                break;
-            case "BigInteger":
-                fillDict(INTEGER, node.value(), arg);
-                break;
-            case "Float":
-                fillDict(FLOAT, node.value(), arg);
-                break;
-            case "Double":
-                fillDict(DOUBLE, node.value(), arg);
-                break;
-            case "Byte":
-                fillDict(BYTE, node.value(), arg);
-                break;
-            case "Short":
-                fillDict(SHORT, node.value(), arg);
-                break;
-
+            }
+            case "String" -> fillDict(STRING, "\"" + node.value() + "\"", arg);
+            case "BigInteger" -> fillDict(INTEGER, node.value(), arg);
+            case "Float" -> fillDict(FLOAT, node.value(), arg);
+            case "Double" -> fillDict(DOUBLE, node.value(), arg);
+            case "Byte" -> fillDict(BYTE, node.value(), arg);
+            case "Short" -> fillDict(SHORT, node.value(), arg);
         }
         return null;
     }

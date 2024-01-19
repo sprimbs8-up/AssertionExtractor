@@ -12,8 +12,18 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.AssertionType;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 
+/**
+ * The {@link ValidAssertionVisitor} class is a visitor for traversing the {@link ParseTree} of a Java class and
+ * determining the validity of assertions based on predefined criteria using the JavaParser library.
+ */
 public class ValidAssertionVisitor extends JavaParserBaseVisitor<Boolean> {
 
+    /**
+     * Visits an expression context and checks if it represents a valid assertion.
+     *
+     * @param ctx The expression context to be visited.
+     * @return true if the expression is a valid assertion, false otherwise.
+     */
     @Override
     public Boolean visitExpression(JavaParser.ExpressionContext ctx) {
         boolean methodInvocation = ctx.getChildCount() == 1
@@ -27,6 +37,12 @@ public class ValidAssertionVisitor extends JavaParserBaseVisitor<Boolean> {
         return methodInvocation || tryCatchInvocation;
     }
 
+    /**
+     * Visits a method call context and checks if it represents a valid assertion method call.
+     *
+     * @param ctx The method call context to be visited.
+     * @return true if the method call is a valid assertion, false otherwise.
+     */
     @Override
     public Boolean visitMethodCall(JavaParser.MethodCallContext ctx) {
         List<ParseTree> filteredChildren = filterTerminalNodes(ctx.children);
@@ -37,6 +53,12 @@ public class ValidAssertionVisitor extends JavaParserBaseVisitor<Boolean> {
             && visitExpressionListContextList(exListCtx, identifierContext);
     }
 
+    /**
+     * Visits an identifier context and checks if it represents a valid assertion type.
+     *
+     * @param ctx The identifier context to be visited.
+     * @return true if the identifier is a valid assertion type, false otherwise.
+     */
     @Override
     public Boolean visitIdentifier(JavaParser.IdentifierContext ctx) {
         return Arrays.stream(AssertionType.values())
@@ -44,6 +66,13 @@ public class ValidAssertionVisitor extends JavaParserBaseVisitor<Boolean> {
             .anyMatch(type -> type.equals(ctx.getText()));
     }
 
+    /**
+     * Checks if the parameters of an assertion match the expected number based on the assertion type.
+     *
+     * @param ctx          The expression list context to be checked.
+     * @param assertionCtx The identifier context representing the assertion type.
+     * @return true if the number of parameters matches the expected number, false otherwise.
+     */
     private boolean visitExpressionListContextList(
         JavaParser.ExpressionListContext ctx, JavaParser.IdentifierContext assertionCtx
     ) {
@@ -56,7 +85,13 @@ public class ValidAssertionVisitor extends JavaParserBaseVisitor<Boolean> {
         return filteredChildren.size() == assertionType.getNumParameters();
     }
 
+    /**
+     * Filters out terminal nodes from a list of ParseTree elements.
+     *
+     * @param ruleContexts The list of ParseTree elements to be filtered.
+     * @return A list containing only non-terminal nodes.
+     */
     private List<ParseTree> filterTerminalNodes(List<ParseTree> ruleContexts) {
-        return ruleContexts.stream().filter(Predicate.not(ctx -> ctx instanceof TerminalNode)).toList();
+        return ruleContexts.stream().filter(Predicate.not(TerminalNode.class::isInstance)).toList();
     }
 }
