@@ -17,8 +17,17 @@ import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParserBaseVisitor;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.CodeParser;
 
+/**
+ * The {@link TestCaseParser} class provides methods for parsing and extracting test cases from Java code.
+ */
 public class TestCaseParser {
 
+    /**
+     * Parses a test case from the given code and constructs a TestCase object.
+     *
+     * @param code The Java code containing the test case.
+     * @return An Optional containing the parsed TestCase, or empty if an error occurs during parsing.
+     */
     public Optional<TestCase> parseTestCase(final String code) {
         String cleanedCode = Utils.normalizeAssertions(code);
         final CodeParser codeParser = new CustomCodeParser();
@@ -32,6 +41,10 @@ public class TestCaseParser {
         return Optional.of(new TestCase(visitor.testElements.toList()));
     }
 
+    /**
+     * The MethodTokenVisitor class is an inner class of TestCaseParser that traverses the parse tree to identify and
+     * extract test elements and assertions from Java code.
+     */
     private static class MethodTokenVisitor extends JavaParserBaseVisitor<Void> {
 
         private Stream<String> codeStream = Stream.empty();

@@ -13,13 +13,27 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.ErrorChecker;
 import de.uni_passau.fim.se2.assertion_exctractor.visitors.ValidAssertionVisitor;
 
+/**
+ * The {@link AssertionParser} class extends {@link TokenParser} and provides methods for parsing and validating
+ * syntactic correctness of assertions in a list of code fragments.
+ */
 public class AssertionParser extends TokenParser {
+    // Logger for logging messages
 
     private static final Logger LOG = LoggerFactory.getLogger(AssertionParser.class);
+    // Visitor for checking the syntactic correctness of assertions
 
     private final ValidAssertionVisitor validAssertionVisitor = new ValidAssertionVisitor();
+    // ObjectMapper for parsing JSON representation of assertion codes
+
     private final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Checks the syntactic correctness of a list of assertion codes.
+     *
+     * @param codes JSON representation of a list of assertion codes.
+     * @return A list of Boolean values indicating the syntactic correctness of each assertion.
+     */
     public List<Boolean> areSyntacticCorrectAssertions(String codes) {
         try {
             List<String> assertionList = mapper
@@ -32,6 +46,12 @@ public class AssertionParser extends TokenParser {
         }
     }
 
+    /**
+     * Checks the syntactic correctness of a single assertion code.
+     *
+     * @param code The assertion code to be validated.
+     * @return True if the assertion is syntactically correct, false otherwise.
+     */
     private boolean isSyntacticCorrectAssertion(final String code) {
         ErrorChecker.getInstance().resetError();
         var codeFragment = codeParser.parseCodeFragment(code);
