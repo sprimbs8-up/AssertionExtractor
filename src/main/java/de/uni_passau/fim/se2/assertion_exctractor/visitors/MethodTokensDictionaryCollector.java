@@ -1,5 +1,6 @@
 package de.uni_passau.fim.se2.assertion_exctractor.visitors;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -8,6 +9,7 @@ import java.util.function.Predicate;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.generated.JavaParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.expression.MethodInvocation;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.expression.literal.LiteralValueExpr;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.identifier.SimpleIdentifier;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.visitor.AstVisitorWithDefaults;
@@ -81,12 +83,19 @@ public class MethodTokensDictionaryCollector implements AstVisitorWithDefaults<V
                 }
             }
             case "String" -> fillDict(STRING, "\"" + node.value() + "\"", arg);
-            case "BigInteger" -> fillDict(INTEGER, node.value(), arg);
+            case "BigInteger" -> fillDict(INTEGER, Math.abs(((BigInteger) node.value()).intValue()), arg);
             case "Float" -> fillDict(FLOAT, node.value(), arg);
-            case "Double" -> fillDict(DOUBLE, node.value(), arg);
+            case "Double" -> fillDict(DOUBLE,  node.value(), arg);
             case "Byte" -> fillDict(BYTE, node.value(), arg);
             case "Short" -> fillDict(SHORT, node.value(), arg);
         }
+        return null;
+    }
+
+    @Override
+    public Void visit(MethodInvocation node, Map<String, String> arg) {
+        fillDict(METHOD, node.identifier().name(), arg);
+        node.arguments().accept(this, arg);
         return null;
     }
 

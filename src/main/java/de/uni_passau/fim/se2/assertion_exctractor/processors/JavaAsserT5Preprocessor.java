@@ -57,6 +57,7 @@ class JavaAsserT5Preprocessor extends AssertionPreprocessor {
                 type, assertTokens, testCaseStreamSupplier.get(), focalMethodTokens.get(), abstractTokenMap
             );
             exportDataPointRaw(type, assertTokens, testCaseStreamSupplier.get(), focalMethodTokens.get());
+            exportDataPointOnlyTest(type, assertTokens, testCaseStreamSupplier.get());
         }
     }
 
@@ -116,6 +117,18 @@ class JavaAsserT5Preprocessor extends AssertionPreprocessor {
         RawExportData data = new RawExportData(assertionString, inputString);
 
         writeDataToFile("raw", type, data, MAPPER);
+        type.getRefresh().set(true);
+    }
+
+    protected void exportDataPointOnlyTest(
+            DatasetType type, List<String> assertionTokens, Stream<String> currentAssertionStream
+    ) {
+        String assertionString = String.join(" ", assertionTokens);
+        String inputString = currentAssertionStream.collect(Collectors.joining(" "));
+
+        RawExportData data = new RawExportData(assertionString, inputString);
+
+        writeDataToFile("test-method", type, data, MAPPER);
         type.getRefresh().set(true);
     }
 

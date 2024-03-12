@@ -47,6 +47,7 @@ public class AssertionPreprocessorFactory {
             case "toga" -> new TogaPreprocessor(dataDir, saveDir, maxAssertions);
             case "code2seq" -> new Code2SeqProcessor(dataDir, saveDir, maxAssertions);
             case "asserT5" -> new JavaAsserT5Preprocessor(dataDir, saveDir, maxAssertions);
+            case "gpt" -> new GPTPreprocessor(dataDir, saveDir, maxAssertions);
             default -> throw new IllegalArgumentException("The model \"" + modelType + "\" is not present.");
         };
     }
