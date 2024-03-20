@@ -35,7 +35,11 @@ It supports the following commands:
 ```bash
     java -jar [path_to_java_jar] preprocess --data-file example-files/results-small.jsonl --save-dir preprocessed -m 5 --model toga:atlas:asserT5 
 ```
-
+#### Script:
+There is a script to automate this preprocessing. Enter:
+```bash
+    bash build-all.sh [path_to_results_jsonl_file] [save_dir] ([number_assertions_separated]) ([models_separated]) 
+```
 ### Assertion Validation:
 In the evaluation script the validity of the assertions must be proven. For that an extra subcommand solves that:
 #### Args:
