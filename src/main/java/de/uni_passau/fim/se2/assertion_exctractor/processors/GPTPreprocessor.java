@@ -14,8 +14,7 @@ import java.util.stream.Stream;
 
 /**
  * The {@link GPTPreprocessor} class extends the {@link AssertionPreprocessor} and is designed specifically for
- * processing assertion data using the "atlas" model. It provides methods to export test cases in both abstract and raw
- * formats, along with utility methods for writing data to files.
+ * creating the input data for a later ChatGPT prompt.
  */
 public class GPTPreprocessor extends AssertionPreprocessor {
 
