@@ -36,6 +36,10 @@ public class JavaDocCollector extends JavaParserBaseVisitor<Void> {
                 Stream<String> c = Stream
                     .concat(ctx.modifier().stream().map(RuleContext::getText), visitor.getCollectedTokens());
                 builder.add(new JavaDocMethod(cleanJavaDoc(ctx.javadoc().getText()), c.toList()));
+            } else {
+                if (memberDeclaration != null) {
+                    memberDeclaration.accept(this);
+                }
             }
         }
         return null;
