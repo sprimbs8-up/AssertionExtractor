@@ -43,5 +43,5 @@ readarray -t ASSERTION_ARRAY < <(awk -F':' '{ for( i=1; i<=NF; i++ ) print $i }'
 for assertion_number in "${ASSERTION_ARRAY[@]}"
 do
   echo_colour "$GREEN" "Exporting models to ${MODELS} and ${assertion_number} number of assertions..."
-  ${JAVA} -jar ${ASSERTION_JAR} preprocess --data-dir "${BASE_FILE}" --save-dir "${SAVE_DIR}/${assertion_number}" --model "${MODELS}" -m "${assertion_number}"
+  ${JAVA} -jar ${ASSERTION_JAR} preprocess --data-file "${BASE_FILE}" --save-dir "${SAVE_DIR}/${assertion_number}" --model "${MODELS}" -m "${assertion_number}"
 done
