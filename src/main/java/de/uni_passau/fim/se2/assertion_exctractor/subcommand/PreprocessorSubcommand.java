@@ -15,26 +15,26 @@ public class PreprocessorSubcommand implements Runnable {
     protected CommandLine.Model.CommandSpec spec;
     @CommandLine.Option(
         names = { "-m", "--max-assertions" },
-        description = "Number of Maximal Assertions",
+        description = "Number of Maximal Assertions.",
         defaultValue = "1"
     )
     int maxAssertions;
 
     @CommandLine.Option(
-        names = { "-d", "--data-dir" },
-        description = "The direcotry of the data",
+        names = { "-d", "--data-file" },
+        description = "The directory of the data.",
         required = true
     )
     String dataDir;
     @CommandLine.Option(
         names = { "-s", "--save-dir" },
-        description = "The direcotry to save the data",
+        description = "The directory to save the data.",
         required = true
     )
     String saveDir;
     @CommandLine.Option(
         names = { "--model" },
-        description = "The model the data should be parsed",
+        description = "The model the data should be parsed.",
         required = true
     )
     String modelType;
