@@ -2,6 +2,7 @@ package de.uni_passau.fim.se2.assertion_exctractor;
 
 import java.util.concurrent.Callable;
 
+import de.uni_passau.fim.se2.assertion_exctractor.subcommand.AsserT5Subcommand;
 import de.uni_passau.fim.se2.assertion_exctractor.subcommand.AssertionCheckSubcommand;
 import de.uni_passau.fim.se2.assertion_exctractor.subcommand.PreprocessorSubcommand;
 import picocli.CommandLine;
@@ -10,7 +11,7 @@ import picocli.CommandLine;
     name = "Assertion Extractor",
     version = "0.1",
     mixinStandardHelpOptions = true,
-    subcommands = { PreprocessorSubcommand.class, AssertionCheckSubcommand.class }
+    subcommands = { PreprocessorSubcommand.class, AssertionCheckSubcommand.class, AsserT5Subcommand.class }
 )
 public class Main implements Callable<Integer> {
 

@@ -1,16 +1,12 @@
 package de.uni_passau.fim.se2.assertion_exctractor.processors;
 
+import java.util.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.uni_passau.fim.se2.assertion_exctractor.data.*;
-import de.uni_passau.fim.se2.assertion_exctractor.utils.TokenAbstractionComparator;
-import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
-import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
-import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import de.uni_passau.fim.se2.assertion_exctractor.data.*;
+import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 /**
  * The {@link GPTPreprocessor} class extends the {@link AssertionPreprocessor} and is designed specifically for
@@ -36,12 +32,12 @@ public class GPTPreprocessor extends AssertionPreprocessor {
         FineMethodData methodData = dataPoint.methodData();
         TestCase testCase = methodData.testCase();
         List<List<String>> assertions = testCase.testElements().stream()
-                .filter(TestElement::isAssertion)
-                .map(TestElement::tokens)
-                .toList();
+            .filter(TestElement::isAssertion)
+            .map(TestElement::tokens)
+            .toList();
         DatasetType type = dataPoint.type();
         Optional<Map<String, String>> optMap = mapToHashMap(dataPointPair.a());
-        if (optMap.isEmpty()){
+        if (optMap.isEmpty()) {
             return;
         }
         Map<String, String> map = optMap.get();
@@ -53,12 +49,11 @@ public class GPTPreprocessor extends AssertionPreprocessor {
     private Optional<Map<String, String>> mapToHashMap(String dataString) {
         try {
             return Optional.of(MAPPER.readValue(dataString, HashMap.class));
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             return Optional.empty();
         }
     }
-
-
 
     protected void exportDataPoint(
         DatasetType type, List<String> assertionTokens, String testMethod, String focalMethod
@@ -66,23 +61,24 @@ public class GPTPreprocessor extends AssertionPreprocessor {
         String replacedTestMethod = replaceAssertionInTestMethod(testMethod, assertionTokens);
         String assertionString = String.join(" ", assertionTokens);
         Map<String, String> exportMap = new HashMap<>();
-        exportMap.put("testMethod",replacedTestMethod);
-        exportMap.put("focalMethod",focalMethod);
+        exportMap.put("testMethod", replacedTestMethod);
+        exportMap.put("focalMethod", focalMethod);
         exportMap.put("expectedAssertion", assertionString);
         try {
             writeDataToFile(type, MAPPER.writeValueAsString(exportMap), "chat-gpt-input.jsonl");
             type.getRefresh().set(true);
-        } catch (JsonProcessingException ignored) {
+        }
+        catch (JsonProcessingException ignored) {
         }
     }
 
     private String replaceAssertionInTestMethod(String testMethod, List<String> assertTokens) {
         String[] testMethodLines = testMethod.split("\n");
-        for (int i = 0; i<testMethodLines.length; i++){
-            String combinedCodeLine = testMethodLines[i].replaceAll(" ","");
+        for (int i = 0; i < testMethodLines.length; i++) {
+            String combinedCodeLine = testMethodLines[i].replaceAll(" ", "");
             String assertionLine = String.join("", assertTokens);
-            if (combinedCodeLine.contains(assertionLine)){
-                testMethodLines[i] = "<ASSERTION> ;" ;
+            if (combinedCodeLine.contains(assertionLine)) {
+                testMethodLines[i] = "<ASSERTION> ;";
             }
         }
         return String.join("\n", testMethodLines);

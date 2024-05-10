@@ -56,25 +56,25 @@ public class AtlasPreprocessor extends AssertionPreprocessor {
             Supplier<Stream<String>> testCaseStreamSupplier = () -> testCase.replaceAssertionStream(pos);
             Supplier<Stream<String>> focalMethodTokens = () -> methodData.focalMethodTokens().stream();
             exportDataPointAbstract(
-                    type, assertTokens, testCaseStreamSupplier.get(), focalMethodTokens.get(), abstractTokenMap
+                type, assertTokens, testCaseStreamSupplier.get(), focalMethodTokens.get(), abstractTokenMap
             );
             exportDataPointRaw(type, assertTokens, testCaseStreamSupplier.get(), focalMethodTokens.get());
         }
     }
 
     protected void exportDataPointAbstract(
-            DatasetType type, List<String> assertionTokens, Stream<String> currentAssertionStream,
-            Stream<String> currentFocalStream,
-            Map<String, String> abstractTokenMap
+        DatasetType type, List<String> assertionTokens, Stream<String> currentAssertionStream,
+        Stream<String> currentFocalStream,
+        Map<String, String> abstractTokenMap
     ) {
         Map<String, String> invertedSortedMap = new TreeMap<>(new TokenAbstractionComparator());
         invertedSortedMap.putAll(Utils.inverseMap(abstractTokenMap));
 
         String assertionString = assertionTokens.stream()
-                .map(token -> abstractTokenMap.getOrDefault(token, token))
-                .collect(Collectors.joining(" "));
+            .map(token -> abstractTokenMap.getOrDefault(token, token))
+            .collect(Collectors.joining(" "));
         String inputString = buildInputString(
-                currentAssertionStream, currentFocalStream, token -> getOrDefault(abstractTokenMap, token)
+            currentAssertionStream, currentFocalStream, token -> getOrDefault(abstractTokenMap, token)
         );
 
         writeDataToFile("abstract", type, assertionString, "assertLines.txt");
@@ -87,33 +87,36 @@ public class AtlasPreprocessor extends AssertionPreprocessor {
         }
         type.getRefresh().set(true);
     }
+
     private String buildInputString(
-            Stream<String> currentAssertionStream, Stream<String> currentClassStream, Function<String, String> tokenFunction
+        Stream<String> currentAssertionStream, Stream<String> currentClassStream, Function<String, String> tokenFunction
     ) {
         String testCaseString = currentAssertionStream
-                .map(tokenFunction)
-                .collect(Collectors.joining(" "));
+            .map(tokenFunction)
+            .collect(Collectors.joining(" "));
         String focalMethodString = currentClassStream
-                .map(tokenFunction)
-                .collect(Collectors.joining(" "));
+            .map(tokenFunction)
+            .collect(Collectors.joining(" "));
         return "TEST_METHOD: " + testCaseString + " FOCAL_METHOD: " + focalMethodString;
 
     }
+
     private static String getOrDefault(Map<String, String> abstractTokenMap, String token) {
-        if (abstractTokenMap.containsKey(token)){
+        if (abstractTokenMap.containsKey(token)) {
             return abstractTokenMap.get(token);
         }
         try {
             double doubleValue = Float.parseFloat(token);
             return abstractTokenMap.getOrDefault(String.valueOf(doubleValue), token);
-        } catch (NumberFormatException e){
+        }
+        catch (NumberFormatException e) {
             return token;
         }
     }
 
     protected void exportDataPointRaw(
-            DatasetType type, List<String> assertionTokens, Stream<String> currentAssertionStream,
-            Stream<String> currentFocalStream
+        DatasetType type, List<String> assertionTokens, Stream<String> currentAssertionStream,
+        Stream<String> currentFocalStream
     ) {
         String assertionString = String.join(" ", assertionTokens);
         String inputString = buildInputString(currentAssertionStream, currentFocalStream, token -> token);

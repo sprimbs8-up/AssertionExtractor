@@ -121,7 +121,7 @@ class JavaAsserT5Preprocessor extends AssertionPreprocessor {
     }
 
     protected void exportDataPointOnlyTest(
-            DatasetType type, List<String> assertionTokens, Stream<String> currentAssertionStream
+        DatasetType type, List<String> assertionTokens, Stream<String> currentAssertionStream
     ) {
         String assertionString = String.join(" ", assertionTokens);
         String inputString = currentAssertionStream.collect(Collectors.joining(" "));

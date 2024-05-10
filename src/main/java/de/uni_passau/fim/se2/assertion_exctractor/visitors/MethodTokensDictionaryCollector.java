@@ -85,7 +85,7 @@ public class MethodTokensDictionaryCollector implements AstVisitorWithDefaults<V
             case "String" -> fillDict(STRING, "\"" + node.value() + "\"", arg);
             case "BigInteger" -> fillDict(INTEGER, Math.abs(((BigInteger) node.value()).intValue()), arg);
             case "Float" -> fillDict(FLOAT, node.value(), arg);
-            case "Double" -> fillDict(DOUBLE,  node.value(), arg);
+            case "Double" -> fillDict(DOUBLE, node.value(), arg);
             case "Byte" -> fillDict(BYTE, node.value(), arg);
             case "Short" -> fillDict(SHORT, node.value(), arg);
         }

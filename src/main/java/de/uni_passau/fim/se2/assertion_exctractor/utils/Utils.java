@@ -139,9 +139,11 @@ public final class Utils {
         collectAbstractTokens(
             String.join(" ", methodData.testCase().toString()), reader, false, abstractTokenMap, preprocessor
         );
-        collectAbstractTokens(
-            String.join(" ", methodData.focalMethodTokens()), reader, false, abstractTokenMap, preprocessor
-        );
+        if (!methodData.focalMethodTokens().isEmpty()) {
+            collectAbstractTokens(
+                String.join(" ", methodData.focalMethodTokens()), reader, false, abstractTokenMap, preprocessor
+            );
+        }
         return Pair.of(reader, abstractTokenMap);
     }
 
