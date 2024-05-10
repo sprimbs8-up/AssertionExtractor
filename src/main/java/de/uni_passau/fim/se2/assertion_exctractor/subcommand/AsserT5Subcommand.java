@@ -1,3 +1,4 @@
+
 package de.uni_passau.fim.se2.assertion_exctractor.subcommand;
 
 import java.util.*;
@@ -39,7 +40,7 @@ public class AsserT5Subcommand implements Runnable {
     String inputFocalMethod;
     @CommandLine.Option(
         names = { "-t", "--test-method" },
-        description = "The focal method.",
+        description = "The test method.",
         required = true
     )
     String inputTestMethod;
@@ -60,6 +61,11 @@ public class AsserT5Subcommand implements Runnable {
         Utils.SINGLE_METHOD_OPTIONS, true, false
     );
 
+    /**
+     * Executes the subcommand to process and extract assertions. It runs the tasks of the subcommand for processing and
+     * extracting assertions from test cases. It processes the given input test method, focal method, focal class, and
+     * test class to extract assertions and related information.
+     */
     @Override
     public void run() {
         try {
@@ -96,18 +102,42 @@ public class AsserT5Subcommand implements Runnable {
         }
     }
 
-    private static String reverse(String s) {
+    /**
+     * Reverses the given string.
+     *
+     * @param s The input string to reverse.
+     * @return The reversed string.
+     */
+    private static String reverse(final String s) {
         return new StringBuilder(s).reverse().toString();
     }
 
-    private static String replaceLast(String text, String oldString, String newString) {
+    /**
+     * Replaces the last occurrence of a substring in a string.
+     *
+     * @param text      The text in which replacement is to be performed.
+     * @param oldString The substring to be replaced.
+     * @param newString The substring to replace oldString.
+     * @return The modified text with the last occurrence of oldString replaced by newString.
+     */
+    private static String replaceLast(final String text, final String oldString, final String newString) {
         return reverse(reverse(text).replaceFirst(reverse(oldString), reverse(newString)));
     }
 
+    /**
+     * Concatenates multiple streams into one.
+     *
+     * @param streams The streams to concatenate.
+     * @param <T>     The type of elements in the streams.
+     * @return A stream that concatenates all the input streams.
+     */
     private static <T> Stream<T> concat(Stream<T>... streams) {
         return Arrays.stream(streams).reduce(Stream.empty(), Stream::concat);
     }
 
+    /**
+     * Data structure for exporting preprocessed text and translation dictionary.
+     */
     private record ExportData(String preprocessedText, Map<String, String> translationDict) {
     }
 }
