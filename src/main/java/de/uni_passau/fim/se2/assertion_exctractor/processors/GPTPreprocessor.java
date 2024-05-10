@@ -9,8 +9,8 @@ import de.uni_passau.fim.se2.assertion_exctractor.data.*;
 import de.uni_passau.fim.se2.deepcode.toolbox.util.functional.Pair;
 
 /**
- * The {@link GPTPreprocessor} class extends the {@link AssertionPreprocessor} and is designed specifically for
- * creating the input data for a later ChatGPT prompt.
+ * The {@link GPTPreprocessor} class extends the {@link AssertionPreprocessor} and is designed specifically for creating
+ * the input data for a later ChatGPT prompt.
  */
 public class GPTPreprocessor extends AssertionPreprocessor {
 
