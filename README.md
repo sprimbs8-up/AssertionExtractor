@@ -49,3 +49,22 @@ In the evaluation script the validity of the assertions must be proven. For that
 ```bash
     java -jar [path_to_java_jar] check --codes "[\"assertEquals(res, 3)\"]"
 ```
+
+### Preprocessing Of A Single Datapoint:
+This subcommand is part of the Assertion Extractor tool suite developed at the University of Passau, Germany. It aims to process and extract assertions from test cases, focusing on specific methods and classes.
+
+### Command Line Options
+- `--model`: Specify the type of model to use for extraction. Options are "Raw" and "Abstract".
+- `-f`, `--focal-method`: Specify the focal method to be analyzed.
+- `-t`, `--test-method`: Specify the test method from which assertions will be extracted.
+- `--focal-class`: Specify the focal class containing the focal method.
+- `--test-class`: Specify the test class containing the test method.
+
+#### Example Command:
+```bash
+    java -jar [path_to_java_jar] asserT5 \
+         --test-method [TEST_METHOD_CODE] \
+         --focal-method [FOCAL_METHOD_CODE] \
+         --test-class [FOCAL_CLASS_CODE] \
+         --focal-class [FOCAL_CLASS_CODE]
+```
