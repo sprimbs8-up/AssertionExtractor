@@ -7,9 +7,9 @@ import java.util.stream.Stream;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.CompilationUnit;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.ConstructorDeclaration;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MemberDeclarator;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
-import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.AstCodeParser;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.ParseException;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOptions;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.ProcessingException;
@@ -75,11 +75,17 @@ public class CustomASTConverterPreprocessor extends AstConverterPreprocessor {
      */
     @Override
     protected Stream<AstNode> processSingleElement(String code, boolean singleMethod) throws ProcessingException {
-        AstCodeParser codeParser = new CustomAstCodeParser();
+        CustomAstCodeParser codeParser = new CustomAstCodeParser();
         if (singleMethod) {
-            Stream<MemberDeclarator<MethodDeclaration>> stream = codeParser.parseMethodSkipErrors(code).stream();
+            Optional<MemberDeclarator<MethodDeclaration>> methodOpt = codeParser.parseMethodSkipErrors(code);
+            if (methodOpt.isPresent()) {
+                Stream<MemberDeclarator<MethodDeclaration>> stream = methodOpt.stream();
+                Objects.requireNonNull(AstNode.class);
+                return stream.map(AstNode.class::cast);
+            }
+            Optional<MemberDeclarator<ConstructorDeclaration>> constOpt = codeParser.parseConstructorSkipErrors(code);
             Objects.requireNonNull(AstNode.class);
-            return stream.map(AstNode.class::cast);
+            return constOpt.stream().map(AstNode.class::cast);
         }
         try {
             var node = codeParser.parseCodeToCompilationUnit(code);
@@ -89,5 +95,4 @@ public class CustomASTConverterPreprocessor extends AstConverterPreprocessor {
             return Stream.empty();
         }
     }
-
 }
