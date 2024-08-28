@@ -1,6 +1,8 @@
 
 package de.uni_passau.fim.se2.assertion_exctractor.subcommand;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,35 +29,11 @@ public class AsserT5Subcommand implements Runnable {
     protected CommandLine.Model.CommandSpec spec;
 
     @CommandLine.Option(
-        names = { "--model" },
-        description = "The model type. Raw and Abstract are available.",
+        names = { "-d" },
+        description = "path of the data",
         required = true
     )
-    String modelType;
-    @CommandLine.Option(
-        names = { "-f", "--focal-method" },
-        description = "The focal method.",
-        required = true
-    )
-    String inputFocalMethod;
-    @CommandLine.Option(
-        names = { "-t", "--test-method" },
-        description = "The test method.",
-        required = true
-    )
-    String inputTestMethod;
-    @CommandLine.Option(
-        names = { "--focal-class" },
-        description = "The focal class.",
-        required = true
-    )
-    String inputFocalClass;
-    @CommandLine.Option(
-        names = { "--test-class" },
-        description = "The test class.",
-        required = true
-    )
-    String inputTestClass;
+    String dataPath;
 
     protected final CustomASTConverterPreprocessor preprocessor = new CustomASTConverterPreprocessor(
         Utils.SINGLE_METHOD_OPTIONS, true, false
@@ -70,13 +48,15 @@ public class AsserT5Subcommand implements Runnable {
     public void run() {
         try {
             ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> classDict = mapper.readValue(new File(dataPath), Map.class);
 
             String dummyAssertion = "assertTrue(true);";
-            inputTestMethod = mapper.readValue(inputTestMethod, String.class);
-            inputFocalMethod = mapper.readValue(inputFocalMethod, String.class);
-            inputFocalClass = mapper.readValue(inputFocalClass, String.class);
-            inputTestClass = mapper.readValue(inputTestClass, String.class);
-            modelType = mapper.readValue(modelType, String.class);
+            String inputTestMethod = (String) classDict.get("test_method");
+            String inputFocalMethod = (String) classDict.get("focal_method");
+            String inputFocalClass = (String) classDict.get("focal_class");
+            String inputTestClass = (String) classDict.get("test_class");
+            String modelType = (String) classDict.get("model_type");
+
             String newInputTestMethod = replaceLast(inputTestMethod, "}", dummyAssertion + "}");
             TestCase tc = new TestCaseParser().parseTestCase(newInputTestMethod).get();
             List<String> methodTokens = new TokenParser().convertCodeToTokenStrings(inputFocalMethod)
@@ -98,6 +78,9 @@ public class AsserT5Subcommand implements Runnable {
             System.out.println(mapper.writeValueAsString(data));
         }
         catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
