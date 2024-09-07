@@ -1,5 +1,6 @@
 package de.uni_passau.fim.se2.assertion_exctractor.parsing.code;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -7,9 +8,11 @@ import java.util.stream.Stream;
 import de.uni_passau.fim.se2.assertion_exctractor.utils.Utils;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.AstNode;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.CompilationUnit;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.Modifier;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.ConstructorDeclaration;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MemberDeclarator;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.MethodDeclaration;
+import de.uni_passau.fim.se2.deepcode.toolbox.ast.model.declaration.TypeDeclarator;
 import de.uni_passau.fim.se2.deepcode.toolbox.ast.parser.ParseException;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.CommonPreprocessorOptions;
 import de.uni_passau.fim.se2.deepcode.toolbox.preprocessor.ProcessingException;
@@ -59,10 +62,26 @@ public class CustomASTConverterPreprocessor extends AstConverterPreprocessor {
             .filter(CompilationUnit.class::isInstance)
             .map(CompilationUnit.class::cast)
             .map(CompilationUnit::typeDeclarations)
-            .filter(x -> x.size() == 1)
-            .map(x -> x.get(0))
+            .map(declarations -> {
+                if (declarations.size() == 1) {
+                    return Optional.of(declarations.get(0));
+                }
+                else {
+                    // simplification: we assume that we only care about the single public class
+                    // here and ignore other (package-)private classes in the file
+                    return getPublicType(declarations);
+                }
+            })
+            .flatMap(Optional::stream)
             .map(AstNode.class::cast)
             .findAny();
+    }
+
+    private static Optional<TypeDeclarator> getPublicType(final List<TypeDeclarator> declarations) {
+        // there can only be up to a single public top-level type in a file
+        return declarations.stream()
+            .filter(decl -> decl.modifiers().basicModifiers().contains(Modifier.PUBLIC))
+            .findFirst();
     }
 
     /**
