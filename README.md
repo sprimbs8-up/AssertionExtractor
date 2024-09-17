@@ -68,3 +68,7 @@ This subcommand is part of the Assertion Extractor tool suite developed at the U
          --test-class [FOCAL_CLASS_CODE] \
          --focal-class [FOCAL_CLASS_CODE]
 ```
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](https://github.com/apache/.github/blob/main/LICENSE) file for details.
